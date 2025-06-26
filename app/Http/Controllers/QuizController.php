@@ -2,39 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Quiz;
 use App\Models\Soal;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Validator;
+use App\Models\Kategori;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Validator;
 
 class QuizController extends Controller
 {
-
     public function index()
     {
         $quizzes = Quiz::with(['user', 'soals'])
-                    ->where('user_id', auth()->id())
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+            ->where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-       
         return view('backend.quiz.index', compact('quizzes'));
     }
-    
+
     public function create()
     {
-        return view('backend.quiz.create');
+        $categories = Kategori::all();
+        return view('backend.quiz.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created quiz in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store(Request $request)
     {
         // Validate the incoming request
@@ -43,6 +37,7 @@ class QuizController extends Controller
             'description' => 'nullable|string|max:1000',
             'visibility' => 'required|in:private,publish',
             'duration' => 'required|integer|min:1|max:300',
+            'categories' => 'required',
             'num_questions' => 'required|integer|min:1|max:50',
             'questions' => 'required|array',
             'questions.*.text' => 'required|string|max:1000',
@@ -84,23 +79,22 @@ class QuizController extends Controller
         // Validate that the number of questions matches the array count
         if (count($validatedData['questions']) != $validatedData['num_questions']) {
             return back()->withErrors(['questions' => 'Jumlah soal tidak sesuai dengan yang diinputkan.'])
-                        ->withInput();
+                ->withInput();
         }
 
         try {
-            // Start database transaction
-            DB::beginTransaction();
-
-            // Generate unique quiz code
+            // Generate unique quiz code (for display purposes)
             $kodeQuiz = $this->generateUniqueQuizCode();
 
-            // Create the quiz
+            // Actually create the quiz with correct field names
+            DB::beginTransaction();
+
             $quiz = Quiz::create([
                 'judul_quiz' => $validatedData['quiz_title'],
                 'deskripsi' => $validatedData['description'] ?? '',
-                'status' => $validatedData['visibility'], // or 'visibility' depending on your database column name
                 'kode_quiz' => $kodeQuiz,
                 'waktu_menit' => $validatedData['duration'],
+                'kategori_id' => $validatedData['categories'], // Changed from 'kategori' to 'kategori_id'
                 'user_id' => auth()->id(),
                 'tanggal_buat' => Carbon::now(),
             ]);
@@ -118,29 +112,27 @@ class QuizController extends Controller
                 ]);
             }
 
-            // Commit the transaction
             DB::commit();
 
             // Create success message based on visibility status
             $statusMessage = $validatedData['visibility'] === 'publish' ? 'dipublish' : 'dibuat sebagai private';
-            
+
             // Redirect with success message
             return redirect()->route('quiz.index')
-                        ->with('success', "Quiz berhasil {$statusMessage} dengan kode: {$kodeQuiz}");
+                ->with('success', "Quiz berhasil {$statusMessage} dengan kode: {$kodeQuiz}");
 
         } catch (\Exception $e) {
             // Rollback the transaction on error
             DB::rollback();
 
             // Log the error for debugging
-            \Log::error('Error creating quiz: ' . $e->getMessage());
+            \Log::error('Error creating quiz: '.$e->getMessage());
 
             // Redirect back with error message
             return back()->withErrors(['error' => 'Terjadi kesalahan saat membuat quiz. Silakan coba lagi.'])
-                        ->withInput();
+                ->withInput();
         }
     }
-
 
     private function generateUniqueQuizCode()
     {
@@ -155,20 +147,21 @@ class QuizController extends Controller
     public function show(Quiz $quiz)
     {
         $quiz->load('soals');
+
         return view('backend.quiz.show', compact('quiz'));
     }
 
     public function edit($id)
     {
         $quiz = Quiz::with('soals')->findOrFail($id);
+
         return view('backend.quiz.edit', compact('quiz'));
     }
-
 
     public function update(Request $request, $id)
     {
         $quiz = Quiz::findOrFail($id);
-        
+
         $validator = Validator::make($request->all(), [
             'judul_quiz' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
@@ -201,7 +194,7 @@ class QuizController extends Controller
             $updatedQuestionIds = [];
 
             foreach ($request->questions as $questionData) {
-                if (isset($questionData['id']) && !empty($questionData['id'])) {
+                if (isset($questionData['id']) && ! empty($questionData['id'])) {
                     $question = Soal::findOrFail($questionData['id']);
                     $question->update([
                         'pertanyaan' => $questionData['pertanyaan'],
@@ -227,7 +220,7 @@ class QuizController extends Controller
             }
 
             $questionsToDelete = array_diff($existingQuestionIds, $updatedQuestionIds);
-            if (!empty($questionsToDelete)) {
+            if (! empty($questionsToDelete)) {
                 Soal::whereIn('id', $questionsToDelete)->delete();
             }
 
@@ -238,6 +231,7 @@ class QuizController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
+
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat memperbarui quiz.')
                 ->withInput();
@@ -255,11 +249,13 @@ class QuizController extends Controller
             $quiz->soals()->delete();
             $quiz->delete();
             DB::commit();
+
             return redirect()->route('quiz.index')
-                           ->with('success', 'Quiz berhasil dihapus.');
+                ->with('success', 'Quiz berhasil dihapus.');
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Error deleting quiz: ' . $e->getMessage());
+            \Log::error('Error deleting quiz: '.$e->getMessage());
+
             return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus quiz.']);
         }
     }

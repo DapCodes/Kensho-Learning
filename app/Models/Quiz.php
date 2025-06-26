@@ -11,8 +11,10 @@ class Quiz extends Model
         'deskripsi',
         'kode_quiz',
         'waktu_menit',
+        'kategori_id',
         'user_id',
         'tanggal_buat',
+        'status', // Add this if you have a status field
     ];
 
     public function user()
@@ -28,6 +30,12 @@ class Quiz extends Model
     public function hasilUjian()
     {
         return $this->hasMany(HasilUjian::class);
+    }
+
+    public function kategori()
+    {
+        // Fixed: should be belongsTo, not hasMany
+        return $this->belongsTo(Kategori::class, 'kategori_id');
     }
 
     public function peringkat()

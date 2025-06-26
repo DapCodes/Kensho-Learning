@@ -1,11 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BackendController;
-use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\QuizController;
 use App\Http\Middleware\Admin;
-
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');

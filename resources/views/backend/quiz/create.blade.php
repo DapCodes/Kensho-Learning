@@ -41,7 +41,7 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="mb-3">
                             <label for="num-questions" class="form-label">Banyak Soal<span class="text-danger">*</span></label>
                             <input type="number" class="form-control @error('num_questions') is-invalid @enderror" id="num-questions" name="num_questions" min="1" max="50" value="{{ old('num_questions') }}" required>
@@ -50,7 +50,7 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="mb-3">
                             <label for="duration" class="form-label">Durasi (menit) <span class="text-danger">*</span></label>
                             <input type="number" class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" min="1" max="300" value="{{ old('duration') }}" required>
@@ -59,11 +59,27 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-2">
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="categories" class="form-label">Kategori <span class="text-danger">*</span></label>
+                            <select class="form-select @error('categories') is-invalid @enderror" id="categories" name="categories" required>
+                                <option value="" disabled selected>Pilih Kategori Quiz</option>
+                                @foreach ($categories as $items)
+                                    <option value="{{ $items->id }}">{{ $items->nama_kategori }}</option>
+                                @endforeach
+                            </select>
+                            @error('categories')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                     <div class="col-md-3">
                         <div class="mb-3">
                             <label for="visibility" class="form-label">Status Visibilitas <span class="text-danger">*</span></label>
                             <select class="form-select @error('visibility') is-invalid @enderror" id="visibility" name="visibility" required>
-                                <option value="">Pilih Status</option>
+                                <option disabled selected>Pilih Status</option>
                                 <option value="private">Private</option>
                                 <option value="publish">Publish</option>
                             </select>
@@ -109,6 +125,7 @@
                         <p class="mb-1"><strong>Jumlah Soal:</strong> <span id="display-questions"></span></p>
                         <p class="mb-1"><strong>Durasi:</strong> <span id="display-duration"></span> menit</p>
                         <p class="mb-1"><strong>Status:</strong> <span id="display-visibility"></span></p>
+                        <p class="mb-1"><strong>Kategori:</strong> <span id="display-categories"></span></p>
                         <p class="mb-0"><strong>Deskripsi:</strong> <span id="display-description"></span></p>
                     </div>
                 </div>
@@ -123,6 +140,7 @@
                 <input type="hidden" name="duration" id="hidden-duration">
                 <input type="hidden" name="description" id="hidden-description">
                 <input type="hidden" name="visibility" id="hidden-visibility">
+                <input type="hidden" name="categories" id="hidden-categories">
 
                 <!-- Dynamic Questions Container -->
                 <div id="questions-list"></div>
@@ -155,8 +173,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const duration = document.getElementById('duration').value;
         const description = document.getElementById('quiz-description').value;
         const visibility = document.getElementById('visibility').value;
+        const categories = document.getElementById('categories').value;
         
-        if (!title || !numQuestions || !duration || !visibility) {
+        if (!title || !numQuestions || !duration || !visibility || !categories) {
             alert('Harap isi semua field yang wajib diisi.');
             return;
         }
@@ -166,12 +185,17 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Get category name from selected option
+        const categorySelect = document.getElementById('categories');
+        const selectedCategoryName = categorySelect.options[categorySelect.selectedIndex].text;
+        
         // Update display information
         document.getElementById('display-title').textContent = title;
         document.getElementById('display-questions').textContent = numQuestions;
         document.getElementById('display-duration').textContent = duration;
         document.getElementById('display-description').textContent = description || 'Tidak ada deskripsi';
         document.getElementById('display-visibility').textContent = visibility;
+        document.getElementById('display-categories').textContent = selectedCategoryName;
         
         // Update hidden fields
         document.getElementById('hidden-title').value = title;
@@ -179,6 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('hidden-duration').value = duration;
         document.getElementById('hidden-description').value = description;
         document.getElementById('hidden-visibility').value = visibility;
+        document.getElementById('hidden-categories').value = categories;
         
         // Generate question forms
         generateQuestionForms(numQuestions);

@@ -17,10 +17,12 @@ return new class extends Migration
             $table->text('deskripsi')->nullable();
             $table->string('kode_quiz', 10)->unique();
             $table->integer('waktu_menit');
+            $table->unsignedBigInteger('kategori_id');
             $table->unsignedBigInteger('user_id');
             $table->enum('status', ['private', 'publish']);
             $table->dateTime('tanggal_buat')->default(DB::raw('CURRENT_TIMESTAMP'));
 
+            $table->foreign('kategori_id')->references('id')->on('kategoris')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->timestamps();
