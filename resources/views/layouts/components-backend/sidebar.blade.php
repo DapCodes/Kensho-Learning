@@ -4,7 +4,7 @@
         <!-- ---------------------------------- -->
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="./main/index.html" class="text-nowrap logo-img">
-            <img src="{{asset('/assets/backend/images/logos/dark-logo.svg')}}"  alt="Logo-Dark" />
+            <img src="{{asset('/assets/backend/images/logos/dark-logo.svg')}}" class="dark-logo" alt="Logo-Dark" />
             <img src="{{asset('/assets/backend/images/logos/light-logo.svg')}}" class="light-logo" alt="Logo-light" />
           </a>
           <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
@@ -48,8 +48,24 @@
             <li class="nav-small-cap">
               <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">Kelola</span>
+            </li> 
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="https://google.com" aria-expanded="false">
+                <span class="d-flex">
+                  <i class="ti ti-user"></i>
+                </span>
+                <span class="hide-menu">User</span>
+              </a>
             </li>
-
+                        
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{{ route('kategori.index') }}" aria-expanded="false">
+                <span class="d-flex">
+                  <i class="ti ti-box"></i>
+                </span>
+                <span class="hide-menu">Kategori</span>
+              </a>
+            </li>
             <li class="sidebar-item">
               <a class="sidebar-link has-arrow" 
                 href="#quizSubmenu" 
@@ -80,16 +96,6 @@
                   </a>
                 </li>
               </ul>
-            </li>
-                      
-            
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="https://google.com" aria-expanded="false">
-                <span class="d-flex">
-                  <i class="ti ti-user"></i>
-                </span>
-                <span class="hide-menu">User</span>
-              </a>
             </li>
           </ul>
         </nav>

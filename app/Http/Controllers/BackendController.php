@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Quiz;
 use App\Models\Kategori;
+use App\Models\Quiz;
 use Illuminate\Http\Request;
 
 class BackendController extends Controller

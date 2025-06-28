@@ -1,27 +1,40 @@
 @extends('layouts.backend')
 @section('content')
+@include('layouts.components-backend.css')
 <div class="container-fluid">
-    <!-- Header Section -->
-    <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
-        <div class="card-body px-4 py-3">
+    <!-- Enhanced Header Section -->
+    <div class="card bg-gradient-primary shadow-sm position-relative overflow-hidden mb-5">
+        <div class="card-body px-4 py-4">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-8">Quiz Terbaru</h4>
+                    <h3 class="fw-bold mb-3 text-white">Quiz Terbaru!!</h3>
+                    <p class="text-white-75 mb-3">Quiz terbaru dalam 7 Hari terakhir.</p>
                     <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-light">
                             <li class="breadcrumb-item">
-                                <a class="text-muted text-decoration-none" href="../main/index.html">Dasbor</a>
+                                <a class="text-white text-decoration-none" href="">
+                                    <i class="ti ti-home me-1"></i>Dasbor
+                                </a>
                             </li>
-                            <li class="breadcrumb-item" aria-current="page">Quiz Terbaru</li>
                         </ol>
                     </nav>
                 </div>
                 <div class="col-3">
-                    <div class="text-center mb-n5">
-                        <img src="{{asset('assets/backend/images/breadcrumb/ChatBc.png')}}" alt="modernize-img" class="img-fluid mb-n4" />
+                    <div class="text-center">
+                        <img src="{{asset('assets/backend/images/breadcrumb/ChatBc.png')}}" 
+                             alt="quiz-dashboard" 
+                             class="img-fluid" 
+                             style="max-height: 120px; filter: brightness(1.1);" />
                     </div>
                 </div>
             </div>
+        </div>
+        <!-- Decorative elements -->
+        <div class="position-absolute top-0 end-0 opacity-25">
+            <div class="bg-white rounded-circle" style="width: 200px; height: 200px; transform: translate(50px, -50px);"></div>
+        </div>
+        <div class="position-absolute bottom-0 start-0 opacity-25">
+            <div class="bg-white rounded-circle" style="width: 150px; height: 150px; transform: translate(-75px, 75px);"></div>
         </div>
     </div>
     <!-- Filter Section -->
@@ -117,7 +130,7 @@
                         <div class="row g-2">
                             <div class="col-6">
                                 <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-primary w-100 btn-action">
-                                    <i class="ti ti-play me-1"></i>Coba Quiz
+                                    <i class="ti ti-play me-1"></i>Detail Quiz
                                 </a>
                             </div>
                             <div class="col-6">

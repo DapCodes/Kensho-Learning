@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\Kategori;
 use App\Models\Quiz;
 use App\Models\Soal;
-use App\Models\Kategori;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,12 +25,12 @@ class QuizController extends Controller
     public function create()
     {
         $categories = Kategori::all();
+
         return view('backend.quiz.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
-        // Validate the incoming request
         $validatedData = $request->validate([
             'quiz_title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
@@ -47,7 +46,6 @@ class QuizController extends Controller
             'questions.*.option_d' => 'required|string|max:255',
             'questions.*.correct_answer' => 'required|in:A,B,C,D',
         ], [
-            // Custom error messages in Indonesian
             'quiz_title.required' => 'Judul quiz wajib diisi.',
             'quiz_title.max' => 'Judul quiz maksimal 255 karakter.',
             'description.max' => 'Deskripsi quiz maksimal 1000 karakter.',
@@ -76,17 +74,14 @@ class QuizController extends Controller
             'questions.*.correct_answer.in' => 'Jawaban benar harus A, B, C, atau D.',
         ]);
 
-        // Validate that the number of questions matches the array count
         if (count($validatedData['questions']) != $validatedData['num_questions']) {
             return back()->withErrors(['questions' => 'Jumlah soal tidak sesuai dengan yang diinputkan.'])
                 ->withInput();
         }
 
         try {
-            // Generate unique quiz code (for display purposes)
             $kodeQuiz = $this->generateUniqueQuizCode();
 
-            // Actually create the quiz with correct field names
             DB::beginTransaction();
 
             $quiz = Quiz::create([
@@ -94,12 +89,11 @@ class QuizController extends Controller
                 'deskripsi' => $validatedData['description'] ?? '',
                 'kode_quiz' => $kodeQuiz,
                 'waktu_menit' => $validatedData['duration'],
-                'kategori_id' => $validatedData['categories'], // Changed from 'kategori' to 'kategori_id'
+                'kategori_id' => $validatedData['categories'],
                 'user_id' => auth()->id(),
                 'tanggal_buat' => Carbon::now(),
             ]);
 
-            // Create questions for the quiz
             foreach ($validatedData['questions'] as $questionData) {
                 Soal::create([
                     'quiz_id' => $quiz->id,
@@ -114,21 +108,16 @@ class QuizController extends Controller
 
             DB::commit();
 
-            // Create success message based on visibility status
             $statusMessage = $validatedData['visibility'] === 'publish' ? 'dipublish' : 'dibuat sebagai private';
 
-            // Redirect with success message
             return redirect()->route('quiz.index')
                 ->with('success', "Quiz berhasil {$statusMessage} dengan kode: {$kodeQuiz}");
 
         } catch (\Exception $e) {
-            // Rollback the transaction on error
             DB::rollback();
 
-            // Log the error for debugging
             \Log::error('Error creating quiz: '.$e->getMessage());
 
-            // Redirect back with error message
             return back()->withErrors(['error' => 'Terjadi kesalahan saat membuat quiz. Silakan coba lagi.'])
                 ->withInput();
         }
@@ -137,7 +126,6 @@ class QuizController extends Controller
     private function generateUniqueQuizCode()
     {
         do {
-            // Generate a random 6-character code (letters and numbers)
             $code = strtoupper(Str::random(6));
         } while (Quiz::where('kode_quiz', $code)->exists());
 
@@ -153,89 +141,158 @@ class QuizController extends Controller
 
     public function edit($id)
     {
-        $quiz = Quiz::with('soals')->findOrFail($id);
-
-        return view('backend.quiz.edit', compact('quiz'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $quiz = Quiz::findOrFail($id);
-
-        $validator = Validator::make($request->all(), [
-            'judul_quiz' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'waktu_menit' => 'required|integer|min:1',
-            'questions' => 'required|array|min:1',
-            'questions.*.pertanyaan' => 'required|string',
-            'questions.*.pilihan_a' => 'required|string|max:255',
-            'questions.*.pilihan_b' => 'required|string|max:255',
-            'questions.*.pilihan_c' => 'required|string|max:255',
-            'questions.*.pilihan_d' => 'required|string|max:255',
-            'questions.*.jawaban_benar' => 'required|in:A,B,C,D',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        DB::beginTransaction();
-
         try {
-            $quiz->update([
-                'judul_quiz' => $request->judul_quiz,
-                'deskripsi' => $request->deskripsi,
-                'waktu_menit' => $request->waktu_menit,
-            ]);
+            $quiz = Quiz::with(['soals', 'kategori'])->findOrFail($id);
 
-            $existingQuestionIds = $quiz->soals->pluck('id')->toArray();
-            $updatedQuestionIds = [];
+            $categories = Kategori::all();
 
-            foreach ($request->questions as $questionData) {
-                if (isset($questionData['id']) && ! empty($questionData['id'])) {
-                    $question = Soal::findOrFail($questionData['id']);
-                    $question->update([
-                        'pertanyaan' => $questionData['pertanyaan'],
-                        'pilihan_a' => $questionData['pilihan_a'],
-                        'pilihan_b' => $questionData['pilihan_b'],
-                        'pilihan_c' => $questionData['pilihan_c'],
-                        'pilihan_d' => $questionData['pilihan_d'],
-                        'jawaban_benar' => $questionData['jawaban_benar'],
-                    ]);
-                    $updatedQuestionIds[] = $question->id;
-                } else {
-                    $newQuestion = Soal::create([
-                        'quiz_id' => $quiz->id,
-                        'pertanyaan' => $questionData['pertanyaan'],
-                        'pilihan_a' => $questionData['pilihan_a'],
-                        'pilihan_b' => $questionData['pilihan_b'],
-                        'pilihan_c' => $questionData['pilihan_c'],
-                        'pilihan_d' => $questionData['pilihan_d'],
-                        'jawaban_benar' => $questionData['jawaban_benar'],
-                    ]);
-                    $updatedQuestionIds[] = $newQuestion->id;
-                }
-            }
-
-            $questionsToDelete = array_diff($existingQuestionIds, $updatedQuestionIds);
-            if (! empty($questionsToDelete)) {
-                Soal::whereIn('id', $questionsToDelete)->delete();
-            }
-
-            DB::commit();
-
-            return redirect()->route('backend.quiz.index', $quiz->id)
-                ->with('success', 'Quiz berhasil diperbarui!');
+            return view('backend.quiz.edit', compact('quiz', 'categories'));
 
         } catch (\Exception $e) {
-            DB::rollback();
-
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui quiz.')
-                ->withInput();
+            return redirect()->route('quiz.index')
+                ->with('error', 'Quiz tidak ditemukan atau terjadi kesalahan.');
         }
+    }
+
+    /**
+     * Update the specified quiz in storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            $quiz = Quiz::with('soals')->findOrFail($id);
+
+            $validator = Validator::make($request->all(), [
+                'judul_quiz' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string|max:1000',
+                'waktu_menit' => 'required|integer|min:1|max:300',
+                'status' => 'required|in:private,published',
+                'questions' => 'required|array|min:1|max:50',
+                'questions.*.pertanyaan' => 'required|string|max:1000',
+                'questions.*.pilihan_a' => 'required|string|max:255',
+                'questions.*.pilihan_b' => 'required|string|max:255',
+                'questions.*.pilihan_c' => 'required|string|max:255',
+                'questions.*.pilihan_d' => 'required|string|max:255',
+                'questions.*.jawaban_benar' => 'required|in:A,B,C,D',
+                'questions.*.id' => 'nullable|integer|exists:soals,id',
+            ], [
+                'judul_quiz.required' => 'Judul quiz wajib diisi.',
+                'judul_quiz.max' => 'Judul quiz tidak boleh lebih dari 255 karakter.',
+                'waktu_menit.required' => 'Durasi quiz wajib diisi.',
+                'waktu_menit.min' => 'Durasi quiz minimal 1 menit.',
+                'waktu_menit.max' => 'Durasi quiz maksimal 300 menit.',
+                'status.required' => 'Status quiz wajib dipilih.',
+                'status.in' => 'Status quiz harus private atau published.',
+                'questions.required' => 'Quiz harus memiliki minimal satu soal.',
+                'questions.min' => 'Quiz harus memiliki minimal satu soal.',
+                'questions.max' => 'Quiz maksimal memiliki 50 soal.',
+                'questions.*.pertanyaan.required' => 'Teks soal wajib diisi.',
+                'questions.*.pertanyaan.max' => 'Teks soal tidak boleh lebih dari 1000 karakter.',
+                'questions.*.pilihan_a.required' => 'Pilihan A wajib diisi.',
+                'questions.*.pilihan_b.required' => 'Pilihan B wajib diisi.',
+                'questions.*.pilihan_c.required' => 'Pilihan C wajib diisi.',
+                'questions.*.pilihan_d.required' => 'Pilihan D wajib diisi.',
+                'questions.*.jawaban_benar.required' => 'Jawaban benar wajib dipilih.',
+                'questions.*.jawaban_benar.in' => 'Jawaban benar harus A, B, C, atau D.',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput()
+                    ->with('error', 'Terdapat kesalahan dalam pengisian form. Silakan periksa kembali.');
+            }
+
+            DB::beginTransaction();
+
+            try {
+                $quiz->update([
+                    'judul_quiz' => $request->judul_quiz,
+                    'deskripsi' => $request->deskripsi,
+                    'waktu_menit' => $request->waktu_menit,
+                    'status' => $request->status,
+                    'user_id' => $quiz->user_id,
+                    'kategori_id' => $quiz->kategori_id,
+                    'kode_quiz' => $quiz->kode_quiz,
+                    'tanggal_buat' => $quiz->tanggal_buat,
+                ]);
+
+                $existingQuestionIds = $quiz->soals->pluck('id')->toArray();
+                $updatedQuestionIds = [];
+
+                foreach ($request->questions as $index => $questionData) {
+                    if (isset($questionData['id']) && ! empty($questionData['id'])) {
+                        $question = Soal::findOrFail($questionData['id']);
+
+                        if ($question->quiz_id !== $quiz->id) {
+                            throw new \Exception('Invalid question ID provided.');
+                        }
+
+                        $question->update([
+                            'pertanyaan' => $questionData['pertanyaan'],
+                            'pilihan_a' => $questionData['pilihan_a'],
+                            'pilihan_b' => $questionData['pilihan_b'],
+                            'pilihan_c' => $questionData['pilihan_c'],
+                            'pilihan_d' => $questionData['pilihan_d'],
+                            'jawaban_benar' => $questionData['jawaban_benar'],
+                        ]);
+
+                        $updatedQuestionIds[] = $question->id;
+
+                    } else {
+                        $newQuestion = Soal::create([
+                            'quiz_id' => $quiz->id,
+                            'pertanyaan' => $questionData['pertanyaan'],
+                            'pilihan_a' => $questionData['pilihan_a'],
+                            'pilihan_b' => $questionData['pilihan_b'],
+                            'pilihan_c' => $questionData['pilihan_c'],
+                            'pilihan_d' => $questionData['pilihan_d'],
+                            'jawaban_benar' => $questionData['jawaban_benar'],
+                        ]);
+
+                        $updatedQuestionIds[] = $newQuestion->id;
+                    }
+                }
+
+                $questionsToDelete = array_diff($existingQuestionIds, $updatedQuestionIds);
+                if (! empty($questionsToDelete)) {
+                    Soal::whereIn('id', $questionsToDelete)->delete();
+                }
+
+                DB::commit();
+
+                return redirect()->route('quiz.index')
+                    ->with('success', 'Quiz berhasil diperbarui!');
+
+            } catch (\Exception $e) {
+                DB::rollback();
+
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Terjadi kesalahan saat memperbarui quiz: '.$e->getMessage());
+            }
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('quiz.index')
+                ->with('error', 'Quiz tidak ditemukan.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('quiz.index')
+                ->with('error', 'Terjadi kesalahan yang tidak terduga.');
+        }
+    }
+
+
+    private function generateQuizCode()
+    {
+        do {
+            $code = 'QZ'.strtoupper(substr(md5(uniqid(rand(), true)), 0, 6));
+        } while (Quiz::where('kode_quiz', $code)->exists());
+
+        return $code;
     }
 
     public function destroy(Quiz $quiz)

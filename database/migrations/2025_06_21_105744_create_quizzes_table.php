@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('waktu_menit');
             $table->unsignedBigInteger('kategori_id');
             $table->unsignedBigInteger('user_id');
-            $table->enum('status', ['private', 'publish']);
+            $table->enum('status', ['private', 'published']);
             $table->dateTime('tanggal_buat')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->foreign('kategori_id')->references('id')->on('kategoris')->onDelete('cascade');

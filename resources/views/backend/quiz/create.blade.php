@@ -1,31 +1,48 @@
 @extends('layouts.backend')
 @section('content')
+@include('layouts.components-backend.css')
 <div class="container-fluid">
-    <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
-        <div class="card-body px-4 py-3">
+    
+    <div class="card bg-gradient-primary shadow-sm position-relative overflow-hidden mb-5 border-0">
+        <div class="card-body px-4 py-4">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-8">Buat Quiz</h4>
+                    <h3 class="fw-bold mb-3 text-white">Buat Quiz baru??</h3>
+                    <p class="text-white-75 mb-3">Buat dan kelola quiz anda dengan mudah</p>
                     <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-light">
                             <li class="breadcrumb-item">
-                                <a class="text-muted text-decoration-none" href="../main/index.html">Quiz</a>
+                                <a class="text-white-75 text-decoration-none" href="">
+                                    <i class="ti ti-home me-1"></i>Kelola
+                                </a>
                             </li>
-                            <li class="breadcrumb-item" aria-current="page">Buat Quiz</li>
+                            <li class="breadcrumb-item active text-white-75" aria-current="page">Quiz</li>
+                            <li class="breadcrumb-item active text-white" aria-current="page">Buat</li>
                         </ol>
                     </nav>
                 </div>
                 <div class="col-3">
-                    <div class="text-center mb-n5">
-                        <img src="{{asset('assets/backend/images/breadcrumb/ChatBc.png')}}" alt="modernize-img" class="img-fluid mb-n4" />
+                    <div class="text-center">
+                        <img src="{{asset('assets/backend/images/breadcrumb/ChatBc.png')}}" 
+                             alt="quiz-dashboard" 
+                             class="img-fluid" 
+                             style="max-height: 120px; filter: brightness(1.1);" />
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Decorative elements -->
+        <div class="position-absolute top-0 end-0 opacity-25">
+            <div class="bg-white rounded-circle" style="width: 200px; height: 200px; transform: translate(50px, -50px);"></div>
+        </div>
+        <div class="position-absolute bottom-0 start-0 opacity-25">
+            <div class="bg-white rounded-circle" style="width: 150px; height: 150px; transform: translate(-75px, 75px);"></div>
+        </div>
     </div>
 
+
     <!-- Quiz Setup Form -->
-    <div class="card" id="quiz-setup-card">
+    <div class="card border-0" id="quiz-setup-card">
         <div class="card-header">
             <h5 class="card-title mb-0">Pengaturan Quiz</h5>
         </div>
@@ -81,7 +98,7 @@
                             <select class="form-select @error('visibility') is-invalid @enderror" id="visibility" name="visibility" required>
                                 <option disabled selected>Pilih Status</option>
                                 <option value="private">Private</option>
-                                <option value="publish">Publish</option>
+                                <option value="published">Publish</option>
                             </select>
                             @error('visibility')
                                 <div class="invalid-feedback">{{ $message }}</div>
