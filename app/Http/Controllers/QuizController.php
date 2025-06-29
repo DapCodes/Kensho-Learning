@@ -34,7 +34,7 @@ class QuizController extends Controller
         $validatedData = $request->validate([
             'quiz_title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'visibility' => 'required|in:private,publish',
+            'visibility' => 'required|in:Privat,Umum',
             'duration' => 'required|integer|min:1|max:300',
             'categories' => 'required',
             'num_questions' => 'required|integer|min:1|max:50',
@@ -50,7 +50,7 @@ class QuizController extends Controller
             'quiz_title.max' => 'Judul quiz maksimal 255 karakter.',
             'description.max' => 'Deskripsi quiz maksimal 1000 karakter.',
             'visibility.required' => 'Status visibilitas quiz wajib dipilih.',
-            'visibility.in' => 'Status visibilitas harus Private atau Publish.',
+            'visibility.in' => 'Status visibilitas harus Privat atau Umum.',
             'duration.required' => 'Durasi quiz wajib diisi.',
             'duration.integer' => 'Durasi harus berupa angka.',
             'duration.min' => 'Durasi minimal 1 menit.',
@@ -108,7 +108,7 @@ class QuizController extends Controller
 
             DB::commit();
 
-            $statusMessage = $validatedData['visibility'] === 'publish' ? 'dipublish' : 'dibuat sebagai private';
+            $statusMessage = $validatedData['visibility'] === 'Umum' ? 'umum' : 'dibuat sebagai umum';
 
             return redirect()->route('quiz.index')
                 ->with('success', "Quiz berhasil {$statusMessage} dengan kode: {$kodeQuiz}");
@@ -169,7 +169,7 @@ class QuizController extends Controller
                 'judul_quiz' => 'required|string|max:255',
                 'deskripsi' => 'nullable|string|max:1000',
                 'waktu_menit' => 'required|integer|min:1|max:300',
-                'status' => 'required|in:private,published',
+                'status' => 'required|in:Privat,Umum',
                 'questions' => 'required|array|min:1|max:50',
                 'questions.*.pertanyaan' => 'required|string|max:1000',
                 'questions.*.pilihan_a' => 'required|string|max:255',
@@ -185,7 +185,7 @@ class QuizController extends Controller
                 'waktu_menit.min' => 'Durasi quiz minimal 1 menit.',
                 'waktu_menit.max' => 'Durasi quiz maksimal 300 menit.',
                 'status.required' => 'Status quiz wajib dipilih.',
-                'status.in' => 'Status quiz harus private atau published.',
+                'status.in' => 'Status quiz harus Privat atau Umum.',
                 'questions.required' => 'Quiz harus memiliki minimal satu soal.',
                 'questions.min' => 'Quiz harus memiliki minimal satu soal.',
                 'questions.max' => 'Quiz maksimal memiliki 50 soal.',

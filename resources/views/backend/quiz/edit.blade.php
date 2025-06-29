@@ -81,8 +81,8 @@
                             <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                             <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                                 <option value="" disabled>Pilih Status</option>
-                                <option value="private" {{ old('status', $quiz->status) == 'private' ? 'selected' : '' }}>Private</option>
-                                <option value="published" {{ old('status', $quiz->status) == 'published' ? 'selected' : '' }}>Published</option>
+                                <option value="Privat" {{ old('status', $quiz->status) == 'Privat' ? 'selected' : '' }}>Privat</option>
+                                <option value="Umum" {{ old('status', $quiz->status) == 'Umum' ? 'selected' : '' }}>Umum</option>
                             </select>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
