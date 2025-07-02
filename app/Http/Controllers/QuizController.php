@@ -215,7 +215,7 @@ class QuizController extends Controller
                     'waktu_menit' => $request->waktu_menit,
                     'status' => $request->status,
                     'user_id' => $quiz->user_id,
-                    'kategori_id' => $quiz->kategori_id,
+                    'kategori_id' => $request->categories,
                     'kode_quiz' => $quiz->kode_quiz,
                     'tanggal_buat' => $quiz->tanggal_buat,
                 ]);

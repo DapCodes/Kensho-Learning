@@ -97,8 +97,8 @@
                             <label for="visibility" class="form-label">Status Visibilitas <span class="text-danger">*</span></label>
                             <select class="form-select @error('visibility') is-invalid @enderror" id="visibility" name="visibility" required>
                                 <option disabled selected>Pilih Status</option>
-                                <option value="private">Private</option>
-                                <option value="published">Publish</option>
+                                <option value="Privat">Privat</option>
+                                <option value="Umum">Umum</option>
                             </select>
                             @error('visibility')
                                 <div class="invalid-feedback">{{ $message }}</div>

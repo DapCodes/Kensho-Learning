@@ -78,6 +78,20 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="mb-3">
+                            <label for="categories" class="form-label">Kategori <span class="text-danger">*</span></label>
+                            <select class="form-select @error('categories') is-invalid @enderror" id="categories" name="categories" required>
+                                <option value="" disabled selected>Pilih Kategori Quiz</option>
+                                @foreach ($categories as $items)
+                                    <option value="{{ $items->id }}" {{ $items->id == $quiz->kategori_id ? 'selected' : '' }}>{{ $items->nama_kategori }}</option>
+                                @endforeach
+                            </select>
+                            @error('categories')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
                             <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                             <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                                 <option value="" disabled>Pilih Status</option>

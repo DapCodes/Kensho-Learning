@@ -57,7 +57,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-8">
-                    <h4 class="text-primary mb-3">{{ $quiz->judul_quiz }}</h4>
+                    <h4 class="text-primary mb-3">{{ $quiz->judul_quiz }} - ({{ $quiz->kategori->nama_kategori }})</h4>
                     @if($quiz->deskripsi)
                         <div class="mb-4">
                             <h6 class="text-muted mb-2">Deskripsi:</h6>
@@ -205,25 +205,6 @@
 </div>
 
 <script>
-function shareQuiz() {
-    // Example share functionality - you can customize this
-    const quizUrl = window.location.origin + '/quiz/take/{{ $quiz->id }}'; // Adjust URL as needed
-    
-    if (navigator.share) {
-        navigator.share({
-            title: '{{ $quiz->judul_quiz }}',
-            text: 'Ikuti quiz: {{ $quiz->judul_quiz }}',
-            url: quizUrl
-        });
-    } else {
-        // Fallback - copy to clipboard
-        navigator.clipboard.writeText(quizUrl).then(function() {
-            alert('Link quiz telah disalin ke clipboard!');
-        });
-    }
-}
-
-// Add smooth scrolling to questions
 document.addEventListener('DOMContentLoaded', function() {
     const questionItems = document.querySelectorAll('.question-item');
     
