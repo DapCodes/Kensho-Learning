@@ -5,12 +5,15 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Add this to your layouts/backend.blade.php in the <head> section -->
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- Favicon icon-->
   <link rel="shortcut icon" type="image/png" href="{{asset('/assets/backend/images/logos/favicon.png')}}" />
 
   <!-- Core CSS -->
   <link rel="stylesheet" href="{{asset('/assets/backend/css/styles.css')}}" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
   <!-- Owl Carousel -->
   <link rel="stylesheet" href="{{asset('/assets/backend/libs/owl.carousel/dist/assets/owl.carousel.min.css')}}" />

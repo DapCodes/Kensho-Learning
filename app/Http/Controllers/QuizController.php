@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Models\HasilUjian;
 use App\Models\Kategori;
 use App\Models\Quiz;
 use App\Models\Soal;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -91,6 +94,7 @@ class QuizController extends Controller
                 'waktu_menit' => $validatedData['duration'],
                 'kategori_id' => $validatedData['categories'],
                 'user_id' => auth()->id(),
+                'status' => $validatedData['visibility'],
                 'tanggal_buat' => Carbon::now(),
             ]);
 
@@ -154,12 +158,6 @@ class QuizController extends Controller
         }
     }
 
-    /**
-     * Update the specified quiz in storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -285,7 +283,6 @@ class QuizController extends Controller
         }
     }
 
-
     private function generateQuizCode()
     {
         do {
@@ -315,5 +312,92 @@ class QuizController extends Controller
 
             return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus quiz.']);
         }
+    }
+
+    // controller untuk user
+    public function start($id)
+    {
+        $quiz = Quiz::with('soals')->findOrFail($id);
+        $startTime = now()->timestamp; // waktu mulai ujian
+
+        return view('frontend.quiz_start', compact('quiz', 'startTime'));
+    }
+
+    public function submit(Request $request, $id)
+    {
+        $quiz = Quiz::with('soals')->findOrFail($id);
+        $soals = $quiz->soals;
+        $jawabanBenar = 0;
+
+        foreach ($soals as $soal) {
+            $jawabanUser = $request->input('jawaban_' . $soal->id);
+            if ($jawabanUser === $soal->jawaban_benar) {
+                $jawabanBenar++;
+            }
+        }
+
+        $totalSoal = $soals->count();
+        $jumlahSalah = $totalSoal - $jawabanBenar;
+        $skor = $totalSoal > 0 ? round(($jawabanBenar / $totalSoal) * 100) : 0;
+
+        $startTimestamp = (int) $request->input('start_time');
+        $nowTimestamp = now()->timestamp;
+
+        $waktuPengerjaan = max(0, $nowTimestamp - $startTimestamp);
+        $waktuPengerjaanMenitDecimal = round($waktuPengerjaan / 60, 2);
+
+        // Cek apakah hasil ujian sudah ada sebelumnya
+        $hasil = HasilUjian::where('user_id', Auth::id())
+                    ->where('quiz_id', $quiz->id)
+                    ->first();
+
+        if ($hasil) {
+            // Update data lama
+            $hasil->update([
+                'skor' => $skor,
+                'jumlah_benar' => $jawabanBenar,
+                'jumlah_salah' => $jumlahSalah,
+                'waktu_pengerjaan' => $waktuPengerjaanMenitDecimal,
+                'tanggal_ujian' => Carbon::now()->toDateString(),
+            ]);
+        } else {
+            // Buat data baru
+            $hasil = HasilUjian::create([
+                'user_id' => Auth::id(),
+                'quiz_id' => $quiz->id,
+                'skor' => $skor,
+                'jumlah_benar' => $jawabanBenar,
+                'jumlah_salah' => $jumlahSalah,
+                'waktu_pengerjaan' => $waktuPengerjaanMenitDecimal,
+                'tanggal_ujian' => Carbon::now()->toDateString(),
+            ]);
+        }
+
+        return redirect()->route('quiz.hasil', $hasil->id)
+            ->with('success', 'Quiz berhasil disubmit. Skor Anda: ' . $skor);
+    }
+
+
+    public function hasil($id)
+    {
+        $hasil = HasilUjian::with('quiz')->findOrFail($id);
+
+        $ranking = HasilUjian::where('quiz_id', $hasil->quiz_id)
+            ->where('skor', '>', $hasil->skor)
+            ->count() + 1;
+
+        // Total peserta
+        $total_peserta = HasilUjian::where('quiz_id', $hasil->quiz_id)->count();
+
+        // Top performers (opsional)
+        $top_performers = HasilUjian::with('user')
+            ->where('quiz_id', $hasil->quiz_id)
+            ->orderBy('skor', 'desc')
+            ->orderBy('waktu_pengerjaan', 'asc')
+            ->take(10)
+            ->get();
+
+        return view('frontend.quiz_hasil_pengerjaan', compact('hasil', 'ranking', 'total_peserta', 'top_performers'));
+
     }
 }

@@ -130,14 +130,9 @@
                     <!-- Action Buttons -->
                     <div class="card-footer bg-transparent border-0 pt-0">
                         <div class="row g-2">
-                            <div class="col-6">
-                                <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-primary w-100 btn-action">
-                                    <i class="ti ti-play me-1"></i>Detail Quiz
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ route('quiz.edit', $quiz->id) }}" class="btn btn-outline-secondary w-100 btn-action">
-                                    <i class="ti ti-edit me-1"></i>Edit
+                            <div class="col-12">
+                                <a href="{{ route('quiz.detail', $quiz->id) }}" class="btn btn-primary w-100 btn-action">
+                                    Kerjakan Sekarang!
                                 </a>
                             </div>
                         </div>

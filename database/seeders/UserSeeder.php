@@ -17,14 +17,21 @@ class UserSeeder extends Seeder
         \App\Models\User::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
-            'password' => bcrypt('rahasia'),
+            'password' => bcrypt('admin123'),
             'isAdmin' => 1,
         ]);
 
         \App\Models\User::create([
-            'name' => 'Member',
-            'email' => 'member@gmail.com',
-            'password' => bcrypt('rahasia'),
+            'name' => 'Daffa Ramadhan',
+            'email' => 'daffa@gmail.com',
+            'password' => bcrypt('12345678'),
+            'isAdmin' => 0,
+        ]);
+
+        \App\Models\User::create([
+            'name' => 'Dhea Febrianti',
+            'email' => 'dhea@gmail.com',
+            'password' => bcrypt('12345678'),
             'isAdmin' => 0,
         ]);
     }

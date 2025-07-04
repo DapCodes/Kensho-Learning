@@ -4,8 +4,8 @@
         <!-- ---------------------------------- -->
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="./main/index.html" class="text-nowrap logo-img">
-            <img src="{{asset('/assets/backend/images/logos/dark-logo.svg')}}" class="dark-logo" alt="Logo-Dark" />
-            <img src="{{asset('/assets/backend/images/logos/light-logo.svg')}}" class="light-logo" alt="Logo-light" />
+            <img src="{{asset('/assets/backend/images/logos/dark-logo.svg')}}" class="dark-logo m-1" alt="Logo-Dark"  />
+            <img src="{{asset('/assets/backend/images/logos/light-logo.svg')}}" class="light-logo m-1" alt="Logo-light" />
           </a>
           <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
             <i class="ti ti-x"></i>
@@ -99,7 +99,7 @@
             </li>
           </ul>
         </nav>
-        <div class="fixed-profile p-3 mx-4 mb-2 bg-secondary-subtle rounded mt-3">
+        <div class="fixed-profile p-3 mx-4 mb-3 bg-secondary-subtle rounded">
           <div class="hstack gap-3">
             <div class="john-img">
               <img src="{{asset('/assets/backend/images/profile/user-1.jpg')}}" class="rounded-circle" width="40" height="40" alt="modernize-img" />

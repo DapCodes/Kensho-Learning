@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
+
 use App\Models\Quiz;
+use Illuminate\Http\Request;
 
 class FrontendController extends Controller
 {
@@ -11,6 +12,7 @@ class FrontendController extends Controller
         $quizzes = Quiz::where('status', 'Umum')
             ->orderBy('created_at', 'desc')
             ->get();
+
         return view('frontend.index', compact('quizzes'));
     }
 
@@ -32,8 +34,7 @@ class FrontendController extends Controller
     public function detail($id)
     {
         $quiz = Quiz::findOrFail($id);
+
         return view('frontend.detail_quiz', compact('quiz'));
     }
-
-
 }

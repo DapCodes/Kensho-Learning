@@ -38,58 +38,6 @@
         </div>
     </div>
 
-    <!-- Enhanced Stats Cards -->
-    <div class="row mb-5">
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm stats-card">
-                <div class="card-body text-center py-4">
-                    <div class="rounded-circle bg-primary-subtle d-inline-flex align-items-center justify-content-center mb-3" 
-                         style="width: 60px; height: 60px;">
-                        <i class="ti ti-file-text text-primary" style="font-size: 24px;"></i>
-                    </div>
-                    <h4 class="fw-bold text-primary mb-1">{{ $quizzes->count() }}</h4>
-                    <p class="text-muted mb-0">Total Quiz</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm stats-card">
-                <div class="card-body text-center py-4">
-                    <div class="rounded-circle bg-success-subtle d-inline-flex align-items-center justify-content-center mb-3" 
-                         style="width: 60px; height: 60px;">
-                        <i class="ti ti-check text-success" style="font-size: 24px;"></i>
-                    </div>
-                    <h4 class="fw-bold text-success mb-1">{{ $quizzes->count() }}</h4>
-                    <p class="text-muted mb-0">Quiz Aktif</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm stats-card">
-                <div class="card-body text-center py-4">
-                    <div class="rounded-circle bg-info-subtle d-inline-flex align-items-center justify-content-center mb-3" 
-                         style="width: 60px; height: 60px;">
-                        <i class="ti ti-users text-info" style="font-size: 24px;"></i>
-                    </div>
-                    <h4 class="fw-bold text-info mb-1">0</h4>
-                    <p class="text-muted mb-0">Peserta</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm stats-card">
-                <div class="card-body text-center py-4">
-                    <div class="rounded-circle bg-warning-subtle d-inline-flex align-items-center justify-content-center mb-3" 
-                         style="width: 60px; height: 60px;">
-                        <i class="ti ti-clock text-warning" style="font-size: 24px;"></i>
-                    </div>
-                    <h4 class="fw-bold text-warning mb-1">{{ $quizzes->sum('waktu_menit') }}</h4>
-                    <p class="text-muted mb-0">Total Menit</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Enhanced Action Section -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body py-3">

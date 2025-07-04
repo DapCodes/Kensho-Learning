@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Kategori;
+use Illuminate\Http\Request;
 
 class KategoriController extends Controller
 {
@@ -13,6 +13,7 @@ class KategoriController extends Controller
     public function index()
     {
         $kategori = Kategori::orderBy('created_at', 'desc')->paginate(10);
+
         return view('backend.kategori.index', compact('kategori'));
     }
 
@@ -34,7 +35,7 @@ class KategoriController extends Controller
         ], [
             'nama_kategori.required' => 'Nama kategori wajib diisi',
             'nama_kategori.max' => 'Nama kategori maksimal 255 karakter',
-            'nama_kategori.unique' => 'Nama kategori sudah ada, silakan gunakan nama lain'
+            'nama_kategori.unique' => 'Nama kategori sudah ada, silakan gunakan nama lain',
         ]);
 
         try {
@@ -43,7 +44,7 @@ class KategoriController extends Controller
             ]);
 
             return redirect()->route('kategori.index')
-                ->with('success', 'Kategori "' . $request->nama_kategori . '" berhasil ditambahkan');
+                ->with('success', 'Kategori "'.$request->nama_kategori.'" berhasil ditambahkan');
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -58,6 +59,7 @@ class KategoriController extends Controller
     public function show(string $id)
     {
         $kategori = Kategori::with('quiz')->findOrFail($id);
+
         return view('backend.kategori.show', compact('kategori'));
     }
 
@@ -67,6 +69,7 @@ class KategoriController extends Controller
     public function edit(string $id)
     {
         $kategori = Kategori::findOrFail($id);
+
         return view('backend.kategori.edit', compact('kategori'));
     }
 
@@ -78,22 +81,22 @@ class KategoriController extends Controller
         $kategori = Kategori::findOrFail($id);
 
         $request->validate([
-            'nama_kategori' => 'required|string|max:255|unique:kategoris,nama_kategori,' . $id,
+            'nama_kategori' => 'required|string|max:255|unique:kategoris,nama_kategori,'.$id,
         ], [
             'nama_kategori.required' => 'Nama kategori wajib diisi',
             'nama_kategori.max' => 'Nama kategori maksimal 255 karakter',
-            'nama_kategori.unique' => 'Nama kategori sudah ada, silakan gunakan nama lain'
+            'nama_kategori.unique' => 'Nama kategori sudah ada, silakan gunakan nama lain',
         ]);
 
         try {
             $oldName = $kategori->nama_kategori;
-            
+
             $kategori->update([
                 'nama_kategori' => $request->nama_kategori,
             ]);
 
             return redirect()->route('kategori.index')
-                ->with('success', 'Kategori "' . $oldName . '" berhasil diperbarui menjadi "' . $request->nama_kategori . '"');
+                ->with('success', 'Kategori "'.$oldName.'" berhasil diperbarui menjadi "'.$request->nama_kategori.'"');
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -114,13 +117,13 @@ class KategoriController extends Controller
             // Check if kategori has related quiz
             if ($kategori->quiz()->count() > 0) {
                 return redirect()->route('kategori.index')
-                    ->with('error', 'Kategori "' . $namaKategori . '" tidak dapat dihapus karena masih memiliki quiz terkait.');
+                    ->with('error', 'Kategori "'.$namaKategori.'" tidak dapat dihapus karena masih memiliki quiz terkait.');
             }
 
             $kategori->delete();
 
             return redirect()->route('kategori.index')
-                ->with('success', 'Kategori "' . $namaKategori . '" berhasil dihapus');
+                ->with('success', 'Kategori "'.$namaKategori.'" berhasil dihapus');
 
         } catch (\Exception $e) {
             return redirect()->route('kategori.index')
@@ -134,6 +137,7 @@ class KategoriController extends Controller
     public function getCategories()
     {
         $categories = Kategori::orderBy('nama_kategori', 'asc')->get();
+
         return response()->json($categories);
     }
 
@@ -143,12 +147,12 @@ class KategoriController extends Controller
     public function search(Request $request)
     {
         $query = $request->get('q');
-        
-        $categories = Kategori::where('nama_kategori', 'LIKE', '%' . $query . '%')
+
+        $categories = Kategori::where('nama_kategori', 'LIKE', '%'.$query.'%')
             ->orderBy('nama_kategori', 'asc')
             ->limit(10)
             ->get();
-            
+
         return response()->json($categories);
     }
 }

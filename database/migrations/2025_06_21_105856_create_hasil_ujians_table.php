@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('skor');
             $table->integer('jumlah_benar');
             $table->integer('jumlah_salah');
-            $table->integer('waktu_pengerjaan');
+            $table->decimal('waktu_pengerjaan', 5, 2);
             $table->dateTime('tanggal_ujian')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('quiz_id')->references('id')->on('quizzes')->onDelete('cascade');

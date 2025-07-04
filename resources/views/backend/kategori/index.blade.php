@@ -206,7 +206,8 @@
                                id="nama_kategori" 
                                name="nama_kategori" 
                                placeholder="Masukkan nama kategori..."
-                               value="{{ old('nama_kategori') }}" 
+                               value="{{ old('nama_kategori') }}"
+                               autofocus 
                                required>
                         @error('nama_kategori')
                             <div class="invalid-feedback">{{ $message }}</div>
