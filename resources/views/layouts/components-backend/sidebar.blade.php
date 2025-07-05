@@ -13,6 +13,7 @@
         </div>
 
         <nav class="sidebar-nav scroll-sidebar" data-simplebar>
+          @if(Auth::user()->isAdmin == 1)
           <ul id="sidebarnav">
             <!-- ---------------------------------- -->
             <!-- Home -->
@@ -28,20 +29,11 @@
               <a class="sidebar-link justify-content-between" href="{{ route('admin.quiz-terbaru') }}" aria-expanded="false">
                 <div class="d-flex align-items-center gap-3">
                   <span class="d-flex">
-                    <i class="ti ti-mood-smile"></i>
+                    <i class="ti ti-home"></i>
                   </span>
-                  <span class="hide-menu">Quiz Terbaru</span>
+                  <span class="hide-menu">Beranda</span>
                 </div>
                 <span class="hide-menu badge rounded-pill border border-primary text-primary fs-2 py-1 px-2">★</span>
-              </a>
-            </li>
-
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="https://google.com" aria-expanded="false">
-                <span class="d-flex">
-                  <i class="ti ti-star"></i>
-                </span>
-                <span class="hide-menu">Papan Peringkat</span>
               </a>
             </li>
 
@@ -98,6 +90,40 @@
               </ul>
             </li>
           </ul>
+          @else
+          <ul id="sidebarnav">
+            <!-- ---------------------------------- -->
+            <!-- Home -->
+            <!-- ---------------------------------- -->
+            <li class="nav-small-cap">
+              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+              <span class="hide-menu">Dasbor</span>
+            </li>
+            <!-- ---------------------------------- -->
+            <!-- Dashboard -->
+            <!-- ---------------------------------- -->
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between" href="{{ route('dasbor') }}" aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-home"></i>
+                  </span>
+                  <span class="hide-menu">Quiz Terbaru</span>
+                </div>
+                <span class="hide-menu badge rounded-pill border border-primary text-primary fs-2 py-1 px-2">★</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{{ route('histori-pengerjaan') }}" aria-expanded="false">
+                <span class="d-flex">
+                  <i class="ti ti-user"></i>
+                </span>
+                <span class="hide-menu">Riwayat Pengerjaan</span>
+              </a>
+            </li>
+          </ul>
+
+          @endif
         </nav>
         <div class="fixed-profile p-3 mx-4 mb-3 bg-secondary-subtle rounded">
           <div class="hstack gap-3">

@@ -3,18 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quiz;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
 {
-    public function index()
-    {
-        $quizzes = Quiz::where('status', 'Umum')
-            ->orderBy('created_at', 'desc')
-            ->get();
+public function index(Request $request)
+{
+    $query = Quiz::where('status', 'Umum')->orderBy('created_at', 'desc');
 
-        return view('frontend.index', compact('quizzes'));
+    if ($request->filled('kategori_id')) {
+        $query->where('kategori_id', $request->kategori_id);
     }
+
+    $quizzes = $query->get();
+    $kategori = Kategori::all();
+
+    return view('frontend.index', compact('quizzes', 'kategori'));
+}
+
 
     public function checkKode(Request $request)
     {

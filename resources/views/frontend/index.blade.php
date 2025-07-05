@@ -8,7 +8,7 @@
             <div class="row align-items-center">
                 <div class="col-9">
                     <h3 class="fw-bold mb-3 text-white">Quiz Terbaru!!</h3>
-                    <p class="text-white-75 mb-3">Quiz terbaru dalam 7 Hari terakhir.</p>
+                    <p class="text-white-75 mb-3">Kerjakan quiz dengan jujur dan bersungguh-sungguh</p>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb breadcrumb-light">
                             <li class="breadcrumb-item">
@@ -55,6 +55,39 @@
             </div>
         </div>
     </div>
+
+<!-- Filter Kategori -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <!-- Kiri: Teks -->
+            <div class="col-md-4 mb-3 mb-md-0">
+                Cari quiz berdasarkan kategori yang anda inginkan !!
+            </div>
+
+            <!-- Kanan: Tombol Kategori -->
+            <div class="col-md-8">
+                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                    <!-- Tombol Semua -->
+                    <button class="btn btn-outline-primary kategori-btn {{ request('kategori_id') ? '' : 'active' }}" 
+                            data-id="">
+                        Semua
+                    </button>
+
+                    <!-- Tombol dari setiap kategori -->
+                    @foreach($kategori as $kat)
+                        <button class="btn btn-outline-primary kategori-btn {{ request('kategori_id') == $kat->id ? 'active' : '' }}" 
+                                data-id="{{ $kat->id }}">
+                            {{ $kat->nama_kategori }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
     <!-- Quiz Cards -->
     <div class="row">
@@ -119,6 +152,9 @@
                         </div>
 
                         <!-- Created Date -->
+                        @php
+                            \Carbon\Carbon::setLocale('id');
+                        @endphp
                         <div class="mb-3">
                             <small class="text-muted">
                                 <i class="ti ti-calendar me-1"></i>
@@ -304,6 +340,22 @@
 </style>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.kategori-btn');
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const kategoriId = this.getAttribute('data-id');
+                const url = new URL(window.location.href);
+                if (kategoriId) {
+                    url.searchParams.set('kategori_id', kategoriId);
+                } else {
+                    url.searchParams.delete('kategori_id');
+                }
+                window.location.href = url.toString();
+            });
+        });
+    });
 // Simple and reliable copy function
 function copyToClipboard(text) {
     // Create temporary textarea

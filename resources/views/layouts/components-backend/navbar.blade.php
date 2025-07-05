@@ -10,16 +10,15 @@
                 </a>
               </li>
             </ul>
-
             <ul class="navbar-nav quick-links d-none d-lg-flex align-items-center">
-              <li class="nav-item dropdown-hover d-none d-lg-block">
-                <a class="nav-link" href="./main/app-chat.html">Dasbor</a>
-              </li>
-              <li class="nav-item dropdown-hover d-none d-lg-block">
-                <a class="nav-link" href="./main/app-calendar.html">Beranda</a>
-              </li>
+                @if(Auth::user()->isAdmin === 0)
+                    <li class="nav-item dropdown-hover d-none d-lg-block">
+                        <a class="nav-link" href="{{ route('home') }}">
+                            Beranda
+                        </a>
+                    </li>
+                @endif
             </ul>
-
             <div class="d-block d-lg-none py-4">
               <a href="./main/index.html" class="text-nowrap logo-img">
                 <img src="{{ asset('assets/backend/images/logos/dark-logo.svg') }}" class="dark-logo" alt="Logo-Dark" />

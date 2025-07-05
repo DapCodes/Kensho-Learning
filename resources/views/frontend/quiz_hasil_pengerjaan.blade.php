@@ -74,7 +74,7 @@
                             </div>
                             <div>
                                 <h6 class="mb-0">Tanggal Ujian</h6>
-                                <span class="text-muted">{{ \Carbon\Carbon::parse($hasil->tanggal_ujian)->format('d M Y') }}</span>
+                                <span class="text-muted">{{ \Carbon\Carbon::parse($hasil->updated_at)->format('d M Y H:i') }}</span>
                             </div>
                         </div>
                         <div class="d-flex align-items-center mb-3">
