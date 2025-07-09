@@ -67,7 +67,7 @@
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link" href="{{ route('kategori.index') }}" aria-expanded="false">
+              <a class="sidebar-link" href="{{ route('matapelajaran.index') }}" aria-expanded="false">
                 <span class="d-flex">
                   <i class="ti ti-tags"></i>
                 </span>
