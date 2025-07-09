@@ -25,4 +25,9 @@ class HasilUjian extends Model
     {
         return $this->belongsTo(Quiz::class);
     }
+
+    public function detail()
+    {
+        return $this->hasMany(HasilUjianDetail::class, 'hasil_ujian_id');
+    }
 }

@@ -137,13 +137,13 @@
                                                     title="Edit kategori"
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#editCategoryModal"
-                                                    onclick="editCategory({{ $item->id }}, '{{ $item->nama_kategori }}')">
+                                                    onclick="editCategory({{ $item->id }}, '{{ addslashes($item->nama_kategori) }}')">
                                                 <i class="ti ti-edit"></i>
                                             </button>
                                             <button type="button" 
                                                     class="btn btn-danger btn-sm" 
                                                     title="Hapus kategori"
-                                                    onclick="deleteKategori({{ $item->id }}, '{{ $item->nama_kategori }}')">
+                                                    onclick="deleteKategori({{ $item->id }}, '{{ addslashes($item->nama_kategori) }}')">
                                                 <i class="ti ti-trash"></i>
                                             </button>
                                         </div>
@@ -240,7 +240,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editCategoryForm" method="POST">
+            <form id="editCategoryForm" action="" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
@@ -249,11 +249,14 @@
                             <i class="ti ti-tag me-1"></i>Nama Kategori
                         </label>
                         <input type="text" 
-                               class="form-control" 
+                               class="form-control @error('nama_kategori') is-invalid @enderror" 
                                id="edit_nama_kategori" 
-                               name="nama_kategori" 
+                               name="nama_kategori"  
                                placeholder="Masukkan nama kategori..."
                                required>
+                        @error('nama_kategori')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                         <div class="form-text">
                             <i class="ti ti-info-circle me-1"></i>Contoh: Teknologi, Olahraga, Pendidikan, dll.
                         </div>
@@ -310,6 +313,9 @@
 @endif
 
 <script>
+    // URL base untuk kategori
+    const kategoriBaseUrl = "{{ route('kategori.index') }}";
+    
     // Delete confirmation function
     function deleteKategori(kategoriId, kategoriName) {
         if (confirm(`Apakah Anda yakin ingin menghapus kategori "${kategoriName}"?\n\nTindakan ini tidak dapat dibatalkan.`)) {
@@ -319,8 +325,25 @@
 
     // Edit category function
     function editCategory(id, nama) {
-        document.getElementById('editCategoryForm').action = `/kategori/${id}`;
+        // Set form action untuk update
+        const actionUrl = `${kategoriBaseUrl}/${id}`;
+        document.getElementById('editCategoryForm').action = actionUrl;
+        
+        // Debug: log URL yang akan digunakan
+        console.log('Edit form action URL:', actionUrl);
+        
+        // Set value input nama kategori
         document.getElementById('edit_nama_kategori').value = nama;
+        
+        // Clear any previous validation errors
+        const inputElement = document.getElementById('edit_nama_kategori');
+        inputElement.classList.remove('is-invalid');
+        
+        // Remove any previous error messages
+        const errorElement = inputElement.nextElementSibling;
+        if (errorElement && errorElement.classList.contains('invalid-feedback')) {
+            errorElement.remove();
+        }
     }
 
     // Auto-hide toasts after 5 seconds
@@ -332,6 +355,26 @@
                 bsToast.hide();
             }, 5000);
         });
+        
+        // Reset form saat modal ditutup
+        const editModal = document.getElementById('editCategoryModal');
+        if (editModal) {
+            editModal.addEventListener('hidden.bs.modal', function() {
+                const form = document.getElementById('editCategoryForm');
+                form.reset();
+                form.action = '';
+                
+                // Clear validation errors
+                const inputElement = document.getElementById('edit_nama_kategori');
+                inputElement.classList.remove('is-invalid');
+                
+                // Remove any error messages
+                const errorElement = inputElement.nextElementSibling;
+                if (errorElement && errorElement.classList.contains('invalid-feedback')) {
+                    errorElement.remove();
+                }
+            });
+        }
     });
 </script>
 @include('layouts.components-backend.css')

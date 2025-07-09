@@ -42,20 +42,36 @@
               <span class="hide-menu">Kelola</span>
             </li> 
             <li class="sidebar-item">
-              <a class="sidebar-link" href="https://google.com" aria-expanded="false">
+              <a class="sidebar-link" href="{{ route('users.index') }}" aria-expanded="false">
                 <span class="d-flex">
                   <i class="ti ti-user"></i>
                 </span>
                 <span class="hide-menu">User</span>
               </a>
             </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{{ route('kategori.index') }}" aria-expanded="false">
+                <span class="d-flex">
+                  <i class="ti ti-tags"></i>
+                </span>
+                <span class="hide-menu">Kelas</span>
+              </a>
+            </li>
                         
             <li class="sidebar-item">
               <a class="sidebar-link" href="{{ route('kategori.index') }}" aria-expanded="false">
                 <span class="d-flex">
-                  <i class="ti ti-box"></i>
+                  <i class="ti ti-tags"></i>
                 </span>
                 <span class="hide-menu">Kategori</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{{ route('kategori.index') }}" aria-expanded="false">
+                <span class="d-flex">
+                  <i class="ti ti-tags"></i>
+                </span>
+                <span class="hide-menu">Mata Pelajaran</span>
               </a>
             </li>
             <li class="sidebar-item">

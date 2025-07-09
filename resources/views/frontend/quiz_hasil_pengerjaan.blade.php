@@ -54,7 +54,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-8">
-                    <h4 class="text-primary mb-3">{{ $hasil->quiz->judul_quiz }} - ({{ $hasil->quiz->kategori->nama_kategori }})</h4>
+                    <h4 class="text-primary mb-3">{{ $hasil->quiz->judul_quiz }} - ({{ $hasil->quiz->mataPelajaran->nama_mapel }})</h4>
                     @if($hasil->quiz->deskripsi)
                         <div class="mb-4">
                             <h6 class="text-muted mb-2">Deskripsi:</h6>
@@ -81,10 +81,17 @@
                             <div class="bg-success rounded-circle me-3 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
                                 <i class="ti ti-clock text-white"></i>
                             </div>
+                            @php
+                                $totalDetik = round($hasil->waktu_pengerjaan * 60);
+                                $menit = floor($totalDetik / 60);
+                                $detik = $totalDetik % 60;
+                            @endphp
+
                             <div>
                                 <h6 class="mb-0">Waktu Pengerjaan</h6>
-                                <span class="text-muted">{{ $hasil->waktu_pengerjaan }} menit</span>
+                                <span class="text-muted">{{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}</span>
                             </div>
+
                         </div>
                         <div class="d-flex align-items-center">
                             <div class="bg-info rounded-circle me-3 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
@@ -198,7 +205,15 @@
                             <td><span class="badge bg-primary">{{ $performer->skor }}</span></td>
                             <td><span class="text-success">{{ $performer->jumlah_benar }}</span></td>
                             <td><span class="text-danger">{{ $performer->jumlah_salah }}</span></td>
-                            <td>{{ $performer->waktu_pengerjaan }}m</td>
+                            <td>
+                                @php
+                                    $totalDetik = round($performer->waktu_pengerjaan * 60);
+                                    $menit = floor($totalDetik / 60);
+                                    $detik = $totalDetik % 60;
+                                @endphp
+
+                                {{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -208,6 +223,39 @@
     </div>
     @endif
 
+    <!-- ujain detail -->
+@if($hasil->quiz->status === 'Umum' && $hasil_detail->isNotEmpty())
+<div class="card border-0 mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Detail Jawaban Anda</h5>
+    </div>
+    <div class="card-body">
+        @foreach($hasil_detail as $index => $detail)
+        <div class="card mb-3 shadow-sm border {{ $detail->status_jawaban === 'benar' ? 'border-success' : 'border-danger' }}">
+            <div class="card-body">
+                <h6 class="fw-bold">
+                    Soal {{ $index + 1 }}
+                    @if($detail->status_jawaban === 'benar')
+                        <span class="badge bg-success ms-2"><i class="ti ti-check"></i> Benar</span>
+                    @else
+                        <span class="badge bg-danger ms-2"><i class="ti ti-x"></i> Salah</span>
+                    @endif
+                </h6>
+                <p><strong>Pertanyaan:</strong> {!! $detail->soal->pertanyaan ?? '-' !!}</p>
+                <p class="mb-1"><strong>Jawaban Anda:</strong> {{ $detail->jawaban_peserta ?? '-' }}</p>
+                @if($detail->status_jawaban !== 'benar')
+                    <p class="mb-0"><strong>Jawaban Benar:</strong> {{ $detail->soal->jawaban_benar ?? '-' }}</p>
+                @endif
+                <p class="text-muted small mb-0">Bobot: {{ $detail->bobot ?? 1 }}</p>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
+    <!-- end -->
+
     <!-- Action Buttons -->
     <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
         <a href="{{ route('dasbor') }}" class="btn btn-outline-secondary">
@@ -216,9 +264,6 @@
         <div class="d-flex gap-2">
             <button class="btn btn-success" onclick="printResult()">
                 <i class="ti ti-printer me-2"></i>Cetak Hasil
-            </button>
-            <button class="btn btn-primary" onclick="shareResult()">
-                <i class="ti ti-share me-2"></i>Bagikan Hasil
             </button>
         </div>
     </div>

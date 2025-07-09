@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\HasilUjian;
+use App\Models\HasilUjianDetail;
 use App\Models\Kategori;
 use App\Models\Quiz;
 use App\Models\Soal;
+use App\Models\MataPelajaran;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -28,8 +30,9 @@ class QuizController extends Controller
     public function create()
     {
         $categories = Kategori::all();
+        $mataPelajaran = MataPelajaran::all();
 
-        return view('backend.quiz.create', compact('categories'));
+        return view('backend.quiz.create', compact('categories', 'mataPelajaran'));
     }
 
     public function store(Request $request)
@@ -40,6 +43,7 @@ class QuizController extends Controller
             'visibility' => 'required|in:Privat,Umum',
             'duration' => 'required|integer|min:1|max:300',
             'categories' => 'required',
+            'mapel' => 'required',
             'num_questions' => 'required|integer|min:1|max:50',
             'questions' => 'required|array',
             'questions.*.text' => 'required|string|max:1000',
@@ -93,6 +97,7 @@ class QuizController extends Controller
                 'kode_quiz' => $kodeQuiz,
                 'waktu_menit' => $validatedData['duration'],
                 'kategori_id' => $validatedData['categories'],
+                'mata_pelajaran_id' => $validatedData['mapel'],
                 'user_id' => auth()->id(),
                 'status' => $validatedData['visibility'],
                 'tanggal_buat' => Carbon::now(),
@@ -149,8 +154,10 @@ class QuizController extends Controller
             $quiz = Quiz::with(['soals', 'kategori'])->findOrFail($id);
 
             $categories = Kategori::all();
+            $mataPelajaran = MataPelajaran::all();
 
-            return view('backend.quiz.edit', compact('quiz', 'categories'));
+
+            return view('backend.quiz.edit', compact('quiz', 'categories', 'mataPelajaran'));
 
         } catch (\Exception $e) {
             return redirect()->route('quiz.index')
@@ -214,6 +221,7 @@ class QuizController extends Controller
                     'status' => $request->status,
                     'user_id' => $quiz->user_id,
                     'kategori_id' => $request->categories,
+                    'mata_pelajaran_id' => $request->mapel,
                     'kode_quiz' => $quiz->kode_quiz,
                     'tanggal_buat' => $quiz->tanggal_buat,
                 ]);
@@ -330,7 +338,7 @@ class QuizController extends Controller
         $jawabanBenar = 0;
 
         foreach ($soals as $soal) {
-            $jawabanUser = $request->input('jawaban_' . $soal->id);
+            $jawabanUser = $request->input('jawaban_'.$soal->id);
             if ($jawabanUser === $soal->jawaban_benar) {
                 $jawabanBenar++;
             }
@@ -348,8 +356,8 @@ class QuizController extends Controller
 
         // Cek apakah hasil ujian sudah ada sebelumnya
         $hasil = HasilUjian::where('user_id', Auth::id())
-                    ->where('quiz_id', $quiz->id)
-                    ->first();
+            ->where('quiz_id', $quiz->id)
+            ->first();
 
         if ($hasil) {
             // Update data lama
@@ -360,6 +368,22 @@ class QuizController extends Controller
                 'waktu_pengerjaan' => $waktuPengerjaanMenitDecimal,
                 'tanggal_ujian' => Carbon::now()->toDateString(),
             ]);
+
+            // Jika status quiz Umum, hapus jawaban lama sebelum insert baru
+            if ($quiz->status === 'Umum') {
+                $hasil->detail()->delete();
+
+                foreach ($soals as $soal) {
+                    $jawabanUser = $request->input('jawaban_'.$soal->id);
+
+                    HasilUjianDetail::create([
+                        'hasil_ujian_id' => $hasil->id,
+                        'soal_id' => $soal->id,
+                        'jawaban_peserta' => $jawabanUser,
+                        'status_jawaban' => $jawabanUser === $soal->jawaban_benar ? 'benar' : 'salah',
+                    ]);
+                }
+            }
         } else {
             // Buat data baru
             $hasil = HasilUjian::create([
@@ -371,25 +395,40 @@ class QuizController extends Controller
                 'waktu_pengerjaan' => $waktuPengerjaanMenitDecimal,
                 'tanggal_ujian' => Carbon::now()->toDateString(),
             ]);
+
+            // Jika status quiz Umum, insert jawaban detail
+            if ($quiz->status === 'Umum') {
+                foreach ($soals as $soal) {
+                    $jawabanUser = $request->input('jawaban_'.$soal->id);
+
+                    HasilUjianDetail::create([
+                        'hasil_ujian_id' => $hasil->id,
+                        'soal_id' => $soal->id,
+                        'jawaban_peserta' => $jawabanUser,
+                        'status_jawaban' => $jawabanUser === $soal->jawaban_benar ? 'benar' : 'salah',
+                    ]);
+                }
+            }
         }
 
         return redirect()->route('quiz.hasil', $hasil->id)
-            ->with('success', 'Quiz berhasil disubmit. Skor Anda: ' . $skor);
+            ->with('success', 'Quiz berhasil disubmit. Skor Anda: '.$skor);
     }
-
 
     public function hasil($id)
     {
-        $hasil = HasilUjian::with('quiz')->findOrFail($id);
+        // Ambil hasil ujian beserta quiz dan relasi lainnya
+        $hasil = HasilUjian::with(['quiz', 'detail.soal', 'user'])->findOrFail($id);
 
+        // Hitung ranking berdasarkan skor lebih tinggi
         $ranking = HasilUjian::where('quiz_id', $hasil->quiz_id)
             ->where('skor', '>', $hasil->skor)
             ->count() + 1;
 
-        // Total peserta
+        // Hitung total peserta pada quiz yang sama
         $total_peserta = HasilUjian::where('quiz_id', $hasil->quiz_id)->count();
 
-        // Top performers (opsional)
+        // Ambil 10 peserta teratas berdasarkan skor dan waktu
         $top_performers = HasilUjian::with('user')
             ->where('quiz_id', $hasil->quiz_id)
             ->orderBy('skor', 'desc')
@@ -397,7 +436,20 @@ class QuizController extends Controller
             ->take(10)
             ->get();
 
-        return view('frontend.quiz_hasil_pengerjaan', compact('hasil', 'ranking', 'total_peserta', 'top_performers'));
+        // Default hasil_detail kosong
+        $hasil_detail = collect();
 
+        // Tampilkan detail hanya jika quiz bersifat umum
+        if ($hasil->quiz->status === 'Umum') {
+            $hasil_detail = $hasil->detail()->with('soal')->get();
+        }
+
+        return view('frontend.quiz_hasil_pengerjaan', compact(
+            'hasil',
+            'ranking',
+            'total_peserta',
+            'top_performers',
+            'hasil_detail'
+        ));
     }
 }

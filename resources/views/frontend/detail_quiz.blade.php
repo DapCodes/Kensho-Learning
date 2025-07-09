@@ -55,6 +55,9 @@
             <!-- Action -->
             <div class="quiz-action">
                 @if($quiz->soals->count() > 0)
+                    <label class="ready-check w-75">
+                        <span class="fw-light">Jika sudah mengerjakan quiz ini sebelumnya, maka hasil pengerjaan quiz sebelumnya akan di hapus dan di perbarui. <span class="text-danger">*</span></span>
+                    </label> 
                     <label class="ready-check">
                         <input type="checkbox" id="readyCheck">
                         <span>Saya sudah siap mengerjakan quiz</span>

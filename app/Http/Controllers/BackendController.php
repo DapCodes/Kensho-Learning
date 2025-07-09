@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HasilUjian;
 use App\Models\Kategori;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
@@ -24,7 +25,9 @@ class BackendController extends Controller
             $quizzes = $query->paginate(12);
         }
 
-        return view('backend.index', compact('quizzes', 'showAll', 'categories'));
+        $totalPeserta = HasilUjian::select('user_id')->distinct()->count();
+
+        return view('backend.index', compact('quizzes', 'showAll', 'categories', 'totalPeserta'));
     }
 
     public function indexAlternative(Request $request)

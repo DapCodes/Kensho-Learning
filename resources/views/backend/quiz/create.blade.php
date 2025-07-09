@@ -92,11 +92,25 @@
                             @enderror
                         </div>
                     </div>
-                     <div class="col-md-3">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="mapel" class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
+                            <select class="form-select @error('mapel') is-invalid @enderror" id="mapel" name="mapel" required>
+                                <option value="" disabled selected>Pilih Mata Pelajaran Quiz</option>
+                                @foreach ($mataPelajaran as $items)
+                                    <option value="{{ $items->id }}">{{ $items->nama_mapel }}</option>
+                                @endforeach
+                            </select>
+                            @error('mataPelajaran')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                     <div class="col-md-4">
                         <div class="mb-3">
                             <label for="visibility" class="form-label">Status Visibilitas <span class="text-danger">*</span></label>
                             <select class="form-select @error('visibility') is-invalid @enderror" id="visibility" name="visibility" required>
-                                <option disabled selected>Pilih Status</option>
+                                <option value="" disabled selected>Pilih Status</option>
                                 <option value="Privat">Privat</option>
                                 <option value="Umum">Umum</option>
                             </select>
@@ -143,6 +157,7 @@
                         <p class="mb-1"><strong>Durasi:</strong> <span id="display-duration"></span> menit</p>
                         <p class="mb-1"><strong>Status:</strong> <span id="display-visibility"></span></p>
                         <p class="mb-1"><strong>Kategori:</strong> <span id="display-categories"></span></p>
+                        <p class="mb-1"><strong>Mata Pelajaran:</strong> <span id="display-mapel"></span></p>
                         <p class="mb-0"><strong>Deskripsi:</strong> <span id="display-description"></span></p>
                     </div>
                 </div>
@@ -158,6 +173,7 @@
                 <input type="hidden" name="description" id="hidden-description">
                 <input type="hidden" name="visibility" id="hidden-visibility">
                 <input type="hidden" name="categories" id="hidden-categories">
+                <input type="hidden" name="mapel" id="hidden-mapel">
 
                 <!-- Dynamic Questions Container -->
                 <div id="questions-list"></div>
@@ -191,8 +207,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const description = document.getElementById('quiz-description').value;
         const visibility = document.getElementById('visibility').value;
         const categories = document.getElementById('categories').value;
+        const mapel = document.getElementById('mapel').value;
         
-        if (!title || !numQuestions || !duration || !visibility || !categories) {
+        if (!title || !numQuestions || !duration || !visibility || !categories || !mapel) {
             alert('Harap isi semua field yang wajib diisi.');
             return;
         }
@@ -206,6 +223,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const categorySelect = document.getElementById('categories');
         const selectedCategoryName = categorySelect.options[categorySelect.selectedIndex].text;
         
+        // Get mata pelajaran name from selected option
+        const mapelSelect = document.getElementById('mapel');
+        const selectedMapelName = mapelSelect.options[mapelSelect.selectedIndex].text;
+        
         // Update display information
         document.getElementById('display-title').textContent = title;
         document.getElementById('display-questions').textContent = numQuestions;
@@ -213,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('display-description').textContent = description || 'Tidak ada deskripsi';
         document.getElementById('display-visibility').textContent = visibility;
         document.getElementById('display-categories').textContent = selectedCategoryName;
+        document.getElementById('display-mapel').textContent = selectedMapelName;
         
         // Update hidden fields
         document.getElementById('hidden-title').value = title;
@@ -221,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('hidden-description').value = description;
         document.getElementById('hidden-visibility').value = visibility;
         document.getElementById('hidden-categories').value = categories;
+        document.getElementById('hidden-mapel').value = mapel;
         
         // Generate question forms
         generateQuestionForms(numQuestions);

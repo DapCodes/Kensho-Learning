@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
         \App\Models\User::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
+            'kelas_id' => 1,
             'password' => bcrypt('admin123'),
             'isAdmin' => 1,
         ]);
@@ -24,6 +25,7 @@ class UserSeeder extends Seeder
         \App\Models\User::create([
             'name' => 'Daffa Ramadhan',
             'email' => 'daffa@gmail.com',
+            'kelas_id' => 1,
             'password' => bcrypt('12345678'),
             'isAdmin' => 0,
         ]);
@@ -31,6 +33,7 @@ class UserSeeder extends Seeder
         \App\Models\User::create([
             'name' => 'Dhea Febrianti',
             'email' => 'dhea@gmail.com',
+            'kelas_id' => 1,
             'password' => bcrypt('12345678'),
             'isAdmin' => 0,
         ]);

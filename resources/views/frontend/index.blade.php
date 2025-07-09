@@ -62,7 +62,8 @@
         <div class="row align-items-center">
             <!-- Kiri: Teks -->
             <div class="col-md-4 mb-3 mb-md-0">
-                Cari quiz berdasarkan kategori yang anda inginkan !!
+                Pilih kategori quiz yang anda inginkan !! <br>
+                <small>terdapat {{$kategori->count()}} kategori</small>
             </div>
 
             <!-- Kanan: Tombol Kategori -->

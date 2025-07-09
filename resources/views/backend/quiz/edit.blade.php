@@ -92,6 +92,20 @@
                     </div>
                     <div class="col-md-4">
                         <div class="mb-3">
+                            <label for="mapel" class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
+                            <select class="form-select @error('mapel') is-invalid @enderror" id="mapel" name="mapel" required>
+                                <option value="" disabled selected>Pilih Mata Pelajaran Quiz</option>
+                                @foreach ($mataPelajaran as $items)
+                                    <option value="{{ $items->id }}" {{ $items->id == $quiz->mata_pelajaran_id ? 'selected' : '' }}>{{ $items->nama_mapel }}</option>
+                                @endforeach
+                            </select>
+                            @error('mapel')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
                             <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                             <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                                 <option value="" disabled>Pilih Status</option>

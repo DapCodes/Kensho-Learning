@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'kelas_id',
         'password',
         'isAdmin',
     ];
@@ -29,19 +30,14 @@ class User extends Authenticatable
         return $this->hasMany(Quiz::class);
     }
 
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
+
     public function hasilUjian()
     {
         return $this->hasMany(HasilUjian::class);
-    }
-
-    public function histori()
-    {
-        return $this->hasMany(HistoriUser::class);
-    }
-
-    public function peringkat()
-    {
-        return $this->hasMany(Peringkat::class);
     }
 
     /**

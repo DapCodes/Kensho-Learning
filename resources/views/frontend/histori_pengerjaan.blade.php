@@ -94,7 +94,7 @@
             @php
                 $rataRata = $histori->avg('skor');
             @endphp
-            <h4 class="fw-bold text-warning mb-1">{{ $rataRata ?? 0 }}</h4>
+            <h4 class="fw-bold text-warning mb-1">{{ number_format($rataRata ?? 0, 1) }}</h4>
             <p class="text-muted mb-0">Rata-rata skor</p>
         </div>
     </div>
@@ -148,7 +148,7 @@
                 </h5>
                 <div class="d-flex align-items-center">
                     <span class="badge bg-success-subtle text-success px-3 py-2">
-                        {{ $histori ? '1' : '0' }} Hasil Tersedia
+                        {{ $histori->count() }} Hasil Tersedia
                     </span>
                 </div>
             </div>
@@ -183,6 +183,9 @@
                                 </th>
                                 <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
                                     <i class="ti ti-award me-1"></i>Status
+                                </th>
+                                <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                    <i class="ti ti-point me-1"></i>Action
                                 </th>
                             </tr>
                         </thead>
@@ -262,8 +265,15 @@
                          style="width: 30px; height: 30px;">
                         <i class="ti ti-clock text-info" style="font-size: 14px;"></i>
                     </div>
-                    <span class="fw-bold text-info">{{ $item->waktu_pengerjaan ?? '0' }}</span>
-                    <small class="text-muted ms-1">min</small>
+
+                                @php
+                                    $totalDetik = round($item->waktu_pengerjaan * 60);
+                                    $menit = floor($totalDetik / 60);
+                                    $detik = $totalDetik % 60;
+                                @endphp
+
+                                {{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}
+
                 </div>
             </td>
 
@@ -281,6 +291,16 @@
                     {{ $status }}
                 </span>
             </td>
+            <td class="py-4 text-center pe-4">
+                <div class="btn-group" role="group">
+                    <a href="{{ route('quiz.hasil', $item->id) }}" 
+                        class="btn btn-info btn-sm" 
+                        title="Lihat Detail">
+                                    <i class="ti ti-eye"></i>
+                                    Lihat
+                                            </a>
+                                        </div>
+                                    </td>
         </tr>
     @endforeach
 </tbody>

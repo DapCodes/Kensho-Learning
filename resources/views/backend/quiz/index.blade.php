@@ -93,7 +93,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th scope="col" class="border-0 fw-bold text-dark py-3">
-                                    <i class="ti ti-file-text me-1"></i>Judul Quiz
+                                    <i class="ti ti-file-text me-1"></i>Judul
                                 </th>
                                 <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
                                     <i class="ti ti-key me-1"></i>Kode Quiz
@@ -109,6 +109,9 @@
                                 </th>
                                 <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
                                     <i class="ti ti-users me-1"></i>Peserta
+                                </th>
+                                <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                    <i class="ti ti-check-circle me-1"></i>Mapel
                                 </th>
                                 <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
                                     <i class="ti ti-check-circle me-1"></i>Status
@@ -189,7 +192,12 @@
                                                  style="width: 30px; height: 30px;">
                                                 <i class="ti ti-users text-success" style="font-size: 14px;"></i>
                                             </div>
-                                            <span class="fw-bold text-success">0</span>
+                                            <span class="fw-bold text-success">{{ $quiz->hasilUjian->count() }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 text-center">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fw-bold text-success">{{ $quiz->mataPelajaran->nama_mapel }}</span>
                                         </div>
                                     </td>
                                     <td class="py-4 text-center">

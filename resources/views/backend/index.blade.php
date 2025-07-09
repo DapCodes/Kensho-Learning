@@ -70,7 +70,7 @@
                          style="width: 60px; height: 60px;">
                         <i class="ti ti-users text-info" style="font-size: 24px;"></i>
                     </div>
-                    <h4 class="fw-bold text-info mb-1">0</h4>
+                    <h4 class="fw-bold text-info mb-1">{{ $totalPeserta }}</h4>
                     <p class="text-muted mb-0">Peserta</p>
                 </div>
             </div>
