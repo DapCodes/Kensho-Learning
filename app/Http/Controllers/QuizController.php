@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\HasilUjian;
 use App\Models\HasilUjianDetail;
 use App\Models\Kategori;
+use App\Models\MataPelajaran;
 use App\Models\Quiz;
 use App\Models\Soal;
-use App\Models\MataPelajaran;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -155,7 +155,6 @@ class QuizController extends Controller
 
             $categories = Kategori::all();
             $mataPelajaran = MataPelajaran::all();
-
 
             return view('backend.quiz.edit', compact('quiz', 'categories', 'mataPelajaran'));
 

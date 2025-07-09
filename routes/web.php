@@ -3,11 +3,11 @@
 use App\Http\Controllers\BackendController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\HasilUjianController;
-use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizSessionController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\Admin;
 use Illuminate\Support\Facades\Route;
 

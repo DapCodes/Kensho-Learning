@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Kelas;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -17,6 +17,7 @@ class UserController extends Controller
     {
         $users = User::latest()->get();
         $kelass = Kelas::whereNot('jurusan', 'UMUM')->orderBy('nama_kelas', 'asc')->get();
+
         return view('backend.user.index', compact('users', 'kelass'));
     }
 
@@ -27,6 +28,7 @@ class UserController extends Controller
     {
         $users = User::latest()->get();
         $kelass = Kelas::whereNot('jurusan', 'UMUM')->orderBy('nama_kelas', 'asc')->get();
+
         return view('backend.user.create', compact('users', 'kelass'));
     }
 
@@ -63,7 +65,7 @@ class UserController extends Controller
             return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->with('error', 'Terjadi kesalahan: '.$e->getMessage())
                 ->withInput();
         }
     }
@@ -85,7 +87,6 @@ class UserController extends Controller
 
         return view('backend.user.edit', compact('user', 'kelass'));
     }
-
 
     /**
      * Update the specified user in storage.

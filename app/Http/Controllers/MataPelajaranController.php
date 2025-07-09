@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\MataPelajaran;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class MataPelajaranController extends Controller
@@ -14,6 +14,7 @@ class MataPelajaranController extends Controller
     public function index()
     {
         $mataPelajaran = MataPelajaran::latest()->get();
+
         return view('backend.matapelajaran.index', compact('mataPelajaran'));
     }
 
@@ -56,7 +57,7 @@ class MataPelajaranController extends Controller
         $mataPelajaran = MataPelajaran::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'nama_mapel' => 'required|string|max:255|unique:mata_pelajarans,nama_mapel,' . $id,
+            'nama_mapel' => 'required|string|max:255|unique:mata_pelajarans,nama_mapel,'.$id,
             'deskripsi' => 'nullable|string|max:1000',
         ]);
 
@@ -88,7 +89,7 @@ class MataPelajaranController extends Controller
     {
         try {
             $mataPelajaran = MataPelajaran::findOrFail($id);
-            
+
             // Check if mata pelajaran has related quiz
             if ($mataPelajaran->quiz()->count() > 0) {
                 return redirect()->back()
