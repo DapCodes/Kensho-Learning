@@ -47,7 +47,7 @@
                             <div class="me-3">
                                 <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center"
                                     style="width: 40px; height: 40px;">
-                                    <i class="ti ti-list text-primary"></i>
+                                    <i class="ti ti-tags text-primary"></i>
                                 </div>
                             </div>
                             <div>

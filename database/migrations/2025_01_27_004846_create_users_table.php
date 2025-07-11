@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('kelas_id')->references('id')->on('kelas');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->boolean('isAdmin')->default(0);
+            $table->enum('isAdmin', ['1', '2', '0'])->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

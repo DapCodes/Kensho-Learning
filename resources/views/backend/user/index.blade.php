@@ -114,7 +114,13 @@
                             <td class="py-4">
                                 <small class="text-muted"><i class="ti ti-calendar me-1"></i>{{ $user->created_at->format('d M Y, H:i') }}</small>
                             </td>
+                            @if ($user->email !== 'admin@gmail.com')
                             <td class="py-4 text-center pe-4">
+                                @if (auth()->user()->canImpersonate() && $user->canBeImpersonated())
+                                    <a href="{{ route('impersonate', $user->id) }}" class="btn btn-sm btn-primary">
+                                        Impersonate
+                                    </a>
+                                @endif
                                 <div class="btn-group" role="group">
                                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm" title="Edit User">
                                         <i class="ti ti-edit"></i>
@@ -130,6 +136,7 @@
                                     @method('DELETE')
                                 </form>
                             </td>
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>

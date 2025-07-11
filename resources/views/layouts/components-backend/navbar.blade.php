@@ -41,20 +41,7 @@
                         <i class="ti ti-align-justified fs-7"></i>
                     </a>
                     <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-                        <!-- ------------------------------- -->
-                        <!-- start language Dropdown -->
-                        <!-- ------------------------------- -->
-                        <li class="nav-item nav-icon-hover-bg rounded-circle mt-1">
-                            <a class="nav-link moon dark-layout" href="javascript:void(0)">
-                                <i class="ti ti-moon moon"></i>
-                            </a>
-                            <a class="nav-link sun light-layout" href="javascript:void(0)">
-                                <i class="ti ti-sun sun"></i>
-                            </a>
-                        </li>
-                        <!-- ------------------------------- -->
-                        <!-- end language Dropdown -->
-                        <!-- ------------------------------- -->
+                     
 
 
                         <!-- ------------------------------- -->
@@ -97,6 +84,12 @@
                                             Log Out
                                         </a>
 
+                                        @if (session()->has('impersonated_by'))
+                                            <a href="{{ route('impersonate.leave') }}" class="btn btn-warning">
+                                                Kembali ke Admin
+                                            </a>
+                                        @endif
+
                                         <form action="{{ route('logout') }}" method="post" id="logout-form">
                                             @csrf
                                         </form>
@@ -127,44 +120,12 @@
                         class="img-fluid" />
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-                <div class="offcanvas-body h-n80" data-simplebar="" data-simplebar>
-                    <ul id="sidebarnav">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-email.html" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-mail"></i>
-                                </span>
-                                <span class="hide-menu">Email</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                
             </nav>
         </div>
     </div>
     <div class="app-header with-horizontal">
         <nav class="navbar navbar-expand-xl container-fluid p-0">
-            <ul class="navbar-nav align-items-center">
-                <li class="nav-item d-none d-xl-block">
-                    <a href="./main/index.html" class="text-nowrap nav-link">
-                        <img src="{{ asset('assets/backend/images/logos/dark-logo.svg') }}" class="dark-logo"
-                            width="180" alt="modernize-img" />
-                        <img src="{{ asset('assets/backend/images/logos/light-logo.svg') }}" class="light-logo"
-                            width="180" alt="modernize-img" />
-                    </a>
-                </li>
-            </ul>
-            <ul class="navbar-nav quick-links d-none d-xl-flex align-items-center">
-                <li class="nav-item dropdown-hover d-none d-lg-block">
-                    <a class="nav-link" href="./main/app-chat.html">Chat</a>
-                </li>
-                <li class="nav-item dropdown-hover d-none d-lg-block">
-                    <a class="nav-link" href="./main/app-calendar.html">Calendar</a>
-                </li>
-                <li class="nav-item dropdown-hover d-none d-lg-block">
-                    <a class="nav-link" href="./main/app-email.html">Email</a>
-                </li>
-            </ul>
             <div class="d-block d-xl-none">
                 <a href="./main/index.html" class="text-nowrap nav-link">
                     <img src="{{ asset('assets/backend/images/logos/dark-logo.svg') }}" width="180"

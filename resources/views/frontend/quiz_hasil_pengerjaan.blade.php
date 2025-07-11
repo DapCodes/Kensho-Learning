@@ -2,7 +2,6 @@
 @section('content')
     @include('layouts.components-backend.css')
     <div class="container-fluid">
-
         <!-- Header Section -->
         <div class="card bg-gradient-success shadow-sm position-relative overflow-hidden mb-5 border-0">
             <div class="card-body px-4 py-4">
@@ -40,7 +39,6 @@
                     style="width: 150px; height: 150px; transform: translate(-75px, 75px);"></div>
             </div>
         </div>
-
         <!-- Quiz Information -->
         <div class="card border-0 mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -348,13 +346,25 @@
                                                         <span class="badge bg-success-subtle text-success">
                                                             <i class="ti ti-check me-1"></i>Benar
                                                         </span>
-                                                    @else
+                                                    @elseif ($detail->status_jawaban === 'benar')
                                                         <span class="badge bg-danger-subtle text-danger">
                                                             <i class="ti ti-x me-1"></i>Salah
                                                         </span>
+                                                    @elseif ($detail->status_jawaban === 'pending')
+                                                        <span class="badge bg-warning-subtle text-dark">
+                                                            <i class="ti ti-time me-1"></i>pending
+                                                        </span>
+                                                    @elseif ($detail->status_jawaban === 'sebagian')
+                                                        <span class="badge bg-info-subtle text-dark">
+                                                           sebagian
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-danger-subtle text-danger">
+                                                            <i class="ti ti-x me-1"></i>tidak terjawab
+                                                        </span>
                                                     @endif
                                                     <span class="badge bg-light text-muted">
-                                                        <i class="ti ti-star me-1"></i>Bobot: {{ $detail->bobot ?? 1 }}
+                                                        <i class="ti ti-star me-1"></i>Bobot: {{ $detail->bobot_diperoleh }} / {{ $detail->bobot_soal }}
                                                     </span>
                                                 </div>
                                             </div>

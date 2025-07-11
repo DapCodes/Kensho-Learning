@@ -4,8 +4,10 @@ use App\Http\Controllers\BackendController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\HasilUjianController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\QuizSessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Admin;
@@ -30,6 +32,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/quiz/{id}/complete', [QuizSessionController::class, 'completeSession'])->name('quiz.complete');
     Route::post('/quiz/cek-kode', [FrontendController::class, 'checkKode'])->name('quiz.checkKode');
     Route::get('/quiz/{id}/detail', [FrontendController::class, 'detail'])->name('quiz.detail');
+
+    //laravel impersonate
+    Route::get('/impersonate/{id}', [ImpersonateController::class, 'impersonate'])->name('impersonate');
+    Route::get('/impersonate-stop', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -40,8 +46,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', Admin::class]], func
     Route::resource('kategori', KategoriController::class);
     Route::resource('users', UserController::class);
 
-    Route::get('/matapelajaran', [MataPelajaranController::class, 'index'])->name('matapelajaran.index');
-    Route::post('/matapelajaran', [MataPelajaranController::class, 'store'])->name('matapelajaran.store');
-    Route::put('/matapelajaran/{id}', [MataPelajaranController::class, 'update'])->name('matapelajaran.update');
-    Route::delete('/matapelajaran/{id}', [MataPelajaranController::class, 'destroy'])->name('matapelajaran.destroy');
+    Route::resource('matapelajaran', MataPelajaranController::class);
+
+    Route::resource('kelas', KelasController::class);
+
 });

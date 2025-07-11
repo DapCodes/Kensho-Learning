@@ -55,7 +55,7 @@
                         @csrf
 
                         <!-- Nama -->
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="name" class="form-label fw-medium">
                                 <i class="ti ti-user me-1"></i>Nama Lengkap
                             </label>
@@ -70,7 +70,7 @@
                         </div>
 
                         <!-- Email -->
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="email" class="form-label fw-medium">
                                 <i class="ti ti-mail me-1"></i>Email
                             </label>
@@ -85,7 +85,7 @@
                         </div>
 
                         <!-- Row untuk Kelas dan Role -->
-                        <div class="row">
+                        <div class="row mb-2">
                             <!-- Kelas -->
                             <div class="col-md-6 mb-3">
                                 <label for="kelas_id" class="form-label fw-medium">
