@@ -121,6 +121,10 @@
                                         '3' => $soal->pilihan_d,
                                         '4' => $soal->pilihan_e,
                                         '5' => $soal->pilihan_f,
+                                        '6' => $soal->pilihan_g,
+                                        '7' => $soal->pilihan_h,
+                                        '8' => $soal->pilihan_i,
+                                        '9' => $soal->pilihan_j,
                                     ];
                                 @endphp
                                 <div class="mb-3">

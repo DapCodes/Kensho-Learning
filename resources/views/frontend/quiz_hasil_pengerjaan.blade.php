@@ -351,7 +351,7 @@
                                                             <i class="ti ti-x me-1"></i>Salah
                                                         </span>
                                                     @elseif ($detail->status_jawaban === 'pending')
-                                                        <span class="badge bg-warning-subtle text-dark">
+                                                        <span class="badge bg-info-subtle text-dark">
                                                             <i class="ti ti-time me-1"></i>pending
                                                         </span>
                                                     @elseif ($detail->status_jawaban === 'sebagian')
@@ -386,46 +386,123 @@
                                         </div>
 
                                         <!-- Answer Section -->
-                                        <div class="row">
-                                            <!-- Your Answer -->
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label fw-semibold">Jawaban Anda:</label>
-                                                <div
-                                                    class="answer-box p-3 rounded border-start border-4 {{ $detail->status_jawaban === 'benar' ? 'bg-success-subtle border-success' : 'bg-danger-subtle border-danger' }}">
-                                                    <div class="d-flex align-items-center">
-                                                        <i
-                                                            class="ti {{ $detail->status_jawaban === 'benar' ? 'ti-check text-success' : 'ti-x text-danger' }} me-2 fs-5"></i>
-                                                        <span
-                                                            class="fw-medium">{{ $detail->jawaban_peserta ?? 'Tidak dijawab' }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                        
+<div class="row">
+    <!-- Your Answer -->
+    <div class="{{ $detail->soal->tipe === 'essay' ? 'col-md-12' : 'col-md-6' }} mb-3">
+        <label class="form-label fw-semibold">Jawaban Anda:</label>
+        <div class="answer-box p-3 rounded border-start border-4 
+    @if ($detail->soal->tipe === 'essay') 
+        bg-info-subtle border-info 
+    @else 
+        {{ $detail->status_jawaban === 'benar' ? 'bg-success-subtle border-success' : 'bg-danger-subtle border-danger' }} 
+    @endif">
 
-                                            <!-- Correct Answer -->
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label fw-semibold">Jawaban Benar:</label>
-                                                <div
-                                                    class="answer-box p-3 rounded border-start border-4 bg-success-subtle border-success">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="ti ti-check text-success me-2 fs-5"></i>
-                                                        <span
-                                                            class="fw-medium">{{ $detail->soal->jawaban_benar ?? '-' }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+            <div class="d-flex align-items-center">
+               <i class="ti 
+    @if ($detail->status_jawaban === 'pending') 
+        ti-clock text-info 
+    @else 
+        {{ $detail->status_jawaban === 'benar' ? 'ti-check text-success' : 'ti-x text-danger' }} 
+    @endif me-2 fs-5"></i>
 
-                                        <!-- Explanation (if available) -->
-                                        @if (isset($detail->soal->penjelasan) && $detail->soal->penjelasan)
-                                            <div class="mt-3">
-                                                <label class="form-label fw-semibold text-info">
-                                                    <i class="ti ti-info-circle me-1"></i>Penjelasan:
-                                                </label>
-                                                <div class="p-3 bg-info-subtle rounded border-start border-4 border-info">
-                                                    {{ $detail->soal->penjelasan }}
-                                                </div>
-                                            </div>
-                                        @endif
+                <div class="flex-grow-1">
+                    @if($detail->jawaban_peserta)
+                        @if($detail->soal->tipe === 'essay')
+                            <div class="fw-medium">
+                                @if ($detail->status_jawaban === 'pending')
+                                    <span class="badge bg-info">Essay - Sedang Dikoreksi</span>
+                                @endif
+
+                                <div class="mt-2">
+                                    <small class="text-muted">Jawaban essay akan dikoreksi secara manual oleh pemilik quiz</small>
+                                </div>
+                            </div>
+                        @elseif($detail->soal->tipe === 'checkbox')
+                            @php
+                                $selectedAnswers = is_array($detail->jawaban_peserta) 
+                                    ? $detail->jawaban_peserta 
+                                    : explode(',', $detail->jawaban_peserta);
+                            @endphp
+                            <div class="fw-medium">
+                                @if(is_array($selectedAnswers) && count($selectedAnswers) > 0)
+                                    @foreach($selectedAnswers as $answer)
+                                        <span class="badge bg-primary me-1">{{ $answer }}</span>
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">Tidak ada pilihan yang dipilih</span>
+                                @endif
+                            </div>
+                        @elseif($detail->soal->tipe === 'benar_salah')
+                            <span class="fw-medium">
+                                @if($detail->jawaban_peserta === '1' || $detail->jawaban_peserta === 'true' || $detail->jawaban_peserta === 'benar')
+                                    <span class="badge bg-success">Benar</span>
+                                @else
+                                    <span class="badge bg-danger">Salah</span>
+                                @endif
+                            </span>
+                        @else
+                            {{-- Pilihan Ganda atau tipe lainnya --}}
+                            <span class="fw-medium">{{ $detail->jawaban_peserta }}</span>
+                        @endif
+                    @else
+                        <span class="fw-medium text-muted">Tidak dijawab</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Correct Answer -->
+    @if($detail->soal->tipe !== 'essay')
+
+    <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Jawaban Benar:</label>
+        <div class="answer-box p-3 rounded border-start border-4 bg-success-subtle border-success">
+            <div class="d-flex align-items-center">
+                <i class="ti ti-check text-success me-2 fs-5"></i>
+                <div class="flex-grow-1">
+                    @if($detail->soal->jawaban_benar)
+
+                       @if($detail->soal->tipe === 'checkbox')
+                            @php
+                                $correctAnswers = is_array($detail->soal->jawaban_benar)
+                                    ? $detail->soal->jawaban_benar
+                                    : explode(',', $detail->soal->jawaban_benar);
+                            @endphp
+                            <div class="fw-medium">
+                                @if(is_array($correctAnswers) && count($correctAnswers) > 0)
+                                    @foreach($correctAnswers as $answer)
+                                        <span class="badge bg-success me-1">{{ $answer }}</span>
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">Tidak ada jawaban benar yang ditetapkan</span>
+                                @endif
+                            </div>
+
+                        @elseif($detail->soal->tipe === 'benar_salah')
+                            <span class="fw-medium">
+                                @if($detail->soal->jawaban_benar === '1' || $detail->soal->jawaban_benar === 'true' || $detail->soal->jawaban_benar === 'benar')
+                                    <span class="badge bg-success">Benar</span>
+                                @else
+                                    <span class="badge bg-danger">Salah</span>
+                                @endif
+                            </span>
+                        @else
+                            {{-- Pilihan Ganda atau tipe lainnya --}}
+                            <span class="fw-medium">{{ $detail->soal->jawaban_benar }}</span>
+                        @endif
+                    @else
+                        <span class="fw-medium text-muted">-</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+</div>
+
+                                    
                                     </div>
                                 </div>
                             </div>

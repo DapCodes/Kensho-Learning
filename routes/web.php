@@ -43,6 +43,9 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', Admin::class]], function () {
     Route::get('/', [BackendController::class, 'index'])->name('admin.quiz-terbaru');
     Route::resource('quiz', QuizController::class);
+
+    Route::patch('/quiz/{id}/toggle-aktivasi', [QuizController::class, 'toggleAktivasi'])->name('quiz.toggleAktivasi');
+
     Route::resource('kategori', KategoriController::class);
     Route::resource('users', UserController::class);
 

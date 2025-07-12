@@ -19,7 +19,15 @@ class UserSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'kelas_id' => 1,
             'password' => bcrypt('admin123'),
-            'isAdmin' => 1,
+            'isAdmin' => '2',
+        ]);
+
+         \App\Models\User::create([
+            'name' => 'Pa Ute',
+            'email' => 'paute@gmail.com',
+            'kelas_id' => 2,
+            'password' => bcrypt('12345678'),
+            'isAdmin' => '1',
         ]);
 
         \App\Models\User::create([
@@ -27,7 +35,7 @@ class UserSeeder extends Seeder
             'email' => 'daffa@gmail.com',
             'kelas_id' => 1,
             'password' => bcrypt('12345678'),
-            'isAdmin' => 0,
+            'isAdmin' => '0',
         ]);
 
         \App\Models\User::create([
@@ -35,7 +43,7 @@ class UserSeeder extends Seeder
             'email' => 'dhea@gmail.com',
             'kelas_id' => 1,
             'password' => bcrypt('12345678'),
-            'isAdmin' => 0,
+            'isAdmin' => '0',
         ]);
     }
 }

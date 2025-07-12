@@ -64,10 +64,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
+    
     public function canImpersonate()
     {
-        return $this->isAdmin === 1; // Ganti dengan logika rolenya
+        return in_array($this->isAdmin, ['1', '2']);
     }
 
     public function canBeImpersonated()

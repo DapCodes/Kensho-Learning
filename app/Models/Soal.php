@@ -14,6 +14,12 @@ class Soal extends Model
         'pilihan_b',
         'pilihan_c',
         'pilihan_d',
+        'pilihan_e',
+        'pilihan_f',
+        'pilihan_g',
+        'pilihan_h',
+        'pilihan_i',
+        'pilihan_j',
         'jawaban_benar',
         'bobot',
     ];

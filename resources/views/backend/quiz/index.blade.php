@@ -116,6 +116,9 @@
                                     <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
                                         <i class="ti ti-check-circle me-1"></i>Status
                                     </th>
+                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <i class="ti ti-check-circle me-1"></i>Aktivasi
+                                    </th>
                                     <th scope="col" class="border-0 fw-bold text-dark py-3 text-center pe-4">
                                         <i class="ti ti-settings me-1"></i>Aksi
                                     </th>
@@ -210,8 +213,19 @@
                                                      text-{{ $quiz->soals->count() > 0 ? 'success' : 'warning' }} px-3 py-2">
                                                 <i
                                                     class="ti ti-{{ $quiz->soals->count() > 0 ? 'check-circle' : 'clock' }} me-1"></i>
-                                                {{ $quiz->status }}
+                                                {{ $quiz->status_aktivasi === 'aktif' ? 'Aktif' : 'Nonaktif' }}
                                             </span>
+                                        </td>
+                                       <td class="py-4 text-center">
+                                            <form action="{{ route('quiz.toggleAktivasi', $quiz->id) }}" method="POST" onsubmit="return confirm('Apakah kamu yakin ingin mengubah status aktivasi kuis ini?')">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-sm 
+                                                    {{ $quiz->status_aktivasi === 'aktif' ? 'btn-danger' : 'btn-success' }}">
+                                                    <i class="ti ti-{{ $quiz->status_aktivasi === 'aktif' ? 'x-circle' : 'check-circle' }} me-1"></i>
+                                                    {{ $quiz->status_aktivasi === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                </button>
+                                            </form>
                                         </td>
                                         <td class="py-4 text-center pe-4">
                                             <div class="btn-group" role="group">

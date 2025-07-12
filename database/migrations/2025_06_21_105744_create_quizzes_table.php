@@ -22,6 +22,8 @@ return new class extends Migration
             $table->foreign('mata_pelajaran_id')->references('id')->on('mata_pelajarans')->onDelete('cascade');
             $table->unsignedBigInteger('user_id');
             $table->enum('status', ['Umum', 'Privat']);
+            $table->enum('status_aktivasi', ['aktif', 'non aktif'])->default('aktif');
+            $table->enum('pengulangan_pekerjaan', ['Boleh', 'Tidak']);
             $table->dateTime('tanggal_buat')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->foreign('kategori_id')->references('id')->on('kategoris')->onDelete('cascade');

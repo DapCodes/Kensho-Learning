@@ -1,4 +1,4 @@
-<header class="topbar">
+<header class="topbar" style="z-index: 999;">
     <div class="with-vertical"><!-- ---------------------------------- -->
         <!-- Start Vertical Layout Header -->
         <!-- ---------------------------------- -->

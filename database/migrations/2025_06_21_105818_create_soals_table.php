@@ -21,6 +21,12 @@ return new class extends Migration
             $table->string('pilihan_b')->nullable();
             $table->string('pilihan_c')->nullable();
             $table->string('pilihan_d')->nullable();
+            $table->string('pilihan_e')->nullable();
+            $table->string('pilihan_f')->nullable();
+            $table->string('pilihan_g')->nullable();
+            $table->string('pilihan_h')->nullable();
+            $table->string('pilihan_i')->nullable();
+            $table->string('pilihan_j')->nullable();
 
             $table->text('jawaban_benar')->nullable();
 

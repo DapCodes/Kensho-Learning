@@ -19,13 +19,32 @@ class QuizController extends Controller
 {
     public function index()
     {
-        $quizzes = Quiz::with(['user', 'soals'])
+        $user = Auth::user();
+        if ($user->isAdmin === 1) {
+            $quizzes = Quiz::with(['user', 'soals'])
             ->where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
+        } else {
+            $quizzes = Quiz::with('soals')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        }
 
         return view('backend.quiz.index', compact('quizzes'));
     }
+
+    public function toggleAktivasi($id)
+    {
+        $quiz = Quiz::findOrFail($id);
+
+        // Toggle status
+        $quiz->status_aktivasi = $quiz->status_aktivasi === 'aktif' ? 'non aktif' : 'aktif';
+        $quiz->save();
+
+        return redirect()->back()->with('success', 'Status aktivasi kuis berhasil diperbarui.');
+    }
+
 
     public function create()
     {
@@ -49,11 +68,19 @@ class QuizController extends Controller
             'questions.*.text' => 'required|string|max:1000',
             'questions.*.type' => 'required|in:pilihan_ganda,essay,benar_salah,checkbox',
             'questions.*.weight' => 'required|integer|min:1|max:100',
+            'aktivasi' => 'required|in:aktif,non aktif',
+            'pengulangan' => 'required|in:Boleh,Tidak', // Tambahkan validasi untuk pengulangan
             // Multiple choice fields
             'questions.*.option_a' => 'nullable|string|max:255',
             'questions.*.option_b' => 'nullable|string|max:255',
             'questions.*.option_c' => 'nullable|string|max:255',
             'questions.*.option_d' => 'nullable|string|max:255',
+            'questions.*.option_e' => 'nullable|string|max:255',
+            'questions.*.option_f' => 'nullable|string|max:255',
+            'questions.*.option_g' => 'nullable|string|max:255',
+            'questions.*.option_h' => 'nullable|string|max:255',
+            'questions.*.option_i' => 'nullable|string|max:255',
+            'questions.*.option_j' => 'nullable|string|max:255',
             'questions.*.correct_answer' => 'nullable|string',
             // Checkbox fields
             'questions.*.checkbox_options' => 'nullable|array',
@@ -74,6 +101,10 @@ class QuizController extends Controller
             'num_questions.min' => 'Minimal 1 soal.',
             'num_questions.max' => 'Maksimal 50 soal.',
             'questions.required' => 'Soal quiz wajib diisi.',
+            'aktivasi.required' => 'Status aktivasi wajib dipilih.',
+            'aktivasi.in' => 'Status aktivasi harus aktif atau non aktif.',
+            'pengulangan.required' => 'Pengulangan pekerjaan wajib dipilih.',
+            'pengulangan.in' => 'Pengulangan pekerjaan harus Boleh atau Tidak.',
             'questions.*.text.required' => 'Teks soal wajib diisi.',
             'questions.*.text.max' => 'Teks soal maksimal 1000 karakter.',
             'questions.*.type.required' => 'Tipe soal wajib dipilih.',
@@ -86,6 +117,12 @@ class QuizController extends Controller
             'questions.*.option_b.max' => 'Pilihan B maksimal 255 karakter.',
             'questions.*.option_c.max' => 'Pilihan C maksimal 255 karakter.',
             'questions.*.option_d.max' => 'Pilihan D maksimal 255 karakter.',
+            'questions.*.option_e.max' => 'Pilihan E maksimal 255 karakter.',
+            'questions.*.option_f.max' => 'Pilihan F maksimal 255 karakter.',
+            'questions.*.option_g.max' => 'Pilihan G maksimal 255 karakter.',
+            'questions.*.option_h.max' => 'Pilihan H maksimal 255 karakter.',
+            'questions.*.option_i.max' => 'Pilihan I maksimal 255 karakter.',
+            'questions.*.option_j.max' => 'Pilihan J maksimal 255 karakter.',
             'questions.*.checkbox_options.*.max' => 'Opsi checkbox maksimal 255 karakter.',
         ]);
 
@@ -145,6 +182,8 @@ class QuizController extends Controller
                 'mata_pelajaran_id' => $validatedData['mapel'],
                 'user_id' => auth()->id(),
                 'status' => $validatedData['visibility'],
+                'status_aktivasi' => $validatedData['aktivasi'],
+                'pengulangan_pekerjaan' => $validatedData['pengulangan'], // Tambahkan ini
                 'tanggal_buat' => Carbon::now(),
             ]);
 
@@ -158,16 +197,22 @@ class QuizController extends Controller
                     'pilihan_b' => null,
                     'pilihan_c' => null,
                     'pilihan_d' => null,
+                    'pilihan_e' => null,
+                    'pilihan_f' => null,
+                    'pilihan_g' => null,
+                    'pilihan_h' => null,
+                    'pilihan_i' => null,
+                    'pilihan_j' => null,
                     'jawaban_benar' => null,
                 ];
 
                 // Handle different question types
                 switch ($questionData['type']) {
                     case 'pilihan_ganda':
-                        $soalData['pilihan_a'] = $questionData['option_a'];
-                        $soalData['pilihan_b'] = $questionData['option_b'];
-                        $soalData['pilihan_c'] = $questionData['option_c'];
-                        $soalData['pilihan_d'] = $questionData['option_d'];
+                        $soalData['pilihan_a'] = $questionData['option_a'] ?? null;
+                        $soalData['pilihan_b'] = $questionData['option_b'] ?? null;
+                        $soalData['pilihan_c'] = $questionData['option_c'] ?? null;
+                        $soalData['pilihan_d'] = $questionData['option_d'] ?? null;
                         $soalData['jawaban_benar'] = $questionData['correct_answer'];
                         break;
 
@@ -181,20 +226,16 @@ class QuizController extends Controller
                         break;
 
                     case 'checkbox':
-                        // Store checkbox options in pilihan_a, pilihan_b, etc.
                         $checkboxOptions = $questionData['checkbox_options'];
-                        if (isset($checkboxOptions[0])) {
-                            $soalData['pilihan_a'] = $checkboxOptions[0];
+
+                        $optionLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+
+                        foreach ($optionLetters as $index => $letter) {
+                            if (isset($checkboxOptions[$index])) {
+                                $soalData['pilihan_' . $letter] = $checkboxOptions[$index];
+                            }
                         }
-                        if (isset($checkboxOptions[1])) {
-                            $soalData['pilihan_b'] = $checkboxOptions[1];
-                        }
-                        if (isset($checkboxOptions[2])) {
-                            $soalData['pilihan_c'] = $checkboxOptions[2];
-                        }
-                        if (isset($checkboxOptions[3])) {
-                            $soalData['pilihan_d'] = $checkboxOptions[3];
-                        }
+
 
                         // Store correct answers as comma-separated string
                         $correctAnswers = $questionData['checkbox_correct'];
@@ -412,12 +453,25 @@ class QuizController extends Controller
     }
 
 
-// Updated Quiz Controller Methods
-
 public function start($id)
 {
     $quiz = Quiz::with('soals')->findOrFail($id);
-    $startTime = now()->timestamp; // waktu mulai ujian
+    $startTime = now()->timestamp;
+
+    if ($quiz->status_aktivasi === 'non aktif') {
+        return redirect()->back()->with('error', 'Quiz sedang tidak dapat dikerjakan');
+    }
+
+    // Cek apakah pengulangan tidak diperbolehkan
+    if ($quiz->pengulangan_pekerjaan === 'Tidak') {
+        $sudahMengerjakan = HasilUjian::where('user_id', Auth::id())
+            ->where('quiz_id', $quiz->id)
+            ->exists();
+
+        if ($sudahMengerjakan) {
+            return redirect()->back()->with('error', 'Anda sudah mengerjakan quiz ini sebelumnya');
+        }
+    }
 
     return view('frontend.quiz_start', compact('quiz', 'startTime'));
 }

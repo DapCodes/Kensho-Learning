@@ -14,7 +14,9 @@ class Quiz extends Model
         'kategori_id',
         'mata_pelajaran_id',
         'user_id',
+        'status_aktivasi',
         'tanggal_buat',
+        'pengulangan_pekerjaan',
         'status',
     ];
 
