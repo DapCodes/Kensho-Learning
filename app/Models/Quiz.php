@@ -44,4 +44,54 @@ class Quiz extends Model
     {
         return $this->belongsTo(MataPelajaran::class);
     }
+
+    /**
+     * TAMBAHAN: Method untuk mengecek apakah quiz memiliki essay yang perlu dikoreksi
+     */
+    public function hasEssayNeedingGrading()
+    {
+        return $this->hasilUjian()
+            ->whereHas('detail', function ($query) {
+                $query->whereHas('soal', function ($subQuery) {
+                    $subQuery->where('tipe', 'essay');
+                })
+                    ->where(function ($statusQuery) {
+                        $statusQuery->where('status_jawaban', 'pending')
+                            ->orWhere('bobot_diperoleh', 0);
+                    });
+            })
+            ->exists();
+    }
+
+    /**
+     * TAMBAHAN: Method untuk mengecek apakah user dapat mengakses quiz untuk koreksi
+     */
+    public function canBeGradedBy($userId)
+    {
+        return $this->user_id == $userId;
+    }
+
+    /**
+     * TAMBAHAN: Scope untuk quiz yang dibuat oleh user tertentu
+     */
+    public function scopeOwnedBy($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * TAMBAHAN: Scope untuk quiz yang memiliki essay pending
+     */
+    public function scopeWithPendingEssays($query)
+    {
+        return $query->whereHas('hasilUjian.detail', function ($subQuery) {
+            $subQuery->whereHas('soal', function ($soalQuery) {
+                $soalQuery->where('tipe', 'essay');
+            })
+                ->where(function ($statusQuery) {
+                    $statusQuery->where('status_jawaban', 'pending')
+                        ->orWhere('bobot_diperoleh', 0);
+                });
+        });
+    }
 }

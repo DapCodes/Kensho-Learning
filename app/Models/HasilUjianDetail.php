@@ -114,6 +114,7 @@ class HasilUjianDetail extends Model
         // Jika jawaban berupa pilihan ganda yang dipisahkan koma (checkbox)
         if (strpos($this->jawaban_peserta, ',') !== false) {
             $jawaban = explode(',', $this->jawaban_peserta);
+
             return implode(', ', array_map('trim', $jawaban));
         }
 
@@ -149,6 +150,7 @@ class HasilUjianDetail extends Model
         if ($this->bobot_soal == 0) {
             return 0;
         }
+
         return round(($this->bobot_diperoleh / $this->bobot_soal) * 100, 2);
     }
 

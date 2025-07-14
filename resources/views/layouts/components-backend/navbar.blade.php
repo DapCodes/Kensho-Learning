@@ -41,7 +41,7 @@
                         <i class="ti ti-align-justified fs-7"></i>
                     </a>
                     <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-                     
+
 
 
                         <!-- ------------------------------- -->
@@ -120,7 +120,7 @@
                         class="img-fluid" />
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-                
+
             </nav>
         </div>
     </div>

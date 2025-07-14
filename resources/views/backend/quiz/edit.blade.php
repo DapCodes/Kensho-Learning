@@ -323,7 +323,7 @@
             // Remove question functionality
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('remove-question') || e.target.closest(
-                    '.remove-question')) {
+                        '.remove-question')) {
                     const questionItem = e.target.closest('.question-item');
                     const questionsContainer = document.getElementById('questions-container');
 

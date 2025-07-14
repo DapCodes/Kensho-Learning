@@ -21,9 +21,8 @@
                     </div>
                     <div class="col-3">
                         <div class="text-center">
-                            <img src="{{ asset('assets/backend/images/breadcrumb/ChatBc.png') }}"
-                                alt="kelas-dashboard" class="img-fluid"
-                                style="max-height: 120px; filter: brightness(1.1);" />
+                            <img src="{{ asset('assets/backend/images/breadcrumb/ChatBc.png') }}" alt="kelas-dashboard"
+                                class="img-fluid" style="max-height: 120px; filter: brightness(1.1);" />
                         </div>
                     </div>
                 </div>
@@ -64,8 +63,7 @@
                         </div>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <button class="btn btn-primary btn-lg px-4" data-bs-toggle="modal"
-                            data-bs-target="#addKelasModal">
+                        <button class="btn btn-primary btn-lg px-4" data-bs-toggle="modal" data-bs-target="#addKelasModal">
                             <i class="ti ti-plus me-2"></i>Buat Kelas Baru
                         </button>
                     </div>
@@ -150,19 +148,18 @@
                                         </td>
                                         <td class="py-4">
                                             <small class="text-muted">
-                                                <i class="ti ti-calendar me-1"></i>{{ $item->created_at->format('d M Y, H:i') }}
+                                                <i
+                                                    class="ti ti-calendar me-1"></i>{{ $item->created_at->format('d M Y, H:i') }}
                                             </small>
                                         </td>
                                         <td class="py-4 text-center pe-4">
                                             <div class="btn-group" role="group">
-                                                <button type="button" class="btn btn-warning btn-sm"
-                                                    title="Edit Kelas" data-bs-toggle="modal"
-                                                    data-bs-target="#editKelasModal"
+                                                <button type="button" class="btn btn-warning btn-sm" title="Edit Kelas"
+                                                    data-bs-toggle="modal" data-bs-target="#editKelasModal"
                                                     onclick="editKelas({{ $item->id }}, '{{ addslashes($item->nama_kelas) }}', '{{ addslashes($item->jurusan) }}')">
                                                     <i class="ti ti-edit"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-danger btn-sm"
-                                                    title="Hapus Kelas"
+                                                <button type="button" class="btn btn-danger btn-sm" title="Hapus Kelas"
                                                     onclick="deleteKelas({{ $item->id }}, '{{ addslashes($item->nama_kelas) }}')">
                                                     <i class="ti ti-trash"></i>
                                                 </button>
@@ -195,8 +192,7 @@
                     <p class="text-muted mb-4 mx-auto" style="max-width: 400px;">
                         Mulai dengan membuat kelas pertama untuk mengorganisir siswa Anda dengan lebih baik!
                     </p>
-                    <button class="btn btn-primary btn-lg px-5" data-bs-toggle="modal"
-                        data-bs-target="#addKelasModal">
+                    <button class="btn btn-primary btn-lg px-5" data-bs-toggle="modal" data-bs-target="#addKelasModal">
                         <i class="ti ti-plus me-2"></i>Buat Kelas Pertama
                     </button>
                 </div>
@@ -205,8 +201,7 @@
     </div>
 
     <!-- Add Kelas Modal -->
-    <div class="modal fade" id="addKelasModal" tabindex="-1" aria-labelledby="addKelasModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="addKelasModal" tabindex="-1" aria-labelledby="addKelasModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
@@ -238,16 +233,26 @@
                             <label for="jurusan" class="form-label fw-bold">
                                 <i class="ti ti-certificate me-1"></i>Jurusan
                             </label>
-                            <select class="form-select @error('jurusan') is-invalid @enderror" id="jurusan" name="jurusan" required>
+                            <select class="form-select @error('jurusan') is-invalid @enderror" id="jurusan"
+                                name="jurusan" required>
                                 <option value="">Pilih Jurusan...</option>
-                                <option value="IPA" {{ old('jurusan') == 'IPA' ? 'selected' : '' }}>IPA (Ilmu Pengetahuan Alam)</option>
-                                <option value="IPS" {{ old('jurusan') == 'IPS' ? 'selected' : '' }}>IPS (Ilmu Pengetahuan Sosial)</option>
+                                <option value="IPA" {{ old('jurusan') == 'IPA' ? 'selected' : '' }}>IPA (Ilmu
+                                    Pengetahuan Alam)</option>
+                                <option value="IPS" {{ old('jurusan') == 'IPS' ? 'selected' : '' }}>IPS (Ilmu
+                                    Pengetahuan Sosial)</option>
                                 <option value="Bahasa" {{ old('jurusan') == 'Bahasa' ? 'selected' : '' }}>Bahasa</option>
-                                <option value="Teknik Informatika" {{ old('jurusan') == 'Teknik Informatika' ? 'selected' : '' }}>Teknik Informatika</option>
-                                <option value="Akuntansi" {{ old('jurusan') == 'Akuntansi' ? 'selected' : '' }}>Akuntansi</option>
-                                <option value="Pemasaran" {{ old('jurusan') == 'Pemasaran' ? 'selected' : '' }}>Pemasaran</option>
-                                <option value="Administrasi Perkantoran" {{ old('jurusan') == 'Administrasi Perkantoran' ? 'selected' : '' }}>Administrasi Perkantoran</option>
-                                <option value="Lainnya" {{ old('jurusan') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                <option value="Teknik Informatika"
+                                    {{ old('jurusan') == 'Teknik Informatika' ? 'selected' : '' }}>Teknik Informatika
+                                </option>
+                                <option value="Akuntansi" {{ old('jurusan') == 'Akuntansi' ? 'selected' : '' }}>Akuntansi
+                                </option>
+                                <option value="Pemasaran" {{ old('jurusan') == 'Pemasaran' ? 'selected' : '' }}>Pemasaran
+                                </option>
+                                <option value="Administrasi Perkantoran"
+                                    {{ old('jurusan') == 'Administrasi Perkantoran' ? 'selected' : '' }}>Administrasi
+                                    Perkantoran</option>
+                                <option value="Lainnya" {{ old('jurusan') == 'Lainnya' ? 'selected' : '' }}>Lainnya
+                                </option>
                             </select>
                             @error('jurusan')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -291,8 +296,7 @@
                                 <i class="ti ti-school me-1"></i>Nama Kelas
                             </label>
                             <input type="text" class="form-control @error('nama_kelas') is-invalid @enderror"
-                                id="edit_nama_kelas" name="nama_kelas" placeholder="Masukkan nama kelas..."
-                                required>
+                                id="edit_nama_kelas" name="nama_kelas" placeholder="Masukkan nama kelas..." required>
                             @error('nama_kelas')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -305,7 +309,8 @@
                             <label for="edit_jurusan" class="form-label fw-bold">
                                 <i class="ti ti-certificate me-1"></i>Jurusan
                             </label>
-                            <select class="form-select @error('jurusan') is-invalid @enderror" id="edit_jurusan" name="jurusan" required>
+                            <select class="form-select @error('jurusan') is-invalid @enderror" id="edit_jurusan"
+                                name="jurusan" required>
                                 <option value="">Pilih Jurusan...</option>
                                 <option value="IPA">IPA (Ilmu Pengetahuan Alam)</option>
                                 <option value="IPS">IPS (Ilmu Pengetahuan Sosial)</option>

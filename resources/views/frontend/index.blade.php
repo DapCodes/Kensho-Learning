@@ -211,7 +211,7 @@
     </div>
 
     <!-- Toast Container -->
-     <!-- Enhanced Toast Messages -->
+    <!-- Enhanced Toast Messages -->
     @if (session('success'))
         <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
             <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">

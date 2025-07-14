@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HasilUjian;
 use App\Models\Kategori;
 use App\Models\Quiz;
-use App\Models\HasilUjian;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -52,7 +52,7 @@ class FrontendController extends Controller
             return redirect()->back()->with('error', 'Quiz sedang tidak dapat dikerjakan');
         }
 
-         // Cek apakah pengulangan tidak diperbolehkan
+        // Cek apakah pengulangan tidak diperbolehkan
         if ($quiz->pengulangan_pekerjaan === 'Tidak') {
             $sudahMengerjakan = HasilUjian::where('user_id', Auth::id())
                 ->where('quiz_id', $quiz->id)
@@ -65,5 +65,4 @@ class FrontendController extends Controller
 
         return view('frontend.detail_quiz', compact('quiz'));
     }
-
 }

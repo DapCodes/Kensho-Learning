@@ -81,7 +81,7 @@ class HasilUjian extends Model
     public function scopeRanking($query)
     {
         return $query->orderBy('bobot_diperoleh', 'desc')
-                    ->orderBy('waktu_pengerjaan', 'asc');
+            ->orderBy('waktu_pengerjaan', 'asc');
     }
 
     /**
@@ -89,7 +89,7 @@ class HasilUjian extends Model
      */
     public function getPersentaseSkorAttribute()
     {
-        return $this->skor . '%';
+        return $this->skor.'%';
     }
 
     /**
@@ -99,8 +99,8 @@ class HasilUjian extends Model
     {
         $menit = floor($this->waktu_pengerjaan);
         $detik = round(($this->waktu_pengerjaan - $menit) * 60);
-        
-        return $menit . ' menit ' . $detik . ' detik';
+
+        return $menit.' menit '.$detik.' detik';
     }
 
     /**
@@ -110,6 +110,7 @@ class HasilUjian extends Model
     public function getStatusKelulusanAttribute()
     {
         $batasLulus = 60; // Batas kelulusan 60%
+
         return $this->skor >= $batasLulus ? 'Lulus' : 'Tidak Lulus';
     }
 
@@ -119,12 +120,12 @@ class HasilUjian extends Model
     public function getRanking()
     {
         return self::where('quiz_id', $this->quiz_id)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('bobot_diperoleh', '>', $this->bobot_diperoleh)
-                      ->orWhere(function($subQuery) {
-                          $subQuery->where('bobot_diperoleh', '=', $this->bobot_diperoleh)
-                                   ->where('waktu_pengerjaan', '<', $this->waktu_pengerjaan);
-                      });
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('bobot_diperoleh', '=', $this->bobot_diperoleh)
+                            ->where('waktu_pengerjaan', '<', $this->waktu_pengerjaan);
+                    });
             })
             ->count() + 1;
     }

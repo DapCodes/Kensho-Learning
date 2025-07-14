@@ -687,8 +687,9 @@
                     const allQuestions = document.querySelectorAll('[name*="[text]"]');
                     allQuestions.forEach((question, index) => {
                         const questionNumber = index + 1;
-                        const typeSelect = document.getElementById(`question-type-${questionNumber}`);
-                        
+                        const typeSelect = document.getElementById(
+                            `question-type-${questionNumber}`);
+
                         if (typeSelect && typeSelect.value === 'checkbox') {
                             debugCheckboxData(questionNumber);
                         }

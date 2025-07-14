@@ -10,9 +10,10 @@ use Lab404\Impersonate\Models\Impersonate;
 
 class User extends Authenticatable
 {
-    use Impersonate;
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+    use Impersonate;
 
     /**
      * The attributes that are mass assignable.
@@ -64,7 +65,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
+
     public function canImpersonate()
     {
         return in_array($this->isAdmin, ['1', '2']);
@@ -74,5 +75,4 @@ class User extends Authenticatable
     {
         return true;
     }
-
 }

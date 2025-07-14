@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ImpersonateController extends Controller
 {
@@ -14,6 +14,7 @@ class ImpersonateController extends Controller
 
         if ($admin->canImpersonate() && $user->canBeImpersonated()) {
             $admin->impersonate($user);
+
             return redirect('/dasbor'); // Ganti dengan route tujuan setelah impersonate
         }
 
@@ -23,6 +24,7 @@ class ImpersonateController extends Controller
     public function leave()
     {
         Auth::user()->leaveImpersonation();
+
         return redirect('/admin/users'); // Ganti dengan halaman admin
     }
 }

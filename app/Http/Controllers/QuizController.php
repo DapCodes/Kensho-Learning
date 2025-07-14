@@ -20,15 +20,15 @@ class QuizController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->isAdmin === 1) {
+        if ($user->isAdmin === '1') {
             $quizzes = Quiz::with(['user', 'soals'])
-            ->where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc')
-            ->get();
+                ->where('user_id', auth()->id())
+                ->orderBy('created_at', 'desc')
+                ->get();
         } else {
             $quizzes = Quiz::with('soals')
-            ->orderBy('created_at', 'desc')
-            ->get();
+                ->orderBy('created_at', 'desc')
+                ->get();
         }
 
         return view('backend.quiz.index', compact('quizzes'));
@@ -44,7 +44,6 @@ class QuizController extends Controller
 
         return redirect()->back()->with('success', 'Status aktivasi kuis berhasil diperbarui.');
     }
-
 
     public function create()
     {
@@ -232,10 +231,9 @@ class QuizController extends Controller
 
                         foreach ($optionLetters as $index => $letter) {
                             if (isset($checkboxOptions[$index])) {
-                                $soalData['pilihan_' . $letter] = $checkboxOptions[$index];
+                                $soalData['pilihan_'.$letter] = $checkboxOptions[$index];
                             }
                         }
-
 
                         // Store correct answers as comma-separated string
                         $correctAnswers = $questionData['checkbox_correct'];
@@ -452,36 +450,34 @@ class QuizController extends Controller
         }
     }
 
+    public function start($id)
+    {
+        $quiz = Quiz::with('soals')->findOrFail($id);
+        $startTime = now()->timestamp;
 
-public function start($id)
-{
-    $quiz = Quiz::with('soals')->findOrFail($id);
-    $startTime = now()->timestamp;
-
-    if ($quiz->status_aktivasi === 'non aktif') {
-        return redirect()->back()->with('error', 'Quiz sedang tidak dapat dikerjakan');
-    }
-
-    // Cek apakah pengulangan tidak diperbolehkan
-    if ($quiz->pengulangan_pekerjaan === 'Tidak') {
-        $sudahMengerjakan = HasilUjian::where('user_id', Auth::id())
-            ->where('quiz_id', $quiz->id)
-            ->exists();
-
-        if ($sudahMengerjakan) {
-            return redirect()->back()->with('error', 'Anda sudah mengerjakan quiz ini sebelumnya');
+        if ($quiz->status_aktivasi === 'non aktif') {
+            return redirect()->back()->with('error', 'Quiz sedang tidak dapat dikerjakan');
         }
+
+        // Cek apakah pengulangan tidak diperbolehkan
+        if ($quiz->pengulangan_pekerjaan === 'Tidak') {
+            $sudahMengerjakan = HasilUjian::where('user_id', Auth::id())
+                ->where('quiz_id', $quiz->id)
+                ->exists();
+
+            if ($sudahMengerjakan) {
+                return redirect()->back()->with('error', 'Anda sudah mengerjakan quiz ini sebelumnya');
+            }
+        }
+
+        return view('frontend.quiz_start', compact('quiz', 'startTime'));
     }
 
-    return view('frontend.quiz_start', compact('quiz', 'startTime'));
-}
-
-
-   public function submit(Request $request, $id)
+    public function submit(Request $request, $id)
     {
         $quiz = Quiz::with('soals')->findOrFail($id);
         $soals = $quiz->soals;
-        
+
         // Initialize scoring variables
         $totalBobot = 0;
         $bobotBenar = 0;
@@ -498,7 +494,7 @@ public function start($id)
 
             switch ($soal->tipe) {
                 case 'pilihan_ganda':
-                    $jawabanUser = $request->input('jawaban_' . $soal->id);
+                    $jawabanUser = $request->input('jawaban_'.$soal->id);
                     if ($jawabanUser === $soal->jawaban_benar) {
                         $bobotDiperoleh = $soal->bobot;
                         $bobotBenar += $soal->bobot;
@@ -511,7 +507,7 @@ public function start($id)
                     break;
 
                 case 'benar_salah':
-                    $jawabanUser = $request->input('jawaban_' . $soal->id);
+                    $jawabanUser = $request->input('jawaban_'.$soal->id);
                     if ($jawabanUser === $soal->jawaban_benar) {
                         $bobotDiperoleh = $soal->bobot;
                         $bobotBenar += $soal->bobot;
@@ -523,52 +519,50 @@ public function start($id)
                     }
                     break;
 
-                    case 'checkbox':
-                        $jawabanUserArray = $request->input('jawaban_' . $soal->id, []);
-                        $jawabanUser = is_array($jawabanUserArray) ? implode(',', $jawabanUserArray) : '';
+                case 'checkbox':
+                    $jawabanUserArray = $request->input('jawaban_'.$soal->id, []);
+                    $jawabanUser = is_array($jawabanUserArray) ? implode(',', $jawabanUserArray) : '';
 
-                        // Casting string semua agar cocok saat dibanding
-                        $correctAnswers = array_map('strval', explode(',', $soal->jawaban_benar));
-                        $userAnswers = array_map('strval', $jawabanUserArray);
+                    // Casting string semua agar cocok saat dibanding
+                    $correctAnswers = array_map('strval', explode(',', $soal->jawaban_benar));
+                    $userAnswers = array_map('strval', $jawabanUserArray);
 
-                        // Jawaban benar & salah
-                        $jawabanBenarDipilih = array_intersect($correctAnswers, $userAnswers);
-                        $jawabanSalahDipilih = array_diff($userAnswers, $correctAnswers);
+                    // Jawaban benar & salah
+                    $jawabanBenarDipilih = array_intersect($correctAnswers, $userAnswers);
+                    $jawabanSalahDipilih = array_diff($userAnswers, $correctAnswers);
 
-                        $jumlahBenarDipilih = count($jawabanBenarDipilih);
-                        $jumlahSalahDipilih = count($jawabanSalahDipilih);
-                        $totalJawabanBenar = count($correctAnswers);
+                    $jumlahBenarDipilih = count($jawabanBenarDipilih);
+                    $jumlahSalahDipilih = count($jawabanSalahDipilih);
+                    $totalJawabanBenar = count($correctAnswers);
 
-                        if ($totalJawabanBenar > 0) {
-                            $bobotPerJawaban = $soal->bobot / $totalJawabanBenar;
+                    if ($totalJawabanBenar > 0) {
+                        $bobotPerJawaban = $soal->bobot / $totalJawabanBenar;
 
-                            // Hitung nilai akhir (penalti = 50% dari nilai benar)
-                            $nilaiBenar = $jumlahBenarDipilih * $bobotPerJawaban;
-                            $penalti = $jumlahSalahDipilih * ($bobotPerJawaban / 2);
-                            $bobotDiperoleh = max(0, $nilaiBenar - $penalti);
+                        // Hitung nilai akhir (penalti = 50% dari nilai benar)
+                        $nilaiBenar = $jumlahBenarDipilih * $bobotPerJawaban;
+                        $penalti = $jumlahSalahDipilih * ($bobotPerJawaban / 2);
+                        $bobotDiperoleh = max(0, $nilaiBenar - $penalti);
 
-                            $bobotBenar += $bobotDiperoleh;
+                        $bobotBenar += $bobotDiperoleh;
 
-                            // Status
-                            if ($jumlahBenarDipilih === $totalJawabanBenar && $jumlahSalahDipilih === 0) {
-                                $jawabanBenar++;
-                                $statusJawaban = 'benar';
-                            } elseif ($bobotDiperoleh > 0) {
-                                $statusJawaban = 'sebagian';
-                            } else {
-                                $jumlahSalah++;
-                                $statusJawaban = 'salah';
-                            }
+                        // Status
+                        if ($jumlahBenarDipilih === $totalJawabanBenar && $jumlahSalahDipilih === 0) {
+                            $jawabanBenar++;
+                            $statusJawaban = 'benar';
+                        } elseif ($bobotDiperoleh > 0) {
+                            $statusJawaban = 'sebagian';
                         } else {
                             $jumlahSalah++;
                             $statusJawaban = 'salah';
                         }
-                        break;
-
-
+                    } else {
+                        $jumlahSalah++;
+                        $statusJawaban = 'salah';
+                    }
+                    break;
 
                 case 'essay':
-                    $jawabanUser = $request->input('jawaban_' . $soal->id);
+                    $jawabanUser = $request->input('jawaban_'.$soal->id);
                     $statusJawaban = 'pending';
                     $bobotDiperoleh = 0;
                     // Essay tidak dihitung dalam jawaban benar/salah sampai dinilai manual
@@ -617,20 +611,19 @@ public function start($id)
                 'tanggal_ujian' => Carbon::now()->toDateString(),
             ]);
 
-            // If quiz is public, delete old details and insert new ones
-            if ($quiz->status === 'Umum') {
-                $hasil->detail()->delete();
+            // PERBAIKAN: Hapus detail lama dan masukkan yang baru untuk SEMUA quiz
+            // (tidak hanya quiz umum)
+            $hasil->detail()->delete();
 
-                foreach ($detailJawaban as $detail) {
-                    HasilUjianDetail::create([
-                        'hasil_ujian_id' => $hasil->id,
-                        'soal_id' => $detail['soal_id'],
-                        'jawaban_peserta' => $detail['jawaban_peserta'],
-                        'status_jawaban' => $detail['status_jawaban'],
-                        'bobot_soal' => $detail['bobot_soal'],
-                        'bobot_diperoleh' => $detail['bobot_diperoleh'],
-                    ]);
-                }
+            foreach ($detailJawaban as $detail) {
+                HasilUjianDetail::create([
+                    'hasil_ujian_id' => $hasil->id,
+                    'soal_id' => $detail['soal_id'],
+                    'jawaban_peserta' => $detail['jawaban_peserta'],
+                    'status_jawaban' => $detail['status_jawaban'],
+                    'bobot_soal' => $detail['bobot_soal'],
+                    'bobot_diperoleh' => $detail['bobot_diperoleh'],
+                ]);
             }
         } else {
             // Create new result
@@ -646,23 +639,22 @@ public function start($id)
                 'tanggal_ujian' => Carbon::now()->toDateString(),
             ]);
 
-            // If quiz is public, insert answer details
-            if ($quiz->status === 'Umum') {
-                foreach ($detailJawaban as $detail) {
-                    HasilUjianDetail::create([
-                        'hasil_ujian_id' => $hasil->id,
-                        'soal_id' => $detail['soal_id'],
-                        'jawaban_peserta' => $detail['jawaban_peserta'],
-                        'status_jawaban' => $detail['status_jawaban'],
-                        'bobot_soal' => $detail['bobot_soal'],
-                        'bobot_diperoleh' => $detail['bobot_diperoleh'],
-                    ]);
-                }
+            // PERBAIKAN: Masukkan detail jawaban untuk SEMUA quiz
+            // (tidak hanya quiz umum)
+            foreach ($detailJawaban as $detail) {
+                HasilUjianDetail::create([
+                    'hasil_ujian_id' => $hasil->id,
+                    'soal_id' => $detail['soal_id'],
+                    'jawaban_peserta' => $detail['jawaban_peserta'],
+                    'status_jawaban' => $detail['status_jawaban'],
+                    'bobot_soal' => $detail['bobot_soal'],
+                    'bobot_diperoleh' => $detail['bobot_diperoleh'],
+                ]);
             }
         }
 
         return redirect()->route('quiz.hasil', $hasil->id)
-            ->with('success', 'Quiz berhasil disubmit. Skor Anda: ' . $skor . ' (Bobot: ' . round($bobotBenar, 2) . '/' . $totalBobot . ')');
+            ->with('success', 'Quiz berhasil disubmit. Skor Anda: '.$skor.' (Bobot: '.round($bobotBenar, 2).'/'.$totalBobot.')');
     }
 
     public function hasil($id)
@@ -672,11 +664,11 @@ public function start($id)
 
         // Calculate ranking based on weighted score
         $ranking = HasilUjian::where('quiz_id', $hasil->quiz_id)
-            ->where(function($query) use ($hasil) {
+            ->where(function ($query) use ($hasil) {
                 $query->where('bobot_diperoleh', '>', $hasil->bobot_diperoleh)
-                    ->orWhere(function($subQuery) use ($hasil) {
+                    ->orWhere(function ($subQuery) use ($hasil) {
                         $subQuery->where('bobot_diperoleh', '=', $hasil->bobot_diperoleh)
-                                ->where('waktu_pengerjaan', '<', $hasil->waktu_pengerjaan);
+                            ->where('waktu_pengerjaan', '<', $hasil->waktu_pengerjaan);
                     });
             })
             ->count() + 1;
@@ -705,10 +697,7 @@ public function start($id)
             'ranking',
             'total_peserta',
             'top_performers',
-            'hasil_detail'
+            'hasil_detail',
         ));
     }
-
-
 }
-
