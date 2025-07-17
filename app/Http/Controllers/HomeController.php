@@ -24,7 +24,7 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->isAdmin == 1) {
+        if ($user->isAdmin == '1' || $user->isAdmin == '2') {
             return redirect('admin');
         } else {
             return redirect('/');

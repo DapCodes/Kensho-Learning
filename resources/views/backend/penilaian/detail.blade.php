@@ -3,12 +3,12 @@
     @include('layouts.components-backend.css')
     <div class="container-fluid">
         <!-- Header Section -->
-        <div class="card bg-gradient-success shadow-sm position-relative overflow-hidden mb-5 border-0">
+        <div class="card bg-gradient-primary shadow-sm position-relative overflow-hidden mb-5 border-0">
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Hasil Ujian</h3>
-                        <p class="text-white-75 mb-3">Lihat hasil ujian dan posisi peringkat Anda</p>
+                        <h3 class="fw-bold mb-3 text-white">Hasil Ujian, {{ $hasil->user->name }}</h3>
+                        <p class="text-white-75 mb-3">Lihat hasil ujian {{ $hasil->user->name }}</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
                                 <li class="breadcrumb-item">
@@ -204,7 +204,7 @@
                                         <td>
                                             {{ $performer->user->name }}
                                             @if ($performer->id == $hasil->id)
-                                                <small class="text-success fw-bold">(Anda)</small>
+                                                <small class="text-success fw-bold">(user)</small>
                                             @endif
                                         </td>
                                         <td><span class="badge bg-primary">{{ $performer->skor }}</span></td>
@@ -783,7 +783,7 @@
         <!-- Action Buttons -->
         <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
             <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-secondary">
-                <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar Quiz
+                <i class="ti ti-arrow-left me-2"></i>Kembali ke Data Penilaian
             </a>
             <div class="d-flex gap-2">
                 <a href="{{ route('penilaian.detail', ['id' => $hasil->id, 'export' => 'excel']) }}"
@@ -959,4 +959,5 @@
             }
         }
     </style>
+    @include('layouts.components-backend.css')
 @endsection

@@ -127,12 +127,12 @@
                         </div>
                         <div class="col-md-6 text-md-end mt-3 mt-md-0">
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-success btn-lg px-4" onclick="exportToExcel()">
+                                <a href="{{ route('hasil-ujian.export-excel') }}" class="btn btn-success btn-lg px-4">
                                     <i class="ti ti-file-spreadsheet me-2"></i>Export Excel
-                                </button>
-                                <button type="button" class="btn btn-danger btn-lg px-4" onclick="exportToPDF()">
+                                </a>
+                                <a href="{{ route('hasil-ujian.export-pdf') }}" class="btn btn-danger btn-lg px-4">
                                     <i class="ti ti-file-type-pdf me-2"></i>Export PDF
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -63,8 +63,9 @@ https://templatemo.com/tm-586-scholar
                         <ul class="nav">
                             <li class="scroll-to-section"><a href="#top" class="active">Beranda</a></li>
                             <li class="scroll-to-section"><a href="#services">Layanan</a></li>
-                            <li class="scroll-to-section"><a href="#tentang">Tentang</a></li>
+                            <li class="scroll-to-section"><a href="#about">Tentang</a></li>
                             <li class="scroll-to-section"><a href="#team">Testimoni</a></li>
+
                             @guest
                                 @if (Route::has('login'))
                                     <li class="scroll-to-section">
@@ -91,7 +92,7 @@ https://templatemo.com/tm-586-scholar
     </header>
     <!-- ***** Header Area End ***** -->
 
-    <div class="main-banner" id="tentang">
+    <div class="main-banner" id="top">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -220,7 +221,7 @@ https://templatemo.com/tm-586-scholar
         </div>
     </div>
 
-    <div class="section about-us">
+    <div class="section about-us" id="about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 offset-lg-1">
@@ -307,101 +308,77 @@ https://templatemo.com/tm-586-scholar
     </div>
 
 
-    <div class="section testimonials">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-7">
-                    <div class="owl-carousel owl-testimonials">
-                        <div class="item">
-                            <p>“Please tell your friends or collegues about TemplateMo website. Anyone can access the
-                                website to download free templates. Thank you for visiting.”</p>
-                            <div class="author">
-                                <img src="{{ asset('assets/frontend/images/testimonial-author.jpg') }}"
-                                    alt="">
-                                <span class="category">Full Stack Master</span>
-                                <h4>Claude David</h4>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <p>“Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravid.”
-                            </p>
-                            <div class="author">
-                                <img src="{{ asset('assets/frontend/images/testimonial-author.jpg') }}"
-                                    alt="">
-                                <span class="category">UI Expert</span>
-                                <h4>Thomas Jefferson</h4>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <p>“Scholar is free website template provided by TemplateMo for educational related
-                                websites. This CSS layout is based on Bootstrap v5.3.0 framework.”</p>
-                            <div class="author">
-                                <img src="{{ asset('assets/frontend/images/testimonial-author.jpg') }}"
-                                    alt="">
-                                <span class="category">Digital Animator</span>
-                                <h4>Stella Blair</h4>
-                            </div>
+    <div class="section testimonials cbt-theme" id="team">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="owl-carousel owl-testimonials">
+                    @foreach ($pesans as $pesan)
+                    <div class="item">
+                        <p>“{{ $pesan->pesan }}”</p>
+                        <div class="author">
+                            <img src="{{ asset('assets/frontend/images/testimonial-author.jpg') }}" alt="">
+                            <span class="category">Peserta</span>
+                            <h4>{{ $pesan->nama_pengirim }}</h4>
                         </div>
                     </div>
+                    @endforeach
                 </div>
-                <div class="col-lg-5 align-self-center">
-                    <div class="section-heading">
-                        <h6>TESTIMONIALS</h6>
-                        <h2>What they say about us?</h2>
-                        <p>You can search free CSS templates on Google using different keywords such as templatemo
-                            portfolio, templatemo gallery, templatemo blue color, etc.</p>
-                    </div>
+            </div>
+            <div class="col-lg-5 align-self-center">
+                <div class="section-heading">
+                    <h6>SISTEM CBT</h6>
+                    <h2>Apa kata mereka tentang platform CBT kami?</h2>
+                    <p>Platform Computer‑Based Test (CBT) kami memudahkan penyelenggaraan ujian online yang aman, cepat, dan interaktif bagi peserta di mana saja.</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="contact-us section" id="contact">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6  align-self-center">
-                    <div class="section-heading">
-                        <h6>Contact Us</h6>
-                        <h2>Feel free to contact us anytime</h2>
-                        <p>Thank you for choosing our templates. We provide you best CSS templates at absolutely 100%
-                            free of charge. You may support us by sharing our website to your friends.</p>
-                    </div>
+<div class="contact-us section cbt-theme" id="contact">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 align-self-center">
+                <div class="section-heading">
+                    <h6>Dukungan</h6>
+                    <h2>Ingin kesan untuk aplikasi kami?</h2>
+                    <p>Kami terbuka dengan kritik, saran maupun pujian dari anda, kenyamanan anda adalah tanggung jawab kami! Jangan ragu untuk menyampaikan semuanya</p>
                 </div>
-                <div class="col-lg-6">
-                    <div class="contact-us-content">
-                        <form id="contact-form" action="" method="post">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <fieldset>
-                                        <input type="name" name="name" id="name"
-                                            placeholder="Your Name..." autocomplete="on" required>
-                                    </fieldset>
-                                </div>
-                                <div class="col-lg-12">
-                                    <fieldset>
-                                        <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*"
-                                            placeholder="Your E-mail..." required="">
-                                    </fieldset>
-                                </div>
-                                <div class="col-lg-12">
-                                    <fieldset>
-                                        <textarea name="message" id="message" placeholder="Your Message"></textarea>
-                                    </fieldset>
-                                </div>
-                                <div class="col-lg-12">
-                                    <fieldset>
-                                        <button type="submit" id="form-submit" class="orange-button">Send Message
-                                            Now</button>
-                                    </fieldset>
-                                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="contact-us-content">
+                    <form id="contact-form" action="{{ route('pesan.store') }}" method="post">
+                        @csrf
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="text" name="nama_pengirim" id="name" placeholder="Nama Anda..." autocomplete="on" required>
+                                </fieldset>
                             </div>
-                        </form>
-                    </div>
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <input type="email" name="email_pengirim" id="email" placeholder="Email Anda..." required>
+                                </fieldset>
+                            </div>
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <textarea name="pesan" id="message" placeholder="Pesan Anda"></textarea>
+                                </fieldset>
+                            </div>
+                            <div class="col-lg-12">
+                                <fieldset>
+                                    <button type="submit" id="form-submit" class="orange-button">Kirim Pesan Sekarang</button>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 
     <footer>
         <div class="container">
@@ -412,6 +389,46 @@ https://templatemo.com/tm-586-scholar
             </div>
         </div>
     </footer>
+
+<!-- Toast Notification (Success & Error) -->
+<div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+    @if (session('success'))
+        <div class="toast align-items-center text-white bg-success border-0 show mb-2" role="alert">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center">
+                    <i class="ti ti-check-circle me-2" style="font-size: 1.2rem;"></i>
+                    {{ session('success') }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="toast align-items-center text-white bg-danger border-0 show mb-2" role="alert">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center">
+                    <i class="ti ti-alert-triangle me-2" style="font-size: 1.2rem;"></i>
+                    {{ session('error') }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        toastElList.map(function (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, {
+                delay: 4000
+            })
+            toast.show()
+        })
+    });
+</script>
+
+
 
     <!-- Scripts -->
     <!-- Bootstrap core JavaScript -->

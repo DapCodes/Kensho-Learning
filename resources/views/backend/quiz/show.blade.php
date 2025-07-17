@@ -46,12 +46,12 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Informasi Quiz</h5>
                 <div class="d-flex gap-2">
+                    <a class="btn btn-info btn-sm" href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}" title="Export PDF">
+                        <i class="ti ti-file-text"></i>
+                    </a>
                     <a href="{{ route('quiz.edit', $quiz->id) }}" class="btn btn-warning btn-sm">
                         <i class="ti ti-edit me-1"></i>Edit Quiz
                     </a>
-                    <span class="badge {{ $quiz->status == 'published' ? 'bg-success' : 'bg-secondary' }} fs-6">
-                        {{ ucfirst($quiz->status) }}
-                    </span>
                 </div>
             </div>
             <div class="card-body">
@@ -62,6 +62,12 @@
                             <div class="mb-4">
                                 <h6 class="text-muted mb-2">Deskripsi:</h6>
                                 <p class="text-dark">{{ $quiz->deskripsi }}</p>
+                            </div>
+                        @endif
+                        @if ($quiz->mapel)
+                            <div class="mb-4">
+                                <h6 class="text-muted mb-2">Mata Pelajaran:</h6>
+                                <p class="text-dark">{{ $quiz->mapel->nama_mapel }}</p>
                             </div>
                         @endif
                     </div>
@@ -87,8 +93,18 @@
                                     <span class="text-muted">{{ $quiz->soals->count() }} pertanyaan</span>
                                 </div>
                             </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-warning rounded-circle me-3 d-flex justify-content-center align-items-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="ti ti-trophy text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Total Bobot</h6>
+                                    <span class="text-muted">{{ $quiz->soals->sum('bobot') }} poin</span>
+                                </div>
+                            </div>
                             <div class="d-flex align-items-center">
-                                <div class="bg-info rounded-circle me-3  d-flex justify-content-center align-items-center"
+                                <div class="bg-info rounded-circle me-3 d-flex justify-content-center align-items-center"
                                     style="width: 40px; height: 40px;">
                                     <i class="ti ti-calendar text-white"></i>
                                 </div>
@@ -103,80 +119,89 @@
             </div>
         </div>
 
+
+                    @php
+                        $questionTypes = [
+                            'pilihan_ganda' => ['label' => 'Pilihan Ganda', 'icon' => 'ti-list', 'color' => 'primary'],
+                            'essay' => ['label' => 'Essay', 'icon' => 'ti-file-text', 'color' => 'primary'],
+                            'benar_salah' => ['label' => 'Benar/Salah', 'icon' => 'ti-x', 'color' => 'primary'],
+                            'checkbox' => ['label' => 'Pilihan Ganda (Multiple)', 'icon' => 'ti-checkbox', 'color' => 'primary']
+                        ];
+                        
+                        $typeStats = $quiz->soals->groupBy('tipe_soal')->map(function($questions) {
+                            return $questions->count();
+                        });
+                    @endphp
+                
+
         <!-- Questions Section -->
         <div class="card border-0">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Daftar Soal Quiz</h5>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-primary">{{ $quiz->soals->count() }} Soal</span>
+                    <span class="badge bg-success">{{ $quiz->soals->sum('bobot') }} Poin</span>
+                </div>
             </div>
             <div class="card-body">
                 @if ($quiz->soals->count() > 0)
                     @foreach ($quiz->soals as $index => $soal)
-                        <div class="question-item card mb-4">
-                            <div class="card-header bg-light">
-                                <h6 class="card-title mb-0 text-primary">
-                                    <i class="ti ti-help-circle me-2"></i>Soal {{ $index + 1 }}
-                                </h6>
+                        @php
+                            $questionType = $soal->tipe;
+                            $typeConfig = $questionTypes[$questionType] ?? $questionTypes['pilihan_ganda'];
+                        @endphp
+                        
+                        <div class="question-item card mb-4" data-type="{{ $questionType }}">
+                            <div class="card-header bg-{{ $typeConfig['color'] }}-subtle d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0 text-{{ $typeConfig['color'] }}">
+                                        <i class="ti ti-help-circle me-2"></i>Soal {{ $index + 1 }}
+                                    </h6>
+                                    <small class="text-muted">
+                                        Tipe: {{ $typeConfig['label'] }} | Bobot: {{ $soal->bobot ?? 1 }} poin
+                                    </small>
+                                </div>
+                                <div class="question-type-icon">
+                                    <i class="ti {{ $typeConfig['icon'] }} text-{{ $typeConfig['color'] }} fs-4"></i>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="mb-4">
                                     <h6 class="text-dark mb-2">Pertanyaan:</h6>
-                                    <p class="text-dark fs-6 bg-light p-3 rounded">{{ $soal->pertanyaan }}</p>
-                                </div>
-
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <div
-                                            class="option-item d-flex align-items-center mb-2 p-2 rounded {{ $soal->jawaban_benar == 'A' ? 'bg-success-subtle border border-success' : 'bg-light' }}">
-                                            <span
-                                                class="badge {{ $soal->jawaban_benar == 'A' ? 'bg-success' : 'bg-secondary' }} me-3">A</span>
-                                            <span class="text-dark">{{ $soal->pilihan_a }}</span>
-                                            @if ($soal->jawaban_benar == 'A')
-                                                <i class="ti ti-check text-success ms-auto fs-5"></i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div
-                                            class="option-item d-flex align-items-center mb-2 p-2 rounded {{ $soal->jawaban_benar == 'B' ? 'bg-success-subtle border border-success' : 'bg-light' }}">
-                                            <span
-                                                class="badge {{ $soal->jawaban_benar == 'B' ? 'bg-success' : 'bg-secondary' }} me-3">B</span>
-                                            <span class="text-dark">{{ $soal->pilihan_b }}</span>
-                                            @if ($soal->jawaban_benar == 'B')
-                                                <i class="ti ti-check text-success ms-auto fs-5"></i>
-                                            @endif
-                                        </div>
+                                    <div class="question-text bg-light p-3 rounded">
+                                        {!! nl2br(e($soal->pertanyaan)) !!}
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <div
-                                            class="option-item d-flex align-items-center mb-2 p-2 rounded {{ $soal->jawaban_benar == 'C' ? 'bg-success-subtle border border-success' : 'bg-light' }}">
-                                            <span
-                                                class="badge {{ $soal->jawaban_benar == 'C' ? 'bg-success' : 'bg-secondary' }} me-3">C</span>
-                                            <span class="text-dark">{{ $soal->pilihan_c }}</span>
-                                            @if ($soal->jawaban_benar == 'C')
-                                                <i class="ti ti-check text-success ms-auto fs-5"></i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div
-                                            class="option-item d-flex align-items-center mb-2 p-2 rounded {{ $soal->jawaban_benar == 'D' ? 'bg-success-subtle border border-success' : 'bg-light' }}">
-                                            <span
-                                                class="badge {{ $soal->jawaban_benar == 'D' ? 'bg-success' : 'bg-secondary' }} me-3">D</span>
-                                            <span class="text-dark">{{ $soal->pilihan_d }}</span>
-                                            @if ($soal->jawaban_benar == 'D')
-                                                <i class="ti ti-check text-success ms-auto fs-5"></i>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
+                                @switch($questionType)
+                                    @case('pilihan_ganda')
+                                        @include('backend.quiz.partials.pilihan-ganda', ['soal' => $soal])
+                                        @break
+                                    @case('essay')
+                                        @include('backend.quiz.partials.essay', ['soal' => $soal])
+                                        @break
+                                    @case('benar_salah')
+                                        @include('backend.quiz.partials.benar-salah', ['soal' => $soal])
+                                        @break
+                                    @case('checkbox')
+                                        @include('backend.quiz.partials.checkbox', ['soal' => $soal])
+                                        @break
+                                    @default
+                                        @include('backend.quiz.partials.pilihan-ganda', ['soal' => $soal])
+                                @endswitch
 
-                                <div class="text-end">
+                                <div class="text-end mt-3">
                                     <small class="text-muted">
                                         <i class="ti ti-check-circle text-success me-1"></i>
-                                        Jawaban benar: <strong>{{ $soal->jawaban_benar }}</strong>
+                                        Tipe: {{ $typeConfig['label'] }}
+                                        @if($questionType !== 'essay')
+                                            | Jawaban: 
+                                            @if($questionType === 'checkbox')
+                                                <span class="text-success">Multiple</span>
+                                            @else
+                                                <strong class="text-success">{{ $soal->jawaban_benar }}</strong>
+                                            @endif
+                                        @endif
                                     </small>
                                 </div>
                             </div>
@@ -203,6 +228,9 @@
                 <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar Quiz
             </a>
             <div class="d-flex gap-2">
+                <a href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}" class="btn btn-danger" target="_blank">
+                    <i class="ti ti-file-download me-2"></i>Cetak PDF
+                </a>
                 <a href="{{ route('quiz.edit', $quiz->id) }}" class="btn btn-warning">
                     <i class="ti ti-edit me-2"></i>Edit Quiz
                 </a>
@@ -224,121 +252,33 @@
                 item.classList.add('fade-in');
             });
         });
+
+        function shareQuiz() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ $quiz->judul_quiz }}',
+                    text: 'Ikuti quiz: {{ $quiz->judul_quiz }}',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback untuk browser yang tidak mendukung Web Share API
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Link quiz telah disalin ke clipboard!');
+                }).catch(() => {
+                    // Jika clipboard API tidak didukung, gunakan metode lama
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert('Link quiz telah disalin ke clipboard!');
+                });
+            }
+        }
     </script>
 
-    <style>
-        .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            border: 1px solid rgba(0, 0, 0, 0.125);
-        }
+    @include('layouts.components-backend.css')
 
-        .question-item {
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.6s ease forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .question-item.fade-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .question-item:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .option-item {
-            transition: all 0.2s ease;
-        }
-
-        .option-item:hover {
-            transform: translateX(5px);
-        }
-
-        .bg-success-subtle {
-            background-color: rgba(25, 135, 84, 0.1) !important;
-        }
-
-        .btn-warning {
-            background-color: #ffc107;
-            border-color: #ffc107;
-            color: #000;
-        }
-
-        .btn-warning:hover {
-            background-color: #ffb300;
-            border-color: #ffb300;
-            color: #000;
-        }
-
-        .btn-success {
-            background-color: #198754;
-            border-color: #198754;
-        }
-
-        .btn-outline-secondary {
-            color: #6c757d;
-            border-color: #6c757d;
-        }
-
-        .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            border-color: #6c757d;
-            color: #fff;
-        }
-
-        .badge {
-            font-size: 0.875em;
-        }
-
-        .text-primary {
-            color: #0d6efd !important;
-        }
-
-        .bg-light {
-            background-color: #f8f9fa !important;
-        }
-
-        .rounded {
-            border-radius: 0.375rem !important;
-        }
-
-        .fs-6 {
-            font-size: 1rem !important;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Icon styles */
-        .ti {
-            font-size: 1.2em;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .d-flex.gap-2 {
-                flex-direction: column;
-            }
-
-            .d-flex.gap-2 .btn {
-                margin-bottom: 0.5rem;
-            }
-
-            .col-md-6 .option-item {
-                margin-bottom: 1rem;
-            }
-        }
-    </style>
 @endsection

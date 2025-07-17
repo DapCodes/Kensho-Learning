@@ -68,7 +68,7 @@
                                         <div class="ms-3">
                                             <h5 class="mb-1 fs-3">{{ Auth::user()->name }}</h5>
                                             <span
-                                                class="mb-1 d-block">{{ Auth::user()->isAdmin == 1 ? 'admin' : '' }}</span>
+                                                class="mb-1 d-block">{{ Auth::user()->isAdmin == '1' ? 'admin' : '' }}</span>
                                             <p class="mb-0 d-flex align-items-center gap-2">
                                                 <i class="ti ti-mail fs-4"></i> {{ Auth::user()->email }}
                                             </p>

@@ -6,8 +6,8 @@ use App\Exports\DataNilaiExport;
 use App\Exports\DataPengerjaanSiswaExport;
 use App\Models\HasilUjian;
 use App\Models\HasilUjianDetail;
+use App\Models\Quiz;
 use Barryvdh\DomPDF\Facade\Pdf;
-// Tambahkan import ini di bagian atas controller
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -66,7 +66,7 @@ class PenilaianController extends Controller
 
         $request->validate([
             'grades' => 'required|array',
-            'grades.*' => 'required|numeric|min:0', // Sudah benar, min:0 membolehkan nilai 0
+            'grades.*' => 'required|numeric|min:0',
         ]);
 
         DB::beginTransaction();
@@ -104,7 +104,6 @@ class PenilaianController extends Controller
                             $statusJawaban = 'sebagian'; // untuk nilai parsial
                         }
                     }
-                    // Note: Jika $finalGrade == 0, statusJawaban tetap 'salah' (sudah benar)
 
                     // Update detail
                     $detail->update([
@@ -200,35 +199,79 @@ class PenilaianController extends Controller
     }
 
     /**
-     * Show data nilai page
+     * Show data nilai page with quiz filter
      */
     public function dataNilai(Request $request)
     {
         $exportType = $request->input('export');
+        $quizFilter = $request->input('quiz_filter');
 
-        // Ambil semua hasil ujian dari quiz yang dibuat oleh user saat ini
-        $hasilUjians = HasilUjian::with(['user', 'quiz'])
-            ->whereHas('quiz', function ($query) {
+        // Base query untuk quiz yang dibuat oleh user saat ini
+        $quizQuery = Quiz::where('user_id', Auth::id());
+
+        // Query untuk hasil ujian dengan filter
+        $hasilUjianQuery = HasilUjian::with(['user', 'quiz.mataPelajaran'])
+            ->whereHas('quiz', function ($query) use ($quizFilter) {
                 $query->where('user_id', Auth::id());
+
+                // Apply quiz filter if provided
+                if ($quizFilter && $quizFilter !== 'all') {
+                    $query->where('id', $quizFilter);
+                }
             })
-            ->orderBy('tanggal_ujian', 'desc')
+            ->orderBy('tanggal_ujian', 'desc');
+
+        // Get filtered results
+        $hasilUjians = $hasilUjianQuery->get();
+
+        // Get list of quizzes for dropdown filter
+        $quizzes = $quizQuery->select('id', 'judul_quiz', 'kode_quiz')
+            ->orderBy('judul_quiz')
             ->get();
 
         // Export jika diminta
         if ($exportType === 'excel') {
+            $fileName = 'laporan-data-nilai-peserta';
+
+            // Add quiz name to filename if filtered
+            if ($quizFilter && $quizFilter !== 'all') {
+                $selectedQuiz = $quizzes->firstWhere('id', $quizFilter);
+                if ($selectedQuiz) {
+                    $fileName .= '-'.\Str::slug($selectedQuiz->judul_quiz);
+                }
+            }
+
+            $fileName .= '-'.date('Y-m-d').'.xlsx';
+
             return Excel::download(
-                new DataNilaiExport($hasilUjians),
-                'laporan-data-nilai-peserta.xlsx'
+                new DataNilaiExport($hasilUjians, $quizFilter),
+                $fileName
             );
         }
 
         if ($exportType === 'pdf') {
-            $pdf = Pdf::loadView('pdf.dataNilai', ['hasilUjians' => $hasilUjians]);
+            $fileName = 'laporan-data-nilai-peserta';
 
-            return $pdf->download('laporan-data-nilai-peserta.pdf');
+            // Add quiz name to filename if filtered
+            if ($quizFilter && $quizFilter !== 'all') {
+                $selectedQuiz = $quizzes->firstWhere('id', $quizFilter);
+                if ($selectedQuiz) {
+                    $fileName .= '-'.\Str::slug($selectedQuiz->judul_quiz);
+                }
+            }
+
+            $fileName .= '-'.date('Y-m-d').'.pdf';
+
+            $pdf = Pdf::loadView('pdf.dataNilai', [
+                'hasilUjians' => $hasilUjians,
+                'quizFilter' => $quizFilter,
+                'selectedQuiz' => $quizFilter && $quizFilter !== 'all' ? $quizzes->firstWhere('id', $quizFilter) : null,
+            ]);
+
+            return $pdf->download($fileName);
         }
 
-        return view('backend.penilaian.data_nilai', compact('hasilUjians'));
+        return view('backend.penilaian.data_nilai', compact('hasilUjians', 'quizzes', 'quizFilter'));
     }
 
     /**
@@ -248,7 +291,7 @@ class PenilaianController extends Controller
         // Export jika diminta
         if ($exportType === 'excel') {
             $fileName = 'Pengerjaan_'.str_replace(' ', '_', $hasil->user->name).'_'.
-                    str_replace(' ', '_', $hasil->quiz->judul).'_'.
+                    str_replace(' ', '_', $hasil->quiz->judul_quiz).'_'.
                     date('Y-m-d_H-i-s').'.xlsx';
 
             return Excel::download(new DataPengerjaanSiswaExport($id), $fileName);
@@ -256,7 +299,7 @@ class PenilaianController extends Controller
 
         if ($exportType === 'pdf') {
             $fileName = 'Pengerjaan_'.str_replace(' ', '_', $hasil->user->name).'_'.
-                    str_replace(' ', '_', $hasil->quiz->judul).'_'.
+                    str_replace(' ', '_', $hasil->quiz->judul_quiz).'_'.
                     date('Y-m-d_H-i-s').'.pdf';
 
             $pdf = Pdf::loadView('pdf.detailPengerjaan', compact('hasil'));

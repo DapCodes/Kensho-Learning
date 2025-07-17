@@ -309,15 +309,19 @@
     </div>
 
     <!-- Enhanced Toast Messages -->
+     <!-- Enhanced Toast Messages -->
     @if (session('success'))
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-success text-white">
-                    <i class="ti ti-check-circle me-2"></i>
+        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
+            <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-success text-white border-0">
+                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
+                        style="width: 20px; height: 20px;">
+                        <i class="ti ti-check text-success" style="font-size: 12px;"></i>
+                    </div>
                     <strong class="me-auto">Berhasil</strong>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
                 </div>
-                <div class="toast-body">
+                <div class="toast-body bg-white">
                     {{ session('success') }}
                 </div>
             </div>
@@ -325,14 +329,17 @@
     @endif
 
     @if (session('error'))
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-danger text-white">
-                    <i class="ti ti-alert-circle me-2"></i>
+        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
+            <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger text-white border-0">
+                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
+                        style="width: 20px; height: 20px;">
+                        <i class="ti ti-x text-danger" style="font-size: 12px;"></i>
+                    </div>
                     <strong class="me-auto">Error</strong>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
                 </div>
-                <div class="toast-body">
+                <div class="toast-body bg-white">
                     {{ session('error') }}
                 </div>
             </div>
@@ -494,4 +501,5 @@
             }, 5000);
         });
     </script>
+    @include('layouts.components-backend.css')
 @endsection

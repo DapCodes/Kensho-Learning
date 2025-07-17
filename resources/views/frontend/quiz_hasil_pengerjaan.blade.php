@@ -104,9 +104,9 @@
                                 </div>
                                 <div>
                                     <h6 class="mb-0">Total Soal</h6>
-                                    <span
-                                        class="text-muted">{{ $hasil->quiz->status === 'Privat' ? '-' : $hasil->detail->count() }}
-                                        pertanyaan</span>
+                                    <span class="text-muted">
+                                        {{ $hasil->quiz->status === 'Privat' || !$hasil->detail ? '-' : $hasil->detail->count() . ' pertanyaan' }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -808,13 +808,6 @@
             <a href="{{ route('dasbor') }}" class="btn btn-outline-secondary">
                 <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar Quiz
             </a>
-            @if ($hasil->quiz->status === 'Umum')
-                <div class="d-flex gap-2">
-                    <button class="btn btn-success" onclick="printResult()">
-                        <i class="ti ti-printer me-2"></i>Cetak Hasil
-                    </button>
-                </div>
-            @endif
         </div>
     </div>
 

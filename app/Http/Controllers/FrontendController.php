@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\HasilUjian;
 use App\Models\Kategori;
+use App\Models\MataPelajaran;
 use App\Models\Quiz;
 use Auth;
 use Illuminate\Http\Request;
@@ -12,21 +13,28 @@ class FrontendController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Quiz::where('status', 'Umum')
+        if (Auth::user()->isAdmin === '1' || Auth::user()->isAdmin === '2') {
+            return redirect()->route('admin.quiz-terbaru');
+        }
+
+        $query = Quiz::where('status', 'Umum')  // Perbaiki: gunakan 'Umum' bukan 'umum'
             ->where('status_aktivasi', 'aktif')
             ->orderBy('created_at', 'desc');
 
-        if ($request->filled('kategori_id')) {
-            $query->where('kategori_id', $request->kategori_id);
+        // Perbaiki: pastikan filter mata pelajaran diterapkan dengan benar
+        if ($request->filled('mata_pelajaran_id')) {
+            $query->where('mata_pelajaran_id', $request->mata_pelajaran_id); 
         }
 
         $quizzes = $query->get();
-        $kategori = Kategori::whereHas('quiz', function ($query) {
+        
+        // Perbaiki: konsistensi case sensitivity
+        $mataPelajaran = MataPelajaran::whereHas('quiz', function ($query) {
             $query->where('status_aktivasi', 'aktif')
-                ->where('status', 'umum');
+                ->where('status', 'Umum');  // Perbaiki: gunakan 'Umum' bukan 'umum'
         })->get();
 
-        return view('frontend.index', compact('quizzes', 'kategori'));
+        return view('frontend.index', compact('quizzes', 'mataPelajaran'));
     }
 
     public function checkKode(Request $request)

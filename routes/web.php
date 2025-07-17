@@ -6,6 +6,7 @@ use App\Http\Controllers\HasilUjianController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\PesanController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\QuizController;
@@ -14,9 +15,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\Admin;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PesanController::class, 'index']);
+Route::post('/kirim-pesan', [PesanController::class, 'store'])->name('pesan.store');
+
 
 Auth::routes(['register' => false]);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -25,6 +26,9 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware(['auth'])->group(function () {
     Route::get('/dasbor', [FrontendController::class, 'index'])->name('dasbor');
     Route::get('/historiPengerjaan', [HasilUjianController::class, 'index'])->name('histori-pengerjaan');
+
+    Route::get('/hasil-ujian/export-excel', [HasilUjianController::class, 'exportExcel'])->name('hasil-ujian.export-excel');
+    Route::get('/hasil-ujian/export-pdf', [HasilUjianController::class, 'exportPDF'])->name('hasil-ujian.export-pdf');
 
     Route::get('/quiz/{id}/start', [QuizController::class, 'start'])->name('quiz.start');
     Route::post('/quiz/{id}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
@@ -87,5 +91,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', Admin::class]], func
         Route::post('/{id}/update-grade', [PenilaianController::class, 'updateGrade'])->name('updateGrade');
         Route::post('/bulk-grade', [PenilaianController::class, 'bulkGrade'])->name('bulkGrade');
     });
+
+    // routes/web.php
+    Route::delete('pesan/{pesan}', [PesanController::class, 'destroy'])
+        ->name('pesan.destroy');
+
 
 });

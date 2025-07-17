@@ -27,7 +27,7 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="{{ asset('/assets/backend/images/logos/favicon.png') }}" alt="loader"
+        <img src="{{ asset('../assets/backend/images/logos/favicon.png') }}" alt="loader"
             class="lds-ripple img-fluid" />
     </div>
 

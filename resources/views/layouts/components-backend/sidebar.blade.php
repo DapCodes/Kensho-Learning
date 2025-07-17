@@ -1,4 +1,4 @@
-<aside class="left-sidebar with-vertical">
+<aside class="left-sidebar with-vertical" style="z-index: 1000;">
     <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
             <a href="./main/index.html" class="text-nowrap logo-img">
@@ -25,8 +25,6 @@
                                 <span class="d-flex"><i class="ti ti-home"></i></span>
                                 <span class="hide-menu">Beranda</span>
                             </div>
-                            <span
-                                class="hide-menu badge rounded-pill border border-primary text-primary fs-2 py-1 px-2">★</span>
                         </a>
                     </li>
 

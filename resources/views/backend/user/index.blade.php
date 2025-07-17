@@ -93,6 +93,7 @@
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-user me-1"></i>Nama</th>
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-mail me-1"></i>Email</th>
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-shield me-1"></i>Role</th>
+                                    <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-shield me-1"></i>Kelas</th>
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-calendar me-1"></i>Dibuat
                                     </th>
                                     <th class="border-0 fw-bold text-dark py-3 text-center pe-4"><i
@@ -115,6 +116,10 @@
                                                 class="badge {{ $user->isAdmin ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary' }}">
                                                 {{ $user->isAdmin ? 'Admin' : 'User' }}
                                             </span>
+                                        </td>
+                                         <td class="py-4">
+                                             <h6 class="mb-0 fw-bold text-dark" title="{{ $user->name }}">
+                                                {{ $user->kelas->nama_kelas }}</h6>
                                         </td>
                                         <td class="py-4">
                                             <small class="text-muted"><i

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\QuizExport;
 use App\Models\HasilUjian;
 use App\Models\HasilUjianDetail;
 use App\Models\Kategori;
@@ -9,17 +10,19 @@ use App\Models\MataPelajaran;
 use App\Models\Quiz;
 use App\Models\Soal;
 use Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class QuizController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+
         if ($user->isAdmin === '1') {
             $quizzes = Quiz::with(['user', 'soals'])
                 ->where('user_id', auth()->id())
@@ -31,7 +34,34 @@ class QuizController extends Controller
                 ->get();
         }
 
+        // Handle export requests
+        if ($request->has('export') && $request->has('quiz_id')) {
+            $quizId = $request->get('quiz_id');
+            $quiz = Quiz::with('soals')->findOrFail($quizId);
+
+            // Check if user has permission to export this quiz
+            if ($user->isAdmin === '1' && $quiz->user_id !== auth()->id()) {
+                abort(403, 'Unauthorized to export this quiz');
+            }
+
+            $exportType = $request->get('export');
+
+            if ($exportType === 'excel') {
+                return Excel::download(new QuizExport($quiz), 'quiz_'.$quiz->kode_quiz.'.xlsx');
+            } elseif ($exportType === 'pdf') {
+                return $this->exportToPdf($quiz);
+            }
+        }
+
         return view('backend.quiz.index', compact('quizzes'));
+    }
+
+    private function exportToPdf($quiz)
+    {
+        $pdf = Pdf::loadView('backend.quiz.export-pdf', compact('quiz'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('quiz_'.$quiz->kode_quiz.'.pdf');
     }
 
     public function toggleAktivasi($id)
@@ -279,143 +309,270 @@ class QuizController extends Controller
 
     public function edit($id)
     {
-        try {
-            $quiz = Quiz::with(['soals', 'kategori'])->findOrFail($id);
+        $quiz = Quiz::with(['soals', 'kategori', 'mataPelajaran'])->findOrFail($id);
 
-            $categories = Kategori::all();
-            $mataPelajaran = MataPelajaran::all();
-
-            return view('backend.quiz.edit', compact('quiz', 'categories', 'mataPelajaran'));
-
-        } catch (\Exception $e) {
-            return redirect()->route('quiz.index')
-                ->with('error', 'Quiz tidak ditemukan atau terjadi kesalahan.');
+        // Validasi ownership
+        if ($quiz->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
         }
+
+        // Get categories and mata pelajaran
+        $categories = \App\Models\Kategori::all();
+        $mataPelajaran = \App\Models\MataPelajaran::all();
+
+        // Process soal data untuk JavaScript
+        $processedSoals = $quiz->soals               // Collection asli
+            ->values()                               // RESET key jadi 0,1,2,…
+            ->map(function ($soal) {
+                $soalData = $soal->toArray();
+
+                // Tambahan khusus tipe checkbox (kode Anda tadi)
+                if ($soal->tipe === 'checkbox') {
+                    $letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+                    $soalData['checkbox_options'] = collect($letters)
+                        ->map(fn ($l) => $soal->{'pilihan_'.$l})
+                        ->filter()
+                        ->values()
+                        ->toArray();
+
+                    $soalData['checkbox_correct'] = $soal->jawaban_benar
+                        ? explode(',', $soal->jawaban_benar)
+                        : [];
+                }
+
+                return $soalData;
+            })
+            ->toArray();
+
+        return view('backend.quiz.edit', compact(
+            'quiz', 'categories', 'mataPelajaran'
+        ))->with('processedSoals', $processedSoals);
+
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $quiz = Quiz::with('soals')->findOrFail($id);
+        $quiz = Quiz::with('soals')->findOrFail($id);
 
-            $validator = Validator::make($request->all(), [
-                'judul_quiz' => 'required|string|max:255',
-                'deskripsi' => 'nullable|string|max:1000',
-                'waktu_menit' => 'required|integer|min:1|max:300',
-                'status' => 'required|in:Privat,Umum',
-                'questions' => 'required|array|min:1|max:50',
-                'questions.*.pertanyaan' => 'required|string|max:1000',
-                'questions.*.pilihan_a' => 'required|string|max:255',
-                'questions.*.pilihan_b' => 'required|string|max:255',
-                'questions.*.pilihan_c' => 'required|string|max:255',
-                'questions.*.pilihan_d' => 'required|string|max:255',
-                'questions.*.jawaban_benar' => 'required|in:A,B,C,D',
-                'questions.*.id' => 'nullable|integer|exists:soals,id',
-            ], [
-                'judul_quiz.required' => 'Judul quiz wajib diisi.',
-                'judul_quiz.max' => 'Judul quiz tidak boleh lebih dari 255 karakter.',
-                'waktu_menit.required' => 'Durasi quiz wajib diisi.',
-                'waktu_menit.min' => 'Durasi quiz minimal 1 menit.',
-                'waktu_menit.max' => 'Durasi quiz maksimal 300 menit.',
-                'status.required' => 'Status quiz wajib dipilih.',
-                'status.in' => 'Status quiz harus Privat atau Umum.',
-                'questions.required' => 'Quiz harus memiliki minimal satu soal.',
-                'questions.min' => 'Quiz harus memiliki minimal satu soal.',
-                'questions.max' => 'Quiz maksimal memiliki 50 soal.',
-                'questions.*.pertanyaan.required' => 'Teks soal wajib diisi.',
-                'questions.*.pertanyaan.max' => 'Teks soal tidak boleh lebih dari 1000 karakter.',
-                'questions.*.pilihan_a.required' => 'Pilihan A wajib diisi.',
-                'questions.*.pilihan_b.required' => 'Pilihan B wajib diisi.',
-                'questions.*.pilihan_c.required' => 'Pilihan C wajib diisi.',
-                'questions.*.pilihan_d.required' => 'Pilihan D wajib diisi.',
-                'questions.*.jawaban_benar.required' => 'Jawaban benar wajib dipilih.',
-                'questions.*.jawaban_benar.in' => 'Jawaban benar harus A, B, C, atau D.',
-            ]);
+        // Validasi ownership
+        if ($quiz->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput()
-                    ->with('error', 'Terdapat kesalahan dalam pengisian form. Silakan periksa kembali.');
+        $validatedData = $request->validate([
+            'judul_quiz' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string|max:1000',
+            'status' => 'required|in:Privat,Umum',
+            'pengulangan' => 'required|in:Boleh,Tidak',
+            'waktu_menit' => 'required|integer|min:1|max:300',
+            'categories' => 'required|exists:kategoris,id',
+            'mapel' => 'required|exists:mata_pelajarans,id',
+            'questions' => 'required|array|min:1',
+            'questions.*.id' => 'nullable|exists:soals,id',
+            'questions.*.pertanyaan' => 'required|string|max:1000',
+            'questions.*.type' => 'required|in:pilihan_ganda,essay,benar_salah,checkbox',
+            'questions.*.weight' => 'required|integer|min:1|max:100',
+            // Multiple choice fields
+            'questions.*.pilihan_a' => 'nullable|string|max:255',
+            'questions.*.pilihan_b' => 'nullable|string|max:255',
+            'questions.*.pilihan_c' => 'nullable|string|max:255',
+            'questions.*.pilihan_d' => 'nullable|string|max:255',
+            'questions.*.pilihan_e' => 'nullable|string|max:255',
+            'questions.*.pilihan_f' => 'nullable|string|max:255',
+            'questions.*.pilihan_g' => 'nullable|string|max:255',
+            'questions.*.pilihan_h' => 'nullable|string|max:255',
+            'questions.*.pilihan_i' => 'nullable|string|max:255',
+            'questions.*.pilihan_j' => 'nullable|string|max:255',
+            'questions.*.jawaban_benar' => 'nullable|string',
+            // Checkbox fields
+            'questions.*.checkbox_options' => 'nullable|array',
+            'questions.*.checkbox_options.*' => 'nullable|string|max:255',
+            'questions.*.checkbox_correct' => 'nullable|array',
+        ], [
+            'judul_quiz.required' => 'Judul quiz wajib diisi.',
+            'judul_quiz.max' => 'Judul quiz maksimal 255 karakter.',
+            'deskripsi.max' => 'Deskripsi quiz maksimal 1000 karakter.',
+            'status.required' => 'Status visibilitas quiz wajib dipilih.',
+            'status.in' => 'Status visibilitas harus Privat atau Umum.',
+            'pengulangan.required' => 'Status pengulangan quiz wajib dipilih.',
+            'pengulangan.in' => 'Status pengulangan harus Boleh atau Tidak.',
+            'waktu_menit.required' => 'Durasi quiz wajib diisi.',
+            'waktu_menit.integer' => 'Durasi harus berupa angka.',
+            'waktu_menit.min' => 'Durasi minimal 1 menit.',
+            'waktu_menit.max' => 'Durasi maksimal 300 menit.',
+            'categories.required' => 'Kategori quiz wajib dipilih.',
+            'categories.exists' => 'Kategori yang dipilih tidak valid.',
+            'mapel.required' => 'Mata pelajaran quiz wajib dipilih.',
+            'mapel.exists' => 'Mata pelajaran yang dipilih tidak valid.',
+            'questions.required' => 'Soal quiz wajib diisi.',
+            'questions.min' => 'Minimal harus ada 1 soal.',
+            'questions.*.pertanyaan.required' => 'Teks soal wajib diisi.',
+            'questions.*.pertanyaan.max' => 'Teks soal maksimal 1000 karakter.',
+            'questions.*.type.required' => 'Tipe soal wajib dipilih.',
+            'questions.*.type.in' => 'Tipe soal tidak valid.',
+            'questions.*.weight.required' => 'Bobot soal wajib diisi.',
+            'questions.*.weight.integer' => 'Bobot soal harus berupa angka.',
+            'questions.*.weight.min' => 'Bobot soal minimal 1.',
+            'questions.*.weight.max' => 'Bobot soal maksimal 100.',
+            'questions.*.pilihan_a.max' => 'Pilihan A maksimal 255 karakter.',
+            'questions.*.pilihan_b.max' => 'Pilihan B maksimal 255 karakter.',
+            'questions.*.pilihan_c.max' => 'Pilihan C maksimal 255 karakter.',
+            'questions.*.pilihan_d.max' => 'Pilihan D maksimal 255 karakter.',
+            'questions.*.pilihan_e.max' => 'Pilihan E maksimal 255 karakter.',
+            'questions.*.pilihan_f.max' => 'Pilihan F maksimal 255 karakter.',
+            'questions.*.pilihan_g.max' => 'Pilihan G maksimal 255 karakter.',
+            'questions.*.pilihan_h.max' => 'Pilihan H maksimal 255 karakter.',
+            'questions.*.pilihan_i.max' => 'Pilihan I maksimal 255 karakter.',
+            'questions.*.pilihan_j.max' => 'Pilihan J maksimal 255 karakter.',
+            'questions.*.checkbox_options.*.max' => 'Opsi checkbox maksimal 255 karakter.',
+        ]);
+
+        // Custom validation for question types
+        foreach ($validatedData['questions'] as $index => $question) {
+            $questionType = $question['type'];
+            $questionIndex = $index + 1;
+
+            if ($questionType === 'pilihan_ganda') {
+                if (empty($question['pilihan_a']) || empty($question['pilihan_b']) ||
+                    empty($question['pilihan_c']) || empty($question['pilihan_d'])) {
+                    return back()->withErrors([
+                        'questions' => "Semua pilihan (A, B, C, D) wajib diisi untuk soal pilihan ganda nomor {$questionIndex}.",
+                    ])->withInput();
+                }
+                if (empty($question['jawaban_benar']) || ! in_array($question['jawaban_benar'], ['A', 'B', 'C', 'D'])) {
+                    return back()->withErrors([
+                        'questions' => "Jawaban benar wajib dipilih untuk soal pilihan ganda nomor {$questionIndex}.",
+                    ])->withInput();
+                }
+            } elseif ($questionType === 'benar_salah') {
+                if (empty($question['jawaban_benar']) || ! in_array($question['jawaban_benar'], ['Benar', 'Salah'])) {
+                    return back()->withErrors([
+                        'questions' => "Jawaban benar wajib dipilih untuk soal benar/salah nomor {$questionIndex}.",
+                    ])->withInput();
+                }
+            } elseif ($questionType === 'checkbox') {
+                if (empty($question['checkbox_options']) || count($question['checkbox_options']) < 2) {
+                    return back()->withErrors([
+                        'questions' => "Minimal 2 opsi wajib diisi untuk soal checkbox nomor {$questionIndex}.",
+                    ])->withInput();
+                }
+                if (empty($question['checkbox_correct']) || count($question['checkbox_correct']) < 1) {
+                    return back()->withErrors([
+                        'questions' => "Minimal 1 jawaban benar wajib dipilih untuk soal checkbox nomor {$questionIndex}.",
+                    ])->withInput();
+                }
             }
+        }
 
+        try {
             DB::beginTransaction();
 
-            try {
-                $quiz->update([
-                    'judul_quiz' => $request->judul_quiz,
-                    'deskripsi' => $request->deskripsi,
-                    'waktu_menit' => $request->waktu_menit,
-                    'status' => $request->status,
-                    'user_id' => $quiz->user_id,
-                    'kategori_id' => $request->categories,
-                    'mata_pelajaran_id' => $request->mapel,
-                    'kode_quiz' => $quiz->kode_quiz,
-                    'tanggal_buat' => $quiz->tanggal_buat,
-                ]);
+            // Update quiz data
+            $quiz->update([
+                'judul_quiz' => $validatedData['judul_quiz'],
+                'deskripsi' => $validatedData['deskripsi'] ?? '',
+                'waktu_menit' => $validatedData['waktu_menit'],
+                'kategori_id' => $validatedData['categories'],
+                'mata_pelajaran_id' => $validatedData['mapel'],
+                'pengulangan_pekerjaan' => $validatedData['pengulangan'],
+                'status' => $validatedData['status'],
+            ]);
 
-                $existingQuestionIds = $quiz->soals->pluck('id')->toArray();
-                $updatedQuestionIds = [];
+            // Get existing question IDs to track which ones to delete
+            $existingQuestionIds = $quiz->soals->pluck('id')->toArray();
+            $submittedQuestionIds = [];
 
-                foreach ($request->questions as $index => $questionData) {
-                    if (isset($questionData['id']) && ! empty($questionData['id'])) {
-                        $question = Soal::findOrFail($questionData['id']);
+            // Process each question
+            foreach ($validatedData['questions'] as $questionData) {
+                $soalData = [
+                    'quiz_id' => $quiz->id,
+                    'tipe' => $questionData['type'],
+                    'pertanyaan' => $questionData['pertanyaan'],
+                    'bobot' => $questionData['weight'],
+                    'pilihan_a' => null,
+                    'pilihan_b' => null,
+                    'pilihan_c' => null,
+                    'pilihan_d' => null,
+                    'pilihan_e' => null,
+                    'pilihan_f' => null,
+                    'pilihan_g' => null,
+                    'pilihan_h' => null,
+                    'pilihan_i' => null,
+                    'pilihan_j' => null,
+                    'jawaban_benar' => null,
+                ];
 
-                        if ($question->quiz_id !== $quiz->id) {
-                            throw new \Exception('Invalid question ID provided.');
+                // Handle different question types
+                switch ($questionData['type']) {
+                    case 'pilihan_ganda':
+                        $soalData['pilihan_a'] = $questionData['pilihan_a'] ?? null;
+                        $soalData['pilihan_b'] = $questionData['pilihan_b'] ?? null;
+                        $soalData['pilihan_c'] = $questionData['pilihan_c'] ?? null;
+                        $soalData['pilihan_d'] = $questionData['pilihan_d'] ?? null;
+                        $soalData['pilihan_e'] = $questionData['pilihan_e'] ?? null;
+                        $soalData['pilihan_f'] = $questionData['pilihan_f'] ?? null;
+                        $soalData['pilihan_g'] = $questionData['pilihan_g'] ?? null;
+                        $soalData['pilihan_h'] = $questionData['pilihan_h'] ?? null;
+                        $soalData['pilihan_i'] = $questionData['pilihan_i'] ?? null;
+                        $soalData['pilihan_j'] = $questionData['pilihan_j'] ?? null;
+                        $soalData['jawaban_benar'] = $questionData['jawaban_benar'];
+                        break;
+
+                    case 'essay':
+                        $soalData['jawaban_benar'] = $questionData['jawaban_benar'] ?? null;
+                        break;
+
+                    case 'benar_salah':
+                        $soalData['jawaban_benar'] = $questionData['jawaban_benar'];
+                        break;
+
+                    case 'checkbox':
+                        $checkboxOptions = $questionData['checkbox_options'];
+                        $optionLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+
+                        foreach ($optionLetters as $index => $letter) {
+                            if (isset($checkboxOptions[$index])) {
+                                $soalData['pilihan_'.$letter] = $checkboxOptions[$index];
+                            }
                         }
 
-                        $question->update([
-                            'pertanyaan' => $questionData['pertanyaan'],
-                            'pilihan_a' => $questionData['pilihan_a'],
-                            'pilihan_b' => $questionData['pilihan_b'],
-                            'pilihan_c' => $questionData['pilihan_c'],
-                            'pilihan_d' => $questionData['pilihan_d'],
-                            'jawaban_benar' => $questionData['jawaban_benar'],
-                        ]);
-
-                        $updatedQuestionIds[] = $question->id;
-
-                    } else {
-                        $newQuestion = Soal::create([
-                            'quiz_id' => $quiz->id,
-                            'pertanyaan' => $questionData['pertanyaan'],
-                            'pilihan_a' => $questionData['pilihan_a'],
-                            'pilihan_b' => $questionData['pilihan_b'],
-                            'pilihan_c' => $questionData['pilihan_c'],
-                            'pilihan_d' => $questionData['pilihan_d'],
-                            'jawaban_benar' => $questionData['jawaban_benar'],
-                        ]);
-
-                        $updatedQuestionIds[] = $newQuestion->id;
-                    }
+                        // Store correct answers as comma-separated string
+                        $correctAnswers = $questionData['checkbox_correct'];
+                        $soalData['jawaban_benar'] = implode(',', $correctAnswers);
+                        break;
                 }
 
-                $questionsToDelete = array_diff($existingQuestionIds, $updatedQuestionIds);
-                if (! empty($questionsToDelete)) {
-                    Soal::whereIn('id', $questionsToDelete)->delete();
+                // Update existing question or create new one
+                if (! empty($questionData['id'])) {
+                    $soal = Soal::findOrFail($questionData['id']);
+                    $soal->update($soalData);
+                    $submittedQuestionIds[] = $questionData['id'];
+                } else {
+                    $newSoal = Soal::create($soalData);
+                    $submittedQuestionIds[] = $newSoal->id;
                 }
-
-                DB::commit();
-
-                return redirect()->route('quiz.index')
-                    ->with('success', 'Quiz berhasil diperbarui!');
-
-            } catch (\Exception $e) {
-                DB::rollback();
-
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Terjadi kesalahan saat memperbarui quiz: '.$e->getMessage());
             }
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Delete questions that were removed
+            $questionsToDelete = array_diff($existingQuestionIds, $submittedQuestionIds);
+            if (! empty($questionsToDelete)) {
+                Soal::whereIn('id', $questionsToDelete)->delete();
+            }
+
+            DB::commit();
+
+            $statusMessage = $validatedData['status'] === 'Umum' ? 'diperbarui sebagai umum' : 'diperbarui sebagai privat';
+
             return redirect()->route('quiz.index')
-                ->with('error', 'Quiz tidak ditemukan.');
+                ->with('success', "Quiz berhasil {$statusMessage}!");
 
         } catch (\Exception $e) {
-            return redirect()->route('quiz.index')
-                ->with('error', 'Terjadi kesalahan yang tidak terduga.');
+            DB::rollback();
+
+            \Log::error('Error updating quiz: '.$e->getMessage());
+
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui quiz. Silakan coba lagi.'])
+                ->withInput();
         }
     }
 

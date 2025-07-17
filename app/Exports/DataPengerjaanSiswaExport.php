@@ -28,18 +28,24 @@ class DataPengerjaanSiswaExport implements FromCollection, WithColumnFormatting,
 
     public function collection()
     {
-        return $this->hasilUjian->detail->map(function ($item, $index) {
+        // Data identitas siswa
+        $siswa = $this->hasilUjian->user;
+
+        return $this->hasilUjian->detail->map(function ($item, $index) use ($siswa) {
             return [
-                'No' => $index + 1,
-                'Pertanyaan' => $this->limitText($item->soal->pertanyaan, 100),
-                'Jawaban Benar' => $this->formatJawabanBenar($item->soal),
-                'Jawaban Peserta' => $this->formatJawabanPeserta($item->jawaban_peserta),
-                'Status' => $this->getStatusJawaban($item->status_jawaban),
-                'Bobot Soal' => $item->bobot_soal,
-                'Bobot Diperoleh' => $item->bobot_diperoleh,
-                'Persentase' => $item->persentase_bobot.'%',
-                'Jenis Soal' => $item->soal->tipe,
-                'Tingkat Kesulitan' => $item->soal->tingkat_kesulitan ?? 'Normal',
+                'No'               => $index + 1,
+                'Nama Siswa'       => $siswa->name,
+                'Email'            => $siswa->email,
+                'Kelas'            => optional($siswa->kelas)->nama_kelas ?? '-',
+                'Pertanyaan'       => $this->limitText($item->soal->pertanyaan, 100),
+                'Jawaban Benar'    => $this->formatJawabanBenar($item->soal),
+                'Jawaban Peserta'  => $this->formatJawabanPeserta($item->jawaban_peserta),
+                'Status'           => $this->getStatusJawaban($item->status_jawaban),
+                'Bobot Soal'       => $item->bobot_soal,
+                'Bobot Diperoleh'  => $item->bobot_diperoleh,
+                'Persentase'       => $item->persentase_bobot.'%',
+                'Jenis Soal'       => $item->soal->tipe,
+                'Tingkat Kesulitan'=> $item->soal->tingkat_kesulitan ?? 'Normal',
             ];
         });
     }
@@ -48,6 +54,9 @@ class DataPengerjaanSiswaExport implements FromCollection, WithColumnFormatting,
     {
         return [
             'No',
+            'Nama Siswa',
+            'Email',
+            'Kelas',
             'Pertanyaan',
             'Jawaban Benar',
             'Jawaban Peserta',
@@ -64,30 +73,26 @@ class DataPengerjaanSiswaExport implements FromCollection, WithColumnFormatting,
     {
         $highestRow = $sheet->getHighestRow();
 
-        // Style untuk header
-        $sheet->getStyle('A1:J1')->getFont()->setBold(true)->setSize(12)->setColor(new Color('FFFFFF'));
-        $sheet->getStyle('A1:J1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:J1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('4CAF50');
+        // Sesuaikan rentang kolom: A–M (13 kolom)
+        $sheet->getStyle('A1:M1')->getFont()->setBold(true)->setSize(12)->setColor(new Color('FFFFFF'));
+        $sheet->getStyle('A1:M1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:M1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('4CAF50');
 
-        // Border untuk semua cell
-        $sheet->getStyle('A1:J'.$highestRow)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        // Border + wrap
+        $sheet->getStyle('A1:M'.$highestRow)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle('A1:M'.$highestRow)->getAlignment()->setWrapText(true);
 
-        // Text wrap untuk semua cell
-        $sheet->getStyle('A1:J'.$highestRow)->getAlignment()->setWrapText(true);
-
-        // Auto size columns
-        foreach (range('A', 'J') as $col) {
+        // Auto‑size
+        foreach (range('A', 'M') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        // Center alignment untuk kolom tertentu
+        // Centering kolom tertentu
         $sheet->getStyle('A:A')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // No
-        $sheet->getStyle('E:E')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Status
-        $sheet->getStyle('F:F')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Bobot Soal
-        $sheet->getStyle('G:G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Bobot Diperoleh
-        $sheet->getStyle('H:H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Persentase
-        $sheet->getStyle('I:I')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Jenis Soal
-        $sheet->getStyle('J:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Tingkat Kesulitan
+        $sheet->getStyle('H:H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Status
+        $sheet->getStyle('I:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Bobot
+        $sheet->getStyle('K:K')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Persentase
+        $sheet->getStyle('L:M')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Jenis & Kesulitan
 
         return [];
     }
@@ -96,9 +101,9 @@ class DataPengerjaanSiswaExport implements FromCollection, WithColumnFormatting,
     {
         return [
             'A' => NumberFormat::FORMAT_NUMBER,
-            'F' => NumberFormat::FORMAT_NUMBER,
-            'G' => NumberFormat::FORMAT_NUMBER_00,
-            'H' => NumberFormat::FORMAT_NUMBER_00,
+            'I' => NumberFormat::FORMAT_NUMBER,
+            'J' => NumberFormat::FORMAT_NUMBER_00,
+            'K' => NumberFormat::FORMAT_NUMBER_00,
         ];
     }
 

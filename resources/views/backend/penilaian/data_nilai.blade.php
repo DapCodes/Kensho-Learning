@@ -70,8 +70,7 @@
                                 <i class="ti ti-check text-success" style="font-size: 24px;"></i>
                             </div>
                             <div>
-                                <h4 class="mb-1 fw-bold text-dark">{{ $hasilUjians->where('status', 'selesai')->count() }}
-                                </h4>
+                                <h4 class="mb-1 fw-bold text-dark">{{ $hasilUjians->count() }}</h4>
                                 <p class="text-muted mb-0">Ujian Selesai</p>
                             </div>
                         </div>
@@ -88,7 +87,7 @@
                             </div>
                             <div>
                                 <h4 class="mb-1 fw-bold text-dark">
-                                    {{ $hasilUjians->where('nilai', '>', 0)->count() > 0 ? number_format($hasilUjians->where('nilai', '>', 0)->avg('nilai'), 1) : '0' }}
+                                    {{ $hasilUjians->where('skor', '>', 0)->count() > 0 ? number_format($hasilUjians->where('skor', '>', 0)->avg('skor'), 1) : '0' }}
                                 </h4>
                                 <p class="text-muted mb-0">Rata-rata Nilai</p>
                             </div>
@@ -114,6 +113,70 @@
             </div>
         </div>
 
+        <!-- Enhanced Filter Section -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom py-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center me-3"
+                        style="width: 40px; height: 40px;">
+                        <i class="ti ti-filter text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Filter Data Nilai</h5>
+                        <p class="text-muted mb-0">Pilih quiz untuk menampilkan data nilai yang spesifik</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ route('penilaian.dataNilai') }}" id="filterForm">
+                    <div class="row align-items-end">
+                        <div class="col-md-8">
+                            <label for="quiz_filter" class="form-label fw-bold">
+                                <i class="ti ti-file-text me-1"></i>Filter berdasarkan Quiz
+                            </label>
+                            <select name="quiz_filter" id="quiz_filter" class="form-select form-select-lg" onchange="document.getElementById('filterForm').submit()">
+                                <option value="all" {{ $quizFilter === 'all' || !$quizFilter ? 'selected' : '' }}>
+                                    <i class="ti ti-list"></i> Semua Quiz
+                                </option>
+                                @foreach($quizzes as $quiz)
+                                    <option value="{{ $quiz->id }}" {{ $quizFilter == $quiz->id ? 'selected' : '' }}>
+                                        {{ $quiz->judul_quiz }} ({{ $quiz->kode_quiz }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                    <i class="ti ti-search me-2"></i>Filter
+                                </button>
+                                <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="ti ti-refresh me-2"></i>Reset
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Summary -->
+                    @if($quizFilter && $quizFilter !== 'all')
+                        @php
+                            $selectedQuiz = $quizzes->firstWhere('id', $quizFilter);
+                        @endphp
+                        <div class="mt-3">
+                            <div class="alert alert-info d-flex align-items-center mb-0">
+                                <i class="ti ti-info-circle me-2"></i>
+                                <div>
+                                    <strong>Filter Aktif:</strong> 
+                                    Menampilkan data nilai untuk quiz "{{ $selectedQuiz->judul_quiz }}" 
+                                    <span class="badge bg-info ms-2">{{ $selectedQuiz->kode_quiz }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </form>
+            </div>
+        </div>
+
         <!-- Enhanced Action Section -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body py-3">
@@ -130,7 +193,11 @@
                                 <h5 class="mb-1">Data Nilai Peserta</h5>
                                 <p class="text-muted mb-0">
                                     @if ($hasilUjians->count() > 0)
-                                        Menampilkan {{ $hasilUjians->count() }} hasil ujian dari peserta
+                                        @if($quizFilter && $quizFilter !== 'all')
+                                            Menampilkan {{ $hasilUjians->count() }} hasil ujian untuk quiz yang dipilih
+                                        @else
+                                            Menampilkan {{ $hasilUjians->count() }} hasil ujian dari semua quiz
+                                        @endif
                                     @else
                                         Belum ada data nilai - peserta belum mengerjakan quiz
                                     @endif
@@ -141,29 +208,18 @@
 
                     <!-- Export Button Component -->
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <i class="fas fa-download me-2"></i>Export Data
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item"
-                                        href="{{ route('penilaian.dataNilai', ['export' => 'excel']) }}">
-                                        <i class="fas fa-file-excel me-2 text-success"></i>Export ke Excel
+                        
+
+                            <div class="col-md-12 text-md-end mt-3 mt-md-0">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('penilaian.dataNilai', array_merge(request()->all(), ['export' => 'excel'])) }}" class="btn btn-success btn-lg px-4">
+                                       Export Excel
                                     </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('penilaian.dataNilai', ['export' => 'pdf']) }}">
-                                        <i class="fas fa-file-pdf me-2 text-danger"></i>Export ke PDF
+                                    <a href="{{ route('penilaian.dataNilai', array_merge(request()->all(), ['export' => 'pdf'])) }}" class="btn btn-danger btn-lg px-4">
+                                            Export PDF
                                     </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-
-
+                                </div>
+                            </div>
                 </div>
             </div>
         </div>
@@ -252,8 +308,7 @@
                                                 </small>
                                                 <div class="mt-1">
                                                     <small class="text-muted">
-                                                        <i
-                                                            class="ti ti-book me-1"></i>{{ $hasil->quiz->mataPelajaran->nama_mapel }}
+                                                        <i class="ti ti-book me-1"></i>{{ $hasil->quiz->mataPelajaran->nama_mapel }}
                                                     </small>
                                                 </div>
                                             </div>
@@ -279,11 +334,7 @@
                                                     $menit = floor($totalDetik / 60);
                                                     $detik = $totalDetik % 60;
                                                 @endphp
-
-
-                                                <span
-                                                    class="text-muted">{{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}</span>
-
+                                                <span class="text-muted">{{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}</span>
                                                 <small class="text-muted ms-1">min</small>
                                             </div>
                                         </td>
@@ -301,13 +352,11 @@
                                                         $badgeClass = 'danger';
                                                     }
                                                 @endphp
-                                                <span
-                                                    class="badge bg-{{ $badgeClass }}-subtle text-{{ $badgeClass }} px-3 py-2 fw-bold">
+                                                <span class="badge bg-{{ $badgeClass }}-subtle text-{{ $badgeClass }} px-3 py-2 fw-bold">
                                                     <i class="ti ti-star me-1"></i>{{ $hasil->skor ?? 'Belum Dinilai' }}
                                                 </span>
                                             </div>
                                         </td>
-                                        {{-- PERBAIKAN: Template blade untuk menampilkan status koreksi essay --}}
                                         @php
                                             // Periksa apakah ada essay yang perlu dikoreksi
                                             $hasEssayNeedingGrading = $hasil->detail->contains(function ($d) {
@@ -365,7 +414,6 @@
                                             @endif
                                         </td>
 
-
                                         <td class="py-4 text-center pe-4">
                                             <div class="btn-group" role="group">
                                                 <a href="{{ route('penilaian.detail', $hasil->id) }}"
@@ -388,21 +436,17 @@
                                                         <li>
                                                             <a class="dropdown-item"
                                                                 href="{{ route('penilaian.detail', ['id' => $hasil->id, 'export' => 'excel']) }}">
-                                                                <i class="fas fa-file-excel me-2 text-success"></i>Export
-                                                                ke Excel
+                                                                <i class="fas fa-file-excel me-2 text-success"></i>Export ke Excel
                                                             </a>
                                                         </li>
                                                         <li>
                                                             <a class="dropdown-item"
                                                                 href="{{ route('penilaian.detail', ['id' => $hasil->id, 'export' => 'pdf']) }}">
-                                                                <i class="fas fa-file-pdf me-2 text-danger"></i>Export ke
-                                                                PDF
+                                                                <i class="fas fa-file-pdf me-2 text-danger"></i>Export ke PDF
                                                             </a>
                                                         </li>
                                                     </ul>
                                                 </div>
-
-
                                             </div>
                                         </td>
                                     </tr>
@@ -420,14 +464,30 @@
                             <i class="ti ti-clipboard-data text-success" style="font-size: 48px;"></i>
                         </div>
                     </div>
-                    <h3 class="fw-bold text-dark mb-3">Belum Ada Data Nilai</h3>
+                    <h3 class="fw-bold text-dark mb-3">
+                        @if($quizFilter && $quizFilter !== 'all')
+                            Belum Ada Data Nilai untuk Quiz Ini
+                        @else
+                            Belum Ada Data Nilai
+                        @endif
+                    </h3>
                     <p class="text-muted mb-4 mx-auto" style="max-width: 400px;">
-                        Belum ada peserta yang mengerjakan quiz Anda. Bagikan kode quiz kepada peserta
-                        untuk mulai mendapatkan data nilai.
+                        @if($quizFilter && $quizFilter !== 'all')
+                            Belum ada peserta yang mengerjakan quiz yang dipilih. Bagikan kode quiz kepada peserta untuk mulai mendapatkan data nilai.
+                        @else
+                            Belum ada peserta yang mengerjakan quiz Anda. Bagikan kode quiz kepada peserta untuk mulai mendapatkan data nilai.
+                        @endif
                     </p>
-                    <a href="{{ route('quiz.index') }}" class="btn btn-success btn-lg px-5">
-                        <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar Quiz
-                    </a>
+                    <div class="d-flex justify-content-center gap-3">
+                        @if($quizFilter && $quizFilter !== 'all')
+                            <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-primary px-4">
+                                <i class="ti ti-refresh me-2"></i>Lihat Semua Quiz
+                            </a>
+                        @endif
+                        <a href="{{ route('quiz.index') }}" class="btn btn-success px-5">
+                            <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar Quiz
+                        </a>
+                    </div>
                 </div>
             @endif
         </div>
@@ -470,65 +530,270 @@
         </div>
     @endif
 
-    <script>
-        // Download Report Function
-        function downloadReport(hasilUjianId) {
-            // Tampilkan loading
-            Swal.fire({
-                title: 'Mengunduh...',
-                text: 'Sedang menyiapkan file export',
-                icon: 'info',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
+
+<script>
+        // Enhanced Filter JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    const quizFilter = document.getElementById('quiz_filter');
+    const filterForm = document.getElementById('filterForm');
+    
+    // Auto-submit form when filter changes
+    quizFilter.addEventListener('change', function() {
+        // Show loading indicator
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center';
+        loadingIndicator.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        loadingIndicator.style.zIndex = '9999';
+        loadingIndicator.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="text-muted">Memuat data...</p>
+            </div>
+        `;
+        document.body.appendChild(loadingIndicator);
+        
+        // Submit form
+        filterForm.submit();
+    });
+    
+    // Enhanced search functionality
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.className = 'form-control mb-3';
+    searchInput.placeholder = 'Cari peserta, quiz, atau mata pelajaran...';
+    searchInput.id = 'searchInput';
+    
+    // Add search input to the table card header
+    const tableHeader = document.querySelector('.card-header');
+    if (tableHeader) {
+        const searchContainer = document.createElement('div');
+        searchContainer.className = 'row align-items-center';
+        searchContainer.innerHTML = `
+            <div class="col-md-6">
+                <h5 class="mb-0 fw-bold">
+                    <i class="ti ti-table me-2 text-success"></i>Tabel Data Nilai
+                </h5>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex align-items-center gap-3">
+                    <input type="text" class="form-control" placeholder="Cari peserta, quiz, atau mata pelajaran..." id="searchInput">
+                    <span class="badge bg-success-subtle text-success px-3 py-2">
+                        ${document.querySelectorAll('.hasil-row').length} Data Tersedia
+                    </span>
+                </div>
+            </div>
+        `;
+        tableHeader.innerHTML = '';
+        tableHeader.appendChild(searchContainer);
+    }
+    
+    // Real-time search functionality
+    const searchInputElement = document.getElementById('searchInput');
+    if (searchInputElement) {
+        searchInputElement.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.hasil-row');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const peserta = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const quiz = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                const mapel = row.querySelector('td:nth-child(3) small').textContent.toLowerCase();
+                
+                if (peserta.includes(searchTerm) || quiz.includes(searchTerm) || mapel.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
                 }
             });
-
-            // Redirect ke route export
-            window.location.href = `{{ url('/penilaian/export-pengerjaan') }}/${hasilUjianId}`;
-
-            // Tutup loading setelah 2 detik
+            
+            // Update counter
+            const counter = document.querySelector('.badge');
+            if (counter) {
+                counter.textContent = `${visibleCount} Data Tersedia`;
+            }
+            
+            // Show/hide empty state
+            const tableBody = document.querySelector('tbody');
+            const emptyState = document.querySelector('.empty-search-state');
+            
+            if (visibleCount === 0 && searchTerm !== '') {
+                if (!emptyState) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.className = 'empty-search-state';
+                    emptyRow.innerHTML = `
+                        <td colspan="9" class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="ti ti-search text-muted" style="font-size: 48px;"></i>
+                            </div>
+                            <h5 class="text-muted">Tidak Ada Data Ditemukan</h5>
+                            <p class="text-muted">Tidak ada data yang cocok dengan pencarian "${searchTerm}"</p>
+                        </td>
+                    `;
+                    tableBody.appendChild(emptyRow);
+                }
+            } else if (emptyState) {
+                emptyState.remove();
+            }
+        });
+    }
+    
+    // Toast auto-hide functionality
+    const toasts = document.querySelectorAll('.toast');
+    toasts.forEach(toast => {
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
             setTimeout(() => {
-                Swal.close();
-            }, 2000);
-        }
-
-
-        // Print Certificate Function
-        function printCertificate(hasilId) {
-            // Implement print certificate functionality
-            alert('Cetak sertifikat untuk ID: ' + hasilId);
-        }
-
-        // Auto hide toast after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const toasts = document.querySelectorAll('.toast');
-            toasts.forEach(toast => {
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 5000);
-            });
+                toast.remove();
+            }, 500);
+        }, 5000);
+    });
+    
+    // Enhanced table row hover effects
+    const tableRows = document.querySelectorAll('.hasil-row');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+            this.style.transition = 'all 0.2s ease';
         });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add loading state for export buttons
-            const exportButtons = document.querySelectorAll('.dropdown-item');
-
-            exportButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    const originalText = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-                    this.style.pointerEvents = 'none';
-
-                    // Reset after 3 seconds (adjust as needed)
-                    setTimeout(() => {
-                        this.innerHTML = originalText;
-                        this.style.pointerEvents = 'auto';
-                    }, 3000);
-                });
-            });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.transform = '';
+            this.style.boxShadow = '';
         });
-    </script>
+    });
+    
+    // Initialize tooltips for action buttons
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Export button loading state
+    const exportButtons = document.querySelectorAll('[href*="export"]');
+    exportButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Exporting...';
+            this.disabled = true;
+            
+            // Re-enable after 3 seconds
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 3000);
+        });
+    });
+    
+    // Smooth scrolling for long tables
+    const tableContainer = document.querySelector('.table-responsive');
+    if (tableContainer) {
+        tableContainer.style.scrollBehavior = 'smooth';
+    }
+    
+    // Enhanced mobile responsiveness
+    function handleMobileView() {
+        const table = document.querySelector('.table');
+        const isMobile = window.innerWidth < 768;
+        
+        if (isMobile && table) {
+            // Add mobile-friendly classes
+            table.classList.add('table-sm');
+            
+            // Hide less important columns on mobile
+            const lessImportantColumns = document.querySelectorAll('th:nth-child(4), td:nth-child(4), th:nth-child(5), td:nth-child(5)');
+            lessImportantColumns.forEach(col => {
+                col.style.display = isMobile ? 'none' : '';
+            });
+        }
+    }
+    
+    // Initial mobile check
+    handleMobileView();
+    
+    // Listen for window resize
+    window.addEventListener('resize', handleMobileView);
+    
+    // Add confirmation for reset button
+    const resetButton = document.querySelector('[href*="dataNilai"]:not([href*="export"])');
+    if (resetButton && resetButton.textContent.includes('Reset')) {
+        resetButton.addEventListener('click', function(e) {
+            if (quizFilter.value !== 'all') {
+                const confirmReset = confirm('Apakah Anda yakin ingin mereset filter dan menampilkan semua data?');
+                if (!confirmReset) {
+                    e.preventDefault();
+                }
+            }
+        });
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + F for search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+            e.preventDefault();
+            if (searchInputElement) {
+                searchInputElement.focus();
+            }
+        }
+        
+        // Escape to clear search
+        if (e.key === 'Escape' && searchInputElement) {
+            searchInputElement.value = '';
+            searchInputElement.dispatchEvent(new Event('input'));
+        }
+    });
+    
+    // Initialize page with animations
+    function initializePageAnimations() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    }
+    
+    // Initialize animations
+    initializePageAnimations();
+    
+    // REMOVED: Custom dropdown functionality that was interfering with Bootstrap
+    // Bootstrap will handle dropdown functionality automatically
+    
+    // Add loading state to filter form
+    filterForm.addEventListener('submit', function() {
+        const submitButton = this.querySelector('button[type="submit"]');
+        if (submitButton) {
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Memuat...';
+            submitButton.disabled = true;
+        }
+    });
+    
+    // Status badge click for more info
+    const statusBadges = document.querySelectorAll('.badge');
+    statusBadges.forEach(badge => {
+        if (badge.textContent.includes('Perlu Koreksi')) {
+            badge.style.cursor = 'pointer';
+            badge.title = 'Klik untuk melihat detail essay yang perlu dikoreksi';
+        }
+    });
+    
+    console.log('Enhanced filter script loaded successfully!');
+});
+</script>
+
     @include('layouts.components-backend.css')
 @endsection

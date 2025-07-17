@@ -230,30 +230,34 @@
                                                 </button>
                                             </form>
                                         </td>
-                                        <td class="py-4 text-center pe-4">
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-info btn-sm"
-                                                    title="Lihat Detail">
-                                                    <i class="ti ti-eye"></i>
-                                                </a>
-                                                <a href="{{ route('quiz.edit', $quiz->id) }}"
-                                                    class="btn btn-warning btn-sm" title="Edit Quiz">
-                                                    <i class="ti ti-edit"></i>
-                                                </a>
-                                                <button type="button" class="btn btn-danger btn-sm" title="Hapus Quiz"
-                                                    onclick="deleteQuiz({{ $quiz->id }}, '{{ $quiz->judul_quiz }}')">
-                                                    <i class="ti ti-trash"></i>
-                                                </button>
-                                            </div>
+                    
+<td class="py-4 text-center pe-4">
+    <div class="btn-group" role="group">
+        <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-info btn-sm" title="Lihat Detail">
+            <i class="ti ti-eye"></i>
+        </a>
+        <a href="{{ route('quiz.edit', $quiz->id) }}" class="btn btn-warning btn-sm" title="Edit Quiz">
+            <i class="ti ti-edit"></i>
+        </a>
+        <a class="btn btn-success btn-sm" href="{{ route('quiz.index', ['export' => 'excel', 'quiz_id' => $quiz->id]) }}" title="Export Excel">
+            <i class="ti ti-file-spreadsheet"></i>
+        </a>
+        <a class="btn btn-info btn-sm" href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}" title="Export PDF">
+            <i class="ti ti-file-text"></i>
+        </a>
+        <button type="button" class="btn btn-danger btn-sm" title="Hapus Quiz" onclick="deleteQuiz({{ $quiz->id }}, '{{ $quiz->judul_quiz }}')">
+            <i class="ti ti-trash"></i>
+        </button>
+    </div>
+    
+    <!-- Hidden delete form -->
+    <form id="delete-form-{{ $quiz->id }}" action="{{ route('quiz.destroy', $quiz->id) }}" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+</td>
 
-                                            <!-- Hidden delete form -->
-                                            <form id="delete-form-{{ $quiz->id }}"
-                                                action="{{ route('quiz.destroy', $quiz->id) }}" method="POST"
-                                                style="display: none;">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -295,42 +299,6 @@
         @endif
     </div>
 
-    <!-- Enhanced Toast Messages -->
-    @if (session('success'))
-        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
-            <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-success text-white border-0">
-                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
-                        style="width: 20px; height: 20px;">
-                        <i class="ti ti-check text-success" style="font-size: 12px;"></i>
-                    </div>
-                    <strong class="me-auto">Berhasil</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body bg-white">
-                    {{ session('success') }}
-                </div>
-            </div>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
-            <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-danger text-white border-0">
-                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
-                        style="width: 20px; height: 20px;">
-                        <i class="ti ti-x text-danger" style="font-size: 12px;"></i>
-                    </div>
-                    <strong class="me-auto">Error</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body bg-white">
-                    {{ session('error') }}
-                </div>
-            </div>
-        </div>
-    @endif
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
