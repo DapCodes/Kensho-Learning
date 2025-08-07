@@ -38,6 +38,8 @@ return new class extends Migration
             // Waktu pengerjaan dalam menit (decimal untuk presisi)
             $table->decimal('waktu_pengerjaan', 8, 2)->default(0);
 
+            $table->integer('perpindahan_halaman')->default(0);
+
             // Tanggal ujian
             $table->date('tanggal_ujian');
 

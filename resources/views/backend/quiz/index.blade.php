@@ -99,25 +99,19 @@
                                         <i class="ti ti-key me-1"></i>Kode Quiz
                                     </th>
                                     <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-calendar me-1"></i>Tanggal
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-list-numbers me-1"></i>Jumlah
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-clock me-1"></i>Durasi
+                                        <i class="ti ti-user me-1"></i>Kreator
                                     </th>
                                     <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
                                         <i class="ti ti-users me-1"></i>Peserta
                                     </th>
                                     <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-check-circle me-1"></i>Mapel
+                                        <i class="ti ti-book me-1"></i>Mapel
                                     </th>
                                     <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-check-circle me-1"></i>Status
+                                        <i class="ti ti-school me-1"></i>Status
                                     </th>
                                     <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-check-circle me-1"></i>Aktivasi
+                                        <i class="ti ti-logout me-1"></i>Aktivasi
                                     </th>
                                     <th scope="col" class="border-0 fw-bold text-dark py-3 text-center pe-4">
                                         <i class="ti ti-settings me-1"></i>Aksi
@@ -137,15 +131,6 @@
                                                     <h6 class="mb-1 fw-bold text-dark" title="{{ $quiz->judul_quiz }}">
                                                         {{ Str::limit($quiz->judul_quiz, 35) }}
                                                     </h6>
-                                                    @if ($quiz->kategori)
-                                                        <small
-                                                            class="text-muted">{{ $quiz->kategori->nama_kategori }}</small>
-                                                    @endif
-                                                    <div class="mt-1">
-                                                        <small class="text-muted">
-                                                            <i class="ti ti-user me-1"></i>{{ $quiz->user->name }}
-                                                        </small>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -165,33 +150,20 @@
                                                 <span class="text-muted">-</span>
                                             @endif
                                         </td>
-                                        <td class="py-4 text-center">
+                                         <td class="py-4 text-center">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <span
+                                                    class="fw-bold text-dark">{{ $quiz->user->name }}</span>
+                                            </div>
+                                        </td>
+                                        <!-- <td class="py-4 text-center">
                                             <div class="d-flex flex-column align-items-center">
                                                 <span
                                                     class="fw-bold text-dark">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('d M Y') }}</span>
                                                 <small
                                                     class="text-muted">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('H:i') }}</small>
                                             </div>
-                                        </td>
-                                        <td class="py-4 text-center">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center me-2"
-                                                    style="width: 30px; height: 30px;">
-                                                    <i class="ti ti-list-numbers text-info" style="font-size: 14px;"></i>
-                                                </div>
-                                                <span class="fw-bold text-info">{{ $quiz->soals->count() }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-4 text-center">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center me-2"
-                                                    style="width: 30px; height: 30px;">
-                                                    <i class="ti ti-clock text-warning" style="font-size: 14px;"></i>
-                                                </div>
-                                                <span class="fw-bold text-warning">{{ $quiz->waktu_menit }}</span>
-                                                <small class="text-muted ms-1">min</small>
-                                            </div>
-                                        </td>
+                                        </td> -->
                                         <td class="py-4 text-center">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <div class="rounded-circle bg-success-subtle d-flex align-items-center justify-content-center me-2"
@@ -298,6 +270,43 @@
             </div>
         @endif
     </div>
+
+    <!-- Enhanced Toast Messages -->
+    @if (session('success'))
+        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
+            <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-success text-white border-0">
+                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
+                        style="width: 20px; height: 20px;">
+                        <i class="ti ti-check text-success" style="font-size: 12px;"></i>
+                    </div>
+                    <strong class="me-auto">Berhasil</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body bg-white">
+                    {{ session('success') }}
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
+            <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger text-white border-0">
+                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
+                        style="width: 20px; height: 20px;">
+                        <i class="ti ti-x text-danger" style="font-size: 12px;"></i>
+                    </div>
+                    <strong class="me-auto">Error</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body bg-white">
+                    {{ session('error') }}
+                </div>
+            </div>
+        </div>
+    @endif
 
 
     <script>

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\HasilUjian;
-use App\Models\Kategori;
 use App\Models\MataPelajaran;
 use App\Models\Quiz;
 use Auth;
@@ -23,11 +22,11 @@ class FrontendController extends Controller
 
         // Perbaiki: pastikan filter mata pelajaran diterapkan dengan benar
         if ($request->filled('mata_pelajaran_id')) {
-            $query->where('mata_pelajaran_id', $request->mata_pelajaran_id); 
+            $query->where('mata_pelajaran_id', $request->mata_pelajaran_id);
         }
 
         $quizzes = $query->get();
-        
+
         // Perbaiki: konsistensi case sensitivity
         $mataPelajaran = MataPelajaran::whereHas('quiz', function ($query) {
             $query->where('status_aktivasi', 'aktif')

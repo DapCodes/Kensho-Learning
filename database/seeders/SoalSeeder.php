@@ -1,10 +1,11 @@
 <?php
+
 // database/seeders/SoalSeeder.php
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Soal;
+use Illuminate\Database\Seeder;
 
 class SoalSeeder extends Seeder
 {
@@ -165,9 +166,6 @@ class SoalSeeder extends Seeder
                 'bobot' => 35,
             ],
         ]);
-
-
-
 
         $quizId = 2;
         Soal::insert([

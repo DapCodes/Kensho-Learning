@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Pesan;
+use Illuminate\Http\Request;
 
 class PesanController extends Controller
 {
     public function index()
     {
         $pesans = Pesan::latest()->get();
+
         return view('welcome', compact('pesans'));
     }
 
@@ -33,5 +34,4 @@ class PesanController extends Controller
 
         return redirect()->back()->with('success', 'Data berhasil dihapus.');
     }
-
 }

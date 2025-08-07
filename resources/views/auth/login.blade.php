@@ -18,7 +18,7 @@
   <!-- Core Css -->
   <link rel="stylesheet" href="{{asset('/assets/backend/css/styles.css')}}" />
 
-  <title>Modernize Bootstrap Admin</title>
+  <title>Kenshō | Login</title>
 </head>
 
 <body>

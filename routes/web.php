@@ -6,9 +6,9 @@ use App\Http\Controllers\HasilUjianController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KelasController;
-use App\Http\Controllers\PesanController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\PenilaianController;
+use App\Http\Controllers\PesanController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizSessionController;
 use App\Http\Controllers\UserController;
@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PesanController::class, 'index']);
 Route::post('/kirim-pesan', [PesanController::class, 'store'])->name('pesan.store');
-
 
 Auth::routes(['register' => false]);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -95,6 +94,5 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', Admin::class]], func
     // routes/web.php
     Route::delete('pesan/{pesan}', [PesanController::class, 'destroy'])
         ->name('pesan.destroy');
-
 
 });

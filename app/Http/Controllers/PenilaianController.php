@@ -205,42 +205,55 @@ class PenilaianController extends Controller
     {
         $exportType = $request->input('export');
         $quizFilter = $request->input('quiz_filter');
+        $statusFilter = $request->input('status');
 
-        // Base query untuk quiz yang dibuat oleh user saat ini
-        $quizQuery = Quiz::where('user_id', Auth::id());
+        $user = Auth::user();
 
-        // Query untuk hasil ujian dengan filter
+        // Base query quiz sesuai role
+        $quizQuery = Quiz::query();
+        if ($user->isAdmin == '1') {
+            $quizQuery->where('user_id', $user->id);
+        } // isAdmin == '2' bisa melihat semua quiz
+
+        // Query hasil ujian
         $hasilUjianQuery = HasilUjian::with(['user', 'quiz.mataPelajaran'])
-            ->whereHas('quiz', function ($query) use ($quizFilter) {
-                $query->where('user_id', Auth::id());
+            ->whereHas('quiz', function ($query) use ($quizFilter, $user) {
+                // Filter berdasarkan user_id jika isAdmin == 1
+                if ($user->isAdmin == '1') {
+                    $query->where('user_id', $user->id);
+                }
 
-                // Apply quiz filter if provided
+                // Filter berdasarkan quiz ID jika ada
                 if ($quizFilter && $quizFilter !== 'all') {
                     $query->where('id', $quizFilter);
                 }
             })
             ->orderBy('tanggal_ujian', 'desc');
 
-        // Get filtered results
+        // Filter status pending
+        if ($statusFilter === 'pending') {
+            $hasilUjianQuery->whereHas('detail', function ($query) {
+                $query->where('status_jawaban', 'pending');
+            });
+        }
+
+        // Ambil data
         $hasilUjians = $hasilUjianQuery->get();
 
-        // Get list of quizzes for dropdown filter
+        // Ambil data quiz untuk filter
         $quizzes = $quizQuery->select('id', 'judul_quiz', 'kode_quiz')
             ->orderBy('judul_quiz')
             ->get();
 
-        // Export jika diminta
+        // Export Excel
         if ($exportType === 'excel') {
             $fileName = 'laporan-data-nilai-peserta';
-
-            // Add quiz name to filename if filtered
             if ($quizFilter && $quizFilter !== 'all') {
                 $selectedQuiz = $quizzes->firstWhere('id', $quizFilter);
                 if ($selectedQuiz) {
                     $fileName .= '-'.\Str::slug($selectedQuiz->judul_quiz);
                 }
             }
-
             $fileName .= '-'.date('Y-m-d').'.xlsx';
 
             return Excel::download(
@@ -249,17 +262,15 @@ class PenilaianController extends Controller
             );
         }
 
+        // Export PDF
         if ($exportType === 'pdf') {
             $fileName = 'laporan-data-nilai-peserta';
-
-            // Add quiz name to filename if filtered
             if ($quizFilter && $quizFilter !== 'all') {
                 $selectedQuiz = $quizzes->firstWhere('id', $quizFilter);
                 if ($selectedQuiz) {
                     $fileName .= '-'.\Str::slug($selectedQuiz->judul_quiz);
                 }
             }
-
             $fileName .= '-'.date('Y-m-d').'.pdf';
 
             $pdf = Pdf::loadView('pdf.dataNilai', [
@@ -271,7 +282,7 @@ class PenilaianController extends Controller
             return $pdf->download($fileName);
         }
 
-        return view('backend.penilaian.data_nilai', compact('hasilUjians', 'quizzes', 'quizFilter'));
+        return view('backend.penilaian.data_nilai', compact('hasilUjians', 'quizzes', 'quizFilter', 'statusFilter'));
     }
 
     /**

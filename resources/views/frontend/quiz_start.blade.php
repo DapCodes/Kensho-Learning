@@ -39,6 +39,7 @@
                 <!-- Quiz Form -->
                 <form id="quiz-form" action="{{ route('quiz.submit', $quiz->id) }}" method="POST">
                     @csrf
+                    <input type="hidden" name="perpindahan_halaman" id="perpindahan_halaman_input">
                     @foreach ($quiz->soals as $soal)
                         <div class="card shadow-sm mb-4 question-card">
                             <div class="card-header bg-light">
@@ -266,9 +267,7 @@
         }
     </style>
 
-    <script>
-    
-    
+<script>
 // Anti-cheating tab switch detection
 let tabSwitchCount = 0;
 let isWarningActive = false;
@@ -277,18 +276,47 @@ let isFrozen = false;
 let freezeInterval = null;
 let soundInterval = null;
 
+// Quiz variables - declared properly
+const userId = {{ auth()->user()->id }};
+const quizId = {{ $quiz->id }};
+const totalMinutes = {{ $quiz->waktu_menit }};
+const totalQuestions = {{ $quiz->soals->count() }};
+
+// Storage keys
+const switchKey = `quiz_${quizId}_user_${userId}_tab_switch`;
+const storageKey = `quiz_${quizId}_user_${userId}_progress`;
+const startTimeKey = `quiz_${quizId}_user_${userId}_start_time`;
+
+// Load saved tab switch count
+const savedSwitch = parseInt(localStorage.getItem(switchKey));
+if (!isNaN(savedSwitch)) {
+    tabSwitchCount = savedSwitch;
+}
+
 // Create audio element for alert sound
 const alertSound = new Audio('/assets/backend/sounds/alert.mp3');
 alertSound.preload = 'auto';
-alertSound.volume = 1.0; // Set volume to 100%
-alertSound.loop = true; // Loop the sound during freeze
+alertSound.volume = 1.0;
+alertSound.loop = true;
+
+// Function to clean up localStorage
+function cleanupLocalStorage() {
+    try {
+        localStorage.removeItem(storageKey);
+        localStorage.removeItem(startTimeKey);
+        localStorage.removeItem(switchKey);
+        console.log('LocalStorage cleaned up successfully');
+    } catch (error) {
+        console.error('Error cleaning up localStorage:', error);
+    }
+}
 
 // Track visibility changes (tab switches)
 document.addEventListener('visibilitychange', function() {
     if (document.hidden && !isDisabled && !isFrozen) {
         tabSwitchCount++;
-        //Debug
-        console.log(tabSwitchCount);
+        localStorage.setItem(switchKey, tabSwitchCount);
+        
         console.log(`Tab switch detected. Count: ${tabSwitchCount}`);
         
         // Show warning after 5 tab switches
@@ -307,7 +335,7 @@ document.addEventListener('visibilitychange', function() {
         }
         
         // Disable interactions after 12 tab switches
-        if (tabSwitchCount > 12) {
+        if (tabSwitchCount >= 12) {
             disableInteractions();
         }
     }
@@ -319,7 +347,6 @@ function showCheatWarning() {
     
     isWarningActive = true;
     
-    // Create warning modal
     const warningModal = document.createElement('div');
     warningModal.id = 'cheat-warning-modal';
     warningModal.style.cssText = `
@@ -346,9 +373,7 @@ function showCheatWarning() {
     `;
     
     warningContent.innerHTML = `
-        <div style="color: #dc3545; font-size: 48px; margin-bottom: 20px;">
-            ⚠️
-        </div>
+        <div style="color: #dc3545; font-size: 48px; margin-bottom: 20px;">⚠️</div>
         <h3 style="color: #dc3545; margin-bottom: 20px;">PERINGATAN SERIUS!</h3>
         <p style="margin-bottom: 20px; font-size: 16px; line-height: 1.5;">
             Sistem telah mendeteksi aktivitas yang mencurigakan.<br>
@@ -370,7 +395,6 @@ function showCheatWarning() {
     warningModal.appendChild(warningContent);
     document.body.appendChild(warningModal);
     
-    // Handle understand button click
     document.getElementById('understand-btn').addEventListener('click', function() {
         document.body.removeChild(warningModal);
         isWarningActive = false;
@@ -379,12 +403,11 @@ function showCheatWarning() {
 
 // Play alert sound
 function playAlertSound() {
-    alertSound.volume = 1.0; // Force volume to 100%
+    alertSound.volume = 1.0;
     alertSound.play().catch(function(error) {
         console.log('Could not play alert sound:', error);
     });
     
-    // Prevent volume changes
     alertSound.addEventListener('volumechange', function() {
         if (alertSound.volume !== 1.0) {
             alertSound.volume = 1.0;
@@ -397,16 +420,14 @@ function freezeSystem() {
     if (isFrozen) return;
     
     isFrozen = true;
-    let remainingTime = 60; // 1 minute in seconds
+    let remainingTime = 60;
     
-    // Start continuous alarm
     alertSound.volume = 1.0;
     alertSound.loop = true;
     alertSound.play().catch(function(error) {
         console.log('Could not play freeze alarm:', error);
     });
     
-    // Prevent volume changes during freeze
     const volumeHandler = function() {
         if (alertSound.volume !== 1.0) {
             alertSound.volume = 1.0;
@@ -414,7 +435,6 @@ function freezeSystem() {
     };
     alertSound.addEventListener('volumechange', volumeHandler);
     
-    // Create freeze overlay
     const freezeOverlay = document.createElement('div');
     freezeOverlay.id = 'freeze-overlay';
     freezeOverlay.style.cssText = `
@@ -428,7 +448,6 @@ function freezeSystem() {
         pointer-events: all;
     `;
     
-    // Create freeze warning
     const freezeWarning = document.createElement('div');
     freezeWarning.id = 'freeze-warning';
     freezeWarning.style.cssText = `
@@ -457,9 +476,7 @@ function freezeSystem() {
         <div style="font-size: 48px; margin-bottom: 10px; color: #ffeb3b;">
             <span id="freeze-countdown">${remainingTime}</span>
         </div>
-        <div style="font-size: 16px; opacity: 0.9;">
-            detik tersisa
-        </div>
+        <div style="font-size: 16px;">detik tersisa</div>
         <div style="font-size: 12px; margin-top: 20px; opacity: 0.8;">
             Alarm akan terus berbunyi selama pembekuan
         </div>
@@ -468,44 +485,37 @@ function freezeSystem() {
     document.body.appendChild(freezeOverlay);
     document.body.appendChild(freezeWarning);
     
-    // Disable all form inputs during freeze
     const inputs = document.querySelectorAll('input, textarea, button, select');
     inputs.forEach(input => { 
         input.disabled = true;
         input.style.opacity = '0.3';
     });
     
-    // Prevent all interactions during freeze
     document.addEventListener('contextmenu', preventEvent);
     document.addEventListener('keydown', preventEvent);
     document.addEventListener('keyup', preventEvent);
     document.addEventListener('keypress', preventEvent);
     document.addEventListener('click', preventEvent);
     
-    // Start countdown
     freezeInterval = setInterval(function() {
         remainingTime--;
         document.getElementById('freeze-countdown').textContent = remainingTime;
         
         if (remainingTime <= 0) {
-            // End freeze
             clearInterval(freezeInterval);
             alertSound.pause();
             alertSound.currentTime = 0;
             alertSound.loop = false;
             alertSound.removeEventListener('volumechange', volumeHandler);
             
-            // Remove freeze elements
             document.body.removeChild(freezeOverlay);
             document.body.removeChild(freezeWarning);
             
-            // Re-enable inputs
             inputs.forEach(input => {
                 input.disabled = false;
                 input.style.opacity = '1';
             });
             
-            // Remove event listeners
             document.removeEventListener('contextmenu', preventEvent);
             document.removeEventListener('keydown', preventEvent);
             document.removeEventListener('keyup', preventEvent);
@@ -513,8 +523,6 @@ function freezeSystem() {
             document.removeEventListener('click', preventEvent);
             
             isFrozen = false;
-            
-            // Show unfreeze message
             showUnfreezeMessage();
         }
     }, 1000);
@@ -546,7 +554,6 @@ function showUnfreezeMessage() {
     
     document.body.appendChild(unfreezeMessage);
     
-    // Auto remove message after 5 seconds
     setTimeout(function() {
         if (document.body.contains(unfreezeMessage)) {
             document.body.removeChild(unfreezeMessage);
@@ -560,7 +567,6 @@ function disableInteractions() {
     
     isDisabled = true;
     
-    // Create overlay to block interactions
     const overlay = document.createElement('div');
     overlay.id = 'cheat-disable-overlay';
     overlay.style.cssText = `
@@ -574,7 +580,6 @@ function disableInteractions() {
         pointer-events: all;
     `;
     
-    // Show final warning
     const finalWarning = document.createElement('div');
     finalWarning.style.cssText = `
         position: fixed;
@@ -606,14 +611,12 @@ function disableInteractions() {
     document.body.appendChild(overlay);
     document.body.appendChild(finalWarning);
     
-    // Disable form inputs
     const inputs = document.querySelectorAll('input, textarea, button, select');
     inputs.forEach(input => {
         input.disabled = true;
         input.style.opacity = '0.5';
     });
     
-    // Prevent right-click and keyboard shortcuts
     document.addEventListener('contextmenu', preventEvent);
     document.addEventListener('keydown', preventEvent);
     document.addEventListener('keyup', preventEvent);
@@ -627,340 +630,300 @@ function preventEvent(e) {
     return false;
 }
 
-// Optional: Add tab switch counter display
-function addTabSwitchCounter() {
-    const counter = document.createElement('div');
-    counter.id = 'tab-switch-counter';
-    counter.style.cssText = `
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        background: #fff;
-        border: 2px solid #dc3545;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        z-index: 1000;
-        color: #dc3545;
-        font-weight: bold;
-    `;
-    counter.innerHTML = `Tab Switches: <span id="switch-count">0</span>/12`;
-    document.body.appendChild(counter);
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const startTime = Date.now();
+    document.getElementById('start_time_input').value = Math.floor(startTime / 1000);
     
-    // Update counter on visibility change
-    const originalVisibilityHandler = document.onvisibilitychange;
-    document.addEventListener('visibilitychange', function() {
-        document.getElementById('switch-count').textContent = tabSwitchCount;
-        
-        const counterElement = document.getElementById('tab-switch-counter');
-        if (tabSwitchCount >= 5) {
-            counterElement.style.background = '#dc3545';
-            counterElement.style.color = 'white';
-            counterElement.style.animation = 'pulse 1s infinite';
+    const form = document.getElementById('quiz-form');
+    const timerElement = document.getElementById('timer');
+    let isSubmitting = false;
+
+    // === TIMER HANDLING ===
+    let startTimeValue = localStorage.getItem(startTimeKey);
+    const now = Date.now();
+    if (!startTimeValue) {
+        startTimeValue = now;
+        localStorage.setItem(startTimeKey, startTimeValue);
+    } else {
+        startTimeValue = parseInt(startTimeValue);
+    }
+
+    const quizDuration = totalMinutes * 60 * 1000;
+    const timePassed = now - startTimeValue;
+    let timeLeft = Math.floor((quizDuration - timePassed) / 1000);
+
+    if (timeLeft <= 0) {
+        timeLeft = 0;
+        showTimeUpModal();
+    }
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 300) {
+            timerElement.classList.add('timer-warning');
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showTimeUpModal();
+        }
+        timeLeft--;
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // === AUTO SUBMIT MODAL ===
+    function showTimeUpModal() {
+        const modal = new bootstrap.Modal(document.getElementById('timeUpModal'));
+        modal.show();
+
+        let countdown = 5;
+        const countdownElement = document.getElementById('countdown');
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                isSubmitting = true;
+                
+                // Set perpindahan halaman before submit
+                document.getElementById('perpindahan_halaman_input').value = tabSwitchCount;
+                
+                // Submit form and let the server handle the redirection
+                // LocalStorage will be cleaned up after successful submission
+                form.submit();
+                
+                // Clean up localStorage after a short delay to ensure form submission
+                setTimeout(() => {
+                    cleanupLocalStorage();
+                }, 1000);
+            }
+        }, 1000);
+    }
+
+    // === PROGRESS BAR ===
+    function updateProgress() {
+        let answeredQuestions = 0;
+
+        answeredQuestions += document.querySelectorAll('input[type="radio"]:checked').length;
+
+        const checkboxQuestions = document.querySelectorAll('input[type="checkbox"]');
+        const checkboxGroups = {};
+        checkboxQuestions.forEach(checkbox => {
+            const name = checkbox.name;
+            if (!checkboxGroups[name]) {
+                checkboxGroups[name] = false;
+            }
+            if (checkbox.checked) {
+                checkboxGroups[name] = true;
+            }
+        });
+        answeredQuestions += Object.values(checkboxGroups).filter(Boolean).length;
+
+        const essayQuestions = document.querySelectorAll('textarea');
+        essayQuestions.forEach(textarea => {
+            if (textarea.value.trim() !== '') {
+                answeredQuestions++;
+            }
+        });
+
+        const progressPercentage = (answeredQuestions / totalQuestions) * 100;
+        document.getElementById('answered-count').textContent = answeredQuestions;
+        document.getElementById('progress-bar').style.width = progressPercentage + '%';
+
+        const submitBtn = document.getElementById('submit-btn');
+        if (answeredQuestions === totalQuestions) {
+            submitBtn.classList.remove('btn-success');
+            submitBtn.classList.add('btn-primary');
+            submitBtn.innerHTML = 
+                '<i class="fas fa-check-circle me-2"></i>Semua Soal Terjawab - Submit Quiz';
+        }
+    }
+
+    window.updateProgress = updateProgress;
+
+    // === SAVE & LOAD PROGRESS ===
+    function saveProgress() {
+        const answers = {};
+
+        document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+            const soalId = input.name.split('_')[1];
+            answers[soalId] = input.value;
+        });
+
+        const checkboxGroups = {};
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+            const soalId = input.name.split('_')[1].replace('[]', '');
+            if (!checkboxGroups[soalId]) {
+                checkboxGroups[soalId] = [];
+            }
+            checkboxGroups[soalId].push(input.value);
+        });
+        Object.keys(checkboxGroups).forEach(soalId => {
+            answers[soalId] = checkboxGroups[soalId];
+        });
+
+        document.querySelectorAll('textarea').forEach(textarea => {
+            const soalId = textarea.name.split('_')[1];
+            answers[soalId] = textarea.value;
+        });
+
+        localStorage.setItem(storageKey, JSON.stringify(answers));
+    }
+
+    // Load saved progress
+    const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    if (Object.keys(savedAnswers).length > 0) {
+        Object.keys(savedAnswers).forEach(soalId => {
+            const savedAnswer = savedAnswers[soalId];
+
+            const radio = document.querySelector(
+                `input[name="jawaban_${soalId}"][value="${savedAnswer}"]`);
+            if (radio) {
+                radio.checked = true;
+            }
+
+            if (Array.isArray(savedAnswer)) {
+                savedAnswer.forEach(value => {
+                    const checkbox = document.querySelector(
+                        `input[name="jawaban_${soalId}[]"][value="${value}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+
+            const textarea = document.querySelector(`textarea[name="jawaban_${soalId}"]`);
+            if (textarea && typeof savedAnswer === 'string') {
+                textarea.value = savedAnswer;
+            }
+        });
+        updateProgress();
+    }
+
+    // Add event listeners
+    document.querySelectorAll('input[type="radio"], input[type="checkbox"], textarea').forEach(input => {
+        input.addEventListener('change', () => {
+            updateProgress();
+            saveProgress();
+        });
+
+        if (input.tagName === 'TEXTAREA') {
+            input.addEventListener('input', () => {
+                updateProgress();
+                saveProgress();
+            });
         }
     });
-}
 
-// Add CSS for pulse animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.5; }
-        100% { opacity: 1; }
-    }
-`;
-document.head.appendChild(style);
+    // === FORM SUBMIT HANDLING ===
+    form.addEventListener('submit', function(e) {
+        // Prevent multiple submissions
+        if (isSubmitting) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Set perpindahan halaman sebelum submit
+        document.getElementById('perpindahan_halaman_input').value = tabSwitchCount;
+        
+        let answeredQuestions = 0;
 
-// Prevent volume control and audio tampering
-document.addEventListener('DOMContentLoaded', function() {
-    // Monitor and prevent volume changes
+        answeredQuestions += document.querySelectorAll('input[type="radio"]:checked').length;
+
+        const checkboxGroups = {};
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            const name = checkbox.name;
+            if (!checkboxGroups[name]) {
+                checkboxGroups[name] = false;
+            }
+            if (checkbox.checked) {
+                checkboxGroups[name] = true;
+            }
+        });
+        answeredQuestions += Object.values(checkboxGroups).filter(Boolean).length;
+
+        document.querySelectorAll('textarea').forEach(textarea => {
+            if (textarea.value.trim() !== '') {
+                answeredQuestions++;
+            }
+        });
+
+        if (answeredQuestions < totalQuestions) {
+            if (!confirm(
+                    `Anda baru menjawab ${answeredQuestions} dari ${totalQuestions} soal.\n\nYakin ingin submit?`
+                    )) {
+                e.preventDefault();
+                return;
+            }
+        } else {
+            if (!confirm("Apakah Anda yakin ingin mengakhiri dan mengirimkan jawaban quiz ini?")) {
+                e.preventDefault();
+                return;
+            }
+        }
+
+        // Set submitting flag
+        isSubmitting = true;
+        
+        // Disable submit button to prevent double submission
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sedang Mengirim...';
+        
+        // Don't clean up localStorage here - let it be cleaned up after successful submission
+        // The cleanup will happen via page unload or after server response
+        
+        console.log('Form submitted with tab switch count:', tabSwitchCount);
+    });
+
+    // Monitor volume changes
     setInterval(function() {
         if (alertSound.volume !== 1.0) {
             alertSound.volume = 1.0;
         }
     }, 100);
     
-    // Block audio context manipulation
-    if (window.AudioContext || window.webkitAudioContext) {
-        const OriginalAudioContext = window.AudioContext || window.webkitAudioContext;
-        window.AudioContext = window.webkitAudioContext = function() {
-            const context = new OriginalAudioContext();
-            const originalCreateGain = context.createGain;
-            context.createGain = function() {
-                const gain = originalCreateGain.call(context);
-                const originalGainSetter = Object.getOwnPropertyDescriptor(gain.gain, 'value').set;
-                Object.defineProperty(gain.gain, 'value', {
-                    set: function(value) {
-                        if (isFrozen || tabSwitchCount >= 8) {
-                            originalGainSetter.call(this, 1.0);
-                        } else {
-                            originalGainSetter.call(this, value);
-                        }
-                    },
-                    get: function() {
-                        return Object.getOwnPropertyDescriptor(gain.gain, 'value').get.call(this);
-                    }
-                });
-                return gain;
-            };
-            return context;
-        };
+    // Clean up localStorage when leaving the page (successful submission)
+    window.addEventListener('pagehide', function() {
+        if (isSubmitting) {
+            cleanupLocalStorage();
+        }
+    });
+    
+    // Additional cleanup on unload
+    window.addEventListener('unload', function() {
+        if (isSubmitting) {
+            cleanupLocalStorage();
+        }
+    });
+});
+
+// === PREVENT RELOAD ACCIDENT ===
+window.addEventListener('beforeunload', function(e) {
+    if (!isSubmitting) {
+        e.preventDefault();
+        e.returnValue = '';
+    } else {
+        // If submitting, clean up localStorage
+        cleanupLocalStorage();
     }
 });
 
-// Initialize counter (optional - remove if not needed)
-// addTabSwitchCounter();
-    
-        const startTime = Date.now();
-        document.getElementById('start_time_input').value = Math.floor(startTime / 1000);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const userId = {{ auth()->user()->id }};
-            const quizId = {{ $quiz->id }};
-            const storageKey = `quiz_${quizId}_user_${userId}_progress`;
-            const startTimeKey = `quiz_${quizId}_user_${userId}_start_time`;
-            const totalMinutes = {{ $quiz->waktu_menit }};
-            const form = document.getElementById('quiz-form');
-            const timerElement = document.getElementById('timer');
-            const totalQuestions = {{ $quiz->soals->count() }};
-            let isSubmitting = false;
-
-            // === TIMER HANDLING ===
-            let startTime = localStorage.getItem(startTimeKey);
-            const now = Date.now();
-            if (!startTime) {
-                startTime = now;
-                localStorage.setItem(startTimeKey, startTime);
-            } else {
-                startTime = parseInt(startTime);
-            }
-
-            const quizDuration = totalMinutes * 60 * 1000;
-            const timePassed = now - startTime;
-            let timeLeft = Math.floor((quizDuration - timePassed) / 1000);
-
-            if (timeLeft <= 0) {
-                timeLeft = 0;
-                showTimeUpModal();
-            }
-
-            function updateTimer() {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerElement.textContent =
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-                if (timeLeft <= 300) {
-                    timerElement.classList.add('timer-warning');
-                }
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    showTimeUpModal();
-                }
-                timeLeft--;
-            }
-
-            const timerInterval = setInterval(updateTimer, 1000);
-            updateTimer();
-
-            // === AUTO SUBMIT MODAL ===
-            function showTimeUpModal() {
-                const modal = new bootstrap.Modal(document.getElementById('timeUpModal'));
-                modal.show();
-
-                let countdown = 5;
-                const countdownElement = document.getElementById('countdown');
-                const countdownInterval = setInterval(() => {
-                    countdown--;
-                    countdownElement.textContent = countdown;
-                    if (countdown <= 0) {
-                        clearInterval(countdownInterval);
-                        isSubmitting = true;
-                        localStorage.removeItem(storageKey);
-                        localStorage.removeItem(startTimeKey);
-                        form.submit();
-                    }
-                }, 1000);
-            }
-
-            // === PROGRESS BAR ===
-            function updateProgress() {
-                let answeredQuestions = 0;
-
-                // Count radio buttons (multiple choice and true/false)
-                answeredQuestions += document.querySelectorAll('input[type="radio"]:checked').length;
-
-                // Count checkbox questions (at least one checked per question)
-                const checkboxQuestions = document.querySelectorAll('input[type="checkbox"]');
-                const checkboxGroups = {};
-                checkboxQuestions.forEach(checkbox => {
-                    const name = checkbox.name;
-                    if (!checkboxGroups[name]) {
-                        checkboxGroups[name] = false;
-                    }
-                    if (checkbox.checked) {
-                        checkboxGroups[name] = true;
-                    }
-                });
-                answeredQuestions += Object.values(checkboxGroups).filter(Boolean).length;
-
-                // Count essay questions (non-empty textareas)
-                const essayQuestions = document.querySelectorAll('textarea');
-                essayQuestions.forEach(textarea => {
-                    if (textarea.value.trim() !== '') {
-                        answeredQuestions++;
-                    }
-                });
-
-                const progressPercentage = (answeredQuestions / totalQuestions) * 100;
-                document.getElementById('answered-count').textContent = answeredQuestions;
-                document.getElementById('progress-bar').style.width = progressPercentage + '%';
-
-                const submitBtn = document.getElementById('submit-btn');
-                if (answeredQuestions === totalQuestions) {
-                    submitBtn.classList.remove('btn-success');
-                    submitBtn.classList.add('btn-primary');
-                    submitBtn.innerHTML =
-                        '<i class="fas fa-check-circle me-2"></i>Semua Soal Terjawab - Submit Quiz';
-                }
-            }
-
-            // Make updateProgress globally accessible
-            window.updateProgress = updateProgress;
-
-            // === SAVE & LOAD PROGRESS ===
-            function saveProgress() {
-                const answers = {};
-
-                // Save radio button answers
-                document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
-                    const soalId = input.name.split('_')[1];
-                    answers[soalId] = input.value;
-                });
-
-                // Save checkbox answers
-                const checkboxGroups = {};
-                document.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
-                    const soalId = input.name.split('_')[1].replace('[]', '');
-                    if (!checkboxGroups[soalId]) {
-                        checkboxGroups[soalId] = [];
-                    }
-                    checkboxGroups[soalId].push(input.value);
-                });
-                Object.keys(checkboxGroups).forEach(soalId => {
-                    answers[soalId] = checkboxGroups[soalId];
-                });
-
-                // Save essay answers
-                document.querySelectorAll('textarea').forEach(textarea => {
-                    const soalId = textarea.name.split('_')[1];
-                    answers[soalId] = textarea.value;
-                });
-
-                localStorage.setItem(storageKey, JSON.stringify(answers));
-            }
-
-            // Load saved progress
-            const savedAnswers = JSON.parse(localStorage.getItem(storageKey));
-            if (savedAnswers) {
-                Object.keys(savedAnswers).forEach(soalId => {
-                    const savedAnswer = savedAnswers[soalId];
-
-                    // Handle radio buttons
-                    const radio = document.querySelector(
-                        `input[name="jawaban_${soalId}"][value="${savedAnswer}"]`);
-                    if (radio) {
-                        radio.checked = true;
-                    }
-
-                    // Handle checkboxes
-                    if (Array.isArray(savedAnswer)) {
-                        savedAnswer.forEach(value => {
-                            const checkbox = document.querySelector(
-                                `input[name="jawaban_${soalId}[]"][value="${value}"]`);
-                            if (checkbox) {
-                                checkbox.checked = true;
-                            }
-                        });
-                    }
-
-                    // Handle essays
-                    const textarea = document.querySelector(`textarea[name="jawaban_${soalId}"]`);
-                    if (textarea) {
-                        textarea.value = savedAnswer;
-                    }
-                });
-                updateProgress();
-            }
-
-            // Add event listeners for all input types
-            document.querySelectorAll('input[type="radio"], input[type="checkbox"], textarea').forEach(input => {
-                input.addEventListener('change', () => {
-                    updateProgress();
-                    saveProgress();
-                });
-
-                if (input.tagName === 'TEXTAREA') {
-                    input.addEventListener('input', () => {
-                        updateProgress();
-                        saveProgress();
-                    });
-                }
-            });
-
-            // === FORM SUBMIT HANDLING ===
-            form.addEventListener('submit', function(e) {
-                let answeredQuestions = 0;
-
-                // Count answered questions
-                answeredQuestions += document.querySelectorAll('input[type="radio"]:checked').length;
-
-                const checkboxGroups = {};
-                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                    const name = checkbox.name;
-                    if (!checkboxGroups[name]) {
-                        checkboxGroups[name] = false;
-                    }
-                    if (checkbox.checked) {
-                        checkboxGroups[name] = true;
-                    }
-                });
-                answeredQuestions += Object.values(checkboxGroups).filter(Boolean).length;
-
-                document.querySelectorAll('textarea').forEach(textarea => {
-                    if (textarea.value.trim() !== '') {
-                        answeredQuestions++;
-                    }
-                });
-
-                if (answeredQuestions < totalQuestions) {
-                    if (!confirm(
-                            `Anda baru menjawab ${answeredQuestions} dari ${totalQuestions} soal.\n\nYakin ingin submit?`
-                            )) {
-                        e.preventDefault();
-                        return;
-                    }
-                } else {
-                    if (!confirm("Apakah Anda yakin ingin mengakhiri dan mengirimkan jawaban quiz ini?")) {
-                        e.preventDefault();
-                        return;
-                    }
-                }
-
-                isSubmitting = true;
-                localStorage.removeItem(storageKey);
-                localStorage.removeItem(startTimeKey);
-            });
-        });
-
-        // === PREVENT RELOAD ACCIDENT ===
-        window.addEventListener('beforeunload', function(e) {
-            if (!isSubmitting) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
-    </script>
+// Additional safety cleanup when page becomes hidden during submission
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden && isSubmitting) {
+        // Clean up localStorage if page becomes hidden during submission
+        setTimeout(() => {
+            cleanupLocalStorage();
+        }, 2000);
+    }
+});
+</script>
 @endsection

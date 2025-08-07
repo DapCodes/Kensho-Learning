@@ -12,7 +12,7 @@ class QuizSeeder extends Seeder
 {
     public function run(): void
     {
-         Quiz::create([
+        Quiz::create([
             'judul_quiz' => 'Bahasa Pemrograman Dasar',
             'deskripsi' => 'Quiz ini menguji pemahaman dasar mengenai bahasa pemrograman seperti sintaks, logika, dan konsep dasar pemrograman.',
             'kode_quiz' => 'QI82GY',
@@ -26,7 +26,6 @@ class QuizSeeder extends Seeder
             'status' => 'Umum',
         ]);
 
-
         Quiz::create([
             'judul_quiz' => 'Matematika Dasar (untuk anak kelas 2 SD)',
             'deskripsi' => 'Quiz ini dirancang untuk menguji pemahaman matematika dasar seperti penjumlahan, pengurangan, dan logika sederhana pada siswa kelas 2 SD.',
@@ -34,7 +33,7 @@ class QuizSeeder extends Seeder
             'waktu_menit' => 45,
             'kategori_id' => 1,
             'mata_pelajaran_id' => 1,
-            'user_id' => 1,
+            'user_id' => 2,
             'status_aktivasi' => 'Aktif',
             'tanggal_buat' => Carbon::now(),
             'pengulangan_pekerjaan' => 'Boleh',
@@ -49,7 +48,7 @@ class QuizSeeder extends Seeder
                 'waktu_menit' => 60,
                 'kategori_id' => 1,
                 'mata_pelajaran_id' => 2,
-                'user_id' => 1,
+                'user_id' => 3,
                 'status_aktivasi' => 'Aktif',
                 'tanggal_buat' => Carbon::now(),
                 'pengulangan_pekerjaan' => 'Boleh',
@@ -62,7 +61,7 @@ class QuizSeeder extends Seeder
                 'waktu_menit' => 50,
                 'kategori_id' => 1,
                 'mata_pelajaran_id' => 3,
-                'user_id' => 1,
+                'user_id' => 2,
                 'status_aktivasi' => 'Aktif',
                 'tanggal_buat' => Carbon::now(),
                 'pengulangan_pekerjaan' => 'Boleh',
@@ -75,7 +74,7 @@ class QuizSeeder extends Seeder
                 'waktu_menit' => 55,
                 'kategori_id' => 2,
                 'mata_pelajaran_id' => 4,
-                'user_id' => 1,
+                'user_id' => 4,
                 'status_aktivasi' => 'Aktif',
                 'tanggal_buat' => Carbon::now(),
                 'pengulangan_pekerjaan' => 'Boleh',
@@ -88,7 +87,7 @@ class QuizSeeder extends Seeder
                 'waktu_menit' => 65,
                 'kategori_id' => 1,
                 'mata_pelajaran_id' => 5,
-                'user_id' => 1,
+                'user_id' => 4,
                 'status_aktivasi' => 'Aktif',
                 'tanggal_buat' => Carbon::now(),
                 'pengulangan_pekerjaan' => 'Boleh',
@@ -101,7 +100,7 @@ class QuizSeeder extends Seeder
                 'waktu_menit' => 70,
                 'kategori_id' => 2,
                 'mata_pelajaran_id' => 4,
-                'user_id' => 1,
+                'user_id' => 2,
                 'status_aktivasi' => 'Aktif',
                 'tanggal_buat' => Carbon::now(),
                 'pengulangan_pekerjaan' => 'Boleh',
@@ -114,7 +113,7 @@ class QuizSeeder extends Seeder
                 'waktu_menit' => 60,
                 'kategori_id' => 1,
                 'mata_pelajaran_id' => 5,
-                'user_id' => 1,
+                'user_id' => 2,
                 'status_aktivasi' => 'Aktif',
                 'tanggal_buat' => Carbon::now(),
                 'pengulangan_pekerjaan' => 'Boleh',
@@ -127,7 +126,7 @@ class QuizSeeder extends Seeder
                 'waktu_menit' => 45,
                 'kategori_id' => 1,
                 'mata_pelajaran_id' => 7,
-                'user_id' => 1,
+                'user_id' => 4,
                 'status_aktivasi' => 'Aktif',
                 'tanggal_buat' => Carbon::now(),
                 'pengulangan_pekerjaan' => 'Boleh',
@@ -140,5 +139,3 @@ class QuizSeeder extends Seeder
         }
     }
 }
-
-

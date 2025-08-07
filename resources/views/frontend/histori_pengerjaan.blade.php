@@ -123,6 +123,7 @@
                                         @endif
                                     </p>
                                 </div>
+
                             </div>
                         </div>
                         <div class="col-md-6 text-md-end mt-3 mt-md-0">
@@ -138,6 +139,15 @@
                     </div>
                 </div>
             </div>
+
+            <form method="GET" action="{{ route('histori-pengerjaan') }}" class="mb-4">
+                <div class="d-flex gap-2">
+                    <input type="number" name="min_skor" class="form-control" placeholder="Skor Minimum" value="{{ request('min_skor') }}">
+                    <input type="number" name="max_skor" class="form-control" placeholder="Skor Maksimum" value="{{ request('max_skor') }}">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="{{ route('histori-pengerjaan') }}" class="btn btn-secondary">Reset</a>
+                </div>
+            </form>
 
             <!-- Enhanced Histori Table -->
             <div class="card border-0 shadow-sm">

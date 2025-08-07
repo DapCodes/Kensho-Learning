@@ -111,11 +111,14 @@
                                                 {{ $user->name }}</h6>
                                         </td>
                                         <td class="py-4 text-dark">{{ $user->email }}</td>
-                                        <td class="py-4">
-                                            <span
-                                                class="badge {{ $user->isAdmin ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary' }}">
-                                                {{ $user->isAdmin ? 'Admin' : 'User' }}
-                                            </span>
+                                        <td class="text-center">
+                                            @if ($user->isAdmin === '2')
+                                                <span class="badge bg-success">Admin</span>
+                                            @elseif ($user->isAdmin === '1')
+                                                <span class="badge bg-primary">Guru</span>
+                                            @else
+                                                <span class="badge bg-secondary">Siswa</span>
+                                            @endif
                                         </td>
                                          <td class="py-4">
                                              <h6 class="mb-0 fw-bold text-dark" title="{{ $user->name }}">
@@ -156,6 +159,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    <div class="m-4">
+                        {{ $users->links('vendor.pagination.bootstrap-5') }}
                     </div>
                 </div>
             @else

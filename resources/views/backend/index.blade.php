@@ -189,11 +189,8 @@
                                             <div class="position-relative mb-3">
                                                 <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center text-white fw-bold" 
                                                      style="width: 40px; height: 40px;">
-                                                    {{ $loop->iteration }}
+                                                    #{{ $loop->iteration }}
                                                 </div>
-                                                @if($index == 1)
-                                                    <i class="ti ti-crown text-warning position-absolute" style="top: -5px; right: -5px; font-size: 20px;"></i>
-                                                @endif
                                             </div>
                                             <h6 class="mb-2">{{ Str::limit($performance['judul'], 25) }}</h6>
                                             <div class="d-flex justify-content-between text-muted small mb-2">

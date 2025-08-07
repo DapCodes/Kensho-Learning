@@ -33,19 +33,19 @@ class DataPengerjaanSiswaExport implements FromCollection, WithColumnFormatting,
 
         return $this->hasilUjian->detail->map(function ($item, $index) use ($siswa) {
             return [
-                'No'               => $index + 1,
-                'Nama Siswa'       => $siswa->name,
-                'Email'            => $siswa->email,
-                'Kelas'            => optional($siswa->kelas)->nama_kelas ?? '-',
-                'Pertanyaan'       => $this->limitText($item->soal->pertanyaan, 100),
-                'Jawaban Benar'    => $this->formatJawabanBenar($item->soal),
-                'Jawaban Peserta'  => $this->formatJawabanPeserta($item->jawaban_peserta),
-                'Status'           => $this->getStatusJawaban($item->status_jawaban),
-                'Bobot Soal'       => $item->bobot_soal,
-                'Bobot Diperoleh'  => $item->bobot_diperoleh,
-                'Persentase'       => $item->persentase_bobot.'%',
-                'Jenis Soal'       => $item->soal->tipe,
-                'Tingkat Kesulitan'=> $item->soal->tingkat_kesulitan ?? 'Normal',
+                'No' => $index + 1,
+                'Nama Siswa' => $siswa->name,
+                'Email' => $siswa->email,
+                'Kelas' => optional($siswa->kelas)->nama_kelas ?? '-',
+                'Pertanyaan' => $this->limitText($item->soal->pertanyaan, 100),
+                'Jawaban Benar' => $this->formatJawabanBenar($item->soal),
+                'Jawaban Peserta' => $this->formatJawabanPeserta($item->jawaban_peserta),
+                'Status' => $this->getStatusJawaban($item->status_jawaban),
+                'Bobot Soal' => $item->bobot_soal,
+                'Bobot Diperoleh' => $item->bobot_diperoleh,
+                'Persentase' => $item->persentase_bobot.'%',
+                'Jenis Soal' => $item->soal->tipe,
+                'Tingkat Kesulitan' => $item->soal->tingkat_kesulitan ?? 'Normal',
             ];
         });
     }

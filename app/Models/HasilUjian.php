@@ -22,6 +22,7 @@ class HasilUjian extends Model
         'total_bobot',
         'bobot_diperoleh',
         'waktu_pengerjaan',
+        'perpindahan_halaman',
         'tanggal_ujian',
     ];
 

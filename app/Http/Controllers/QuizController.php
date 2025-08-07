@@ -642,6 +642,9 @@ class QuizController extends Controller
         $jumlahSalah = 0;
         $detailJawaban = [];
 
+        // Get perpindahan halaman dari request
+        $perpindahanHalaman = (int) $request->input('perpindahan_halaman');
+
         // Process each question based on its type
         foreach ($soals as $soal) {
             $totalBobot += $soal->bobot;
@@ -746,7 +749,7 @@ class QuizController extends Controller
         $skor = $totalBobot > 0 ? round(($bobotBenar / $totalBobot) * 100, 2) : 0;
 
         // Calculate time taken
-        $startTimestamp = (int) $request->input('start_time');
+        $startTimestamp = (int) $request->input('start_time', now()->timestamp);
         $nowTimestamp = now()->timestamp;
         $waktuPengerjaan = max(0, $nowTimestamp - $startTimestamp);
         $waktuPengerjaanMenitDecimal = round($waktuPengerjaan / 60, 2);
@@ -765,11 +768,11 @@ class QuizController extends Controller
                 'total_bobot' => $totalBobot,
                 'bobot_diperoleh' => round($bobotBenar, 2),
                 'waktu_pengerjaan' => $waktuPengerjaanMenitDecimal,
+                'perpindahan_halaman' => $perpindahanHalaman, // PERBAIKAN: Pastikan value masuk
                 'tanggal_ujian' => Carbon::now()->toDateString(),
             ]);
 
-            // PERBAIKAN: Hapus detail lama dan masukkan yang baru untuk SEMUA quiz
-            // (tidak hanya quiz umum)
+            // Delete old details and insert new ones
             $hasil->detail()->delete();
 
             foreach ($detailJawaban as $detail) {
@@ -793,6 +796,7 @@ class QuizController extends Controller
                 'total_bobot' => $totalBobot,
                 'bobot_diperoleh' => round($bobotBenar, 2),
                 'waktu_pengerjaan' => $waktuPengerjaanMenitDecimal,
+                'perpindahan_halaman' => $perpindahanHalaman, // PERBAIKAN: Pastikan value masuk
                 'tanggal_ujian' => Carbon::now()->toDateString(),
             ]);
 

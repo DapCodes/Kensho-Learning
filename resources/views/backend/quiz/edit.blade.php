@@ -164,9 +164,6 @@
             <div class="card border-0">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Soal Quiz</h5>
-                    <button type="button" class="btn btn-primary btn-sm" id="add-question">
-                        <i class="ti ti-plus me-1"></i>Tambah Soal
-                    </button>
                 </div>
                 <div class="card-body">
                     <div id="questions-container">
@@ -227,9 +224,14 @@
                         <a href="{{ route('quiz.index') }}" class="btn btn-outline-secondary">
                             <i class="ti ti-arrow-left me-2"></i>Kembali
                         </a>
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="ti ti-device-floppy me-2"></i>Simpan Perubahan
-                        </button>
+                        <div class="d-flex justify-content-end gap-1">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="ti ti-device-floppy me-2"></i>Simpan Perubahan
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" id="add-question">
+                                <i class="ti ti-plus me-1"></i>Tambah Soal
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

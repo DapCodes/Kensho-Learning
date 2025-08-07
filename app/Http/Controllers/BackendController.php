@@ -11,142 +11,166 @@ use App\Models\Soal;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class BackendController extends Controller
 {
     public function index(Request $request)
-{
-    
-    // Basic query for user's quizzes
-    $query = Quiz::with(['kategori', 'mataPelajaran', 'soals', 'hasilUjian.user'])
-        ->where('user_id', auth()->id())
-        ->orderBy('created_at', 'desc');
-    
-    $showAll = $request->get('show_all', false);
-    
-    // Get all categories and mata pelajaran for filtering
-    $categories = Kategori::all();
-    
-    $mataPelajaran = MataPelajaran::all();
-    
-    // Get recent quizzes (last 7 days)
-    $recentQuizzes = $query->clone()
-        ->where('created_at', '>=', Carbon::now()->subDays(7))
-        ->with(['soals', 'hasilUjian'])
-        ->get();
-    
-    // Get all quizzes for the user
-    if (! $showAll) {
-        $quizzes = $query->paginate(12);
-    } else {
-        $quizzes = $query->get();
-    }
-    
-    // Calculate comprehensive statistics
-    $stats = $this->getAdminStats();
-    
-    // Get quiz performance data
-    $quizPerformance = $this->getQuizPerformanceData();
-    
-    // Get pending essays count
-    $pendingEssaysCount = $this->getPendingEssaysCount();
-    
-    
-    // Get weekly statistics
-    $weeklyStats = $this->getWeeklyStats();
-    
-    // Get top performing students
-    $topStudents = $this->getTopStudents();
-    
-    // Get quiz completion trends
-    $completionTrends = $this->getCompletionTrends();
-    
-    // Get recent messages
-    $recentMessages = $this->getRecentMessages();
-    
-    return view('backend.index', compact(
-        'quizzes',
-        'recentQuizzes',
-        'showAll',
-        'categories',
-        'mataPelajaran',
-        'stats',
-        'quizPerformance',
-        'pendingEssaysCount',
-        'weeklyStats',
-        'topStudents',
-        'completionTrends',
-        'recentMessages'
-    ));
-}
+    {
+        $user = auth()->user();
 
-/**
- * Get recent messages for dashboard
- */
-private function getRecentMessages($limit = 5)
-{
-    return \App\Models\Pesan::orderBy('created_at', 'desc')
-        ->limit($limit)
-        ->get();
-}
+        // Basic query for quizzes based on admin level
+        $query = Quiz::with(['kategori', 'mataPelajaran', 'soals', 'hasilUjian.user']);
+
+        // Apply filter based on admin level
+        if ($user->isAdmin === '1') {
+            // Admin level 1: Show only quizzes created by this user
+            $query->where('user_id', $user->id);
+        } elseif ($user->isAdmin === '2') {
+            // Admin level 2: Show all quizzes (no filter needed)
+            // $query remains unchanged to show all quizzes
+        } else {
+            // For non-admin users, show only their own quizzes (fallback)
+            $query->where('user_id', $user->id);
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        $showAll = $request->get('show_all', false);
+
+        // Get all categories and mata pelajaran for filtering
+        $categories = Kategori::all();
+        $mataPelajaran = MataPelajaran::all();
+
+        // Get recent quizzes (last 7 days)
+        $recentQuizzes = $query->clone()
+            ->where('created_at', '>=', Carbon::now()->subDays(7))
+            ->with(['soals', 'hasilUjian'])
+            ->get();
+
+        // Get all quizzes for the user
+        if (! $showAll) {
+            $quizzes = $query->paginate(12);
+        } else {
+            $quizzes = $query->get();
+        }
+
+        // Calculate comprehensive statistics
+        $stats = $this->getAdminStats();
+
+        // Get quiz performance data
+        $quizPerformance = $this->getQuizPerformanceData();
+
+        // Get pending essays count
+        $pendingEssaysCount = $this->getPendingEssaysCount();
+
+        // Get weekly statistics
+        $weeklyStats = $this->getWeeklyStats();
+
+        // Get top performing students
+        $topStudents = $this->getTopStudents();
+
+        // Get quiz completion trends
+        $completionTrends = $this->getCompletionTrends();
+
+        // Get recent messages
+        $recentMessages = $this->getRecentMessages();
+
+        return view('backend.index', compact(
+            'quizzes',
+            'recentQuizzes',
+            'showAll',
+            'categories',
+            'mataPelajaran',
+            'stats',
+            'quizPerformance',
+            'pendingEssaysCount',
+            'weeklyStats',
+            'topStudents',
+            'completionTrends',
+            'recentMessages'
+        ));
+    }
+
+    /**
+     * Get recent messages for dashboard
+     */
+    private function getRecentMessages($limit = 5)
+    {
+        return \App\Models\Pesan::orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+    }
 
     private function getAdminStats()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
 
-        // Total quizzes created by admin
-        $totalQuizzes = Quiz::where('user_id', $userId)->count();
+        // Base queries for quizzes based on admin level
+        if ($user->isAdmin === '1') {
+            // Admin level 1: Only their own quizzes
+            $quizQuery = Quiz::where('user_id', $user->id);
+            $hasilUjianQuery = HasilUjian::whereHas('quiz', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+            $soalQuery = Soal::whereHas('quiz', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+        } elseif ($user->isAdmin === '2') {
+            // Admin level 2: All quizzes
+            $quizQuery = Quiz::query();
+            $hasilUjianQuery = HasilUjian::query();
+            $soalQuery = Soal::query();
+        } else {
+            // Fallback: Only their own quizzes
+            $quizQuery = Quiz::where('user_id', $user->id);
+            $hasilUjianQuery = HasilUjian::whereHas('quiz', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+            $soalQuery = Soal::whereHas('quiz', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
 
-        $activeQuizzes = Quiz::where('user_id', $userId)
+        // Calculate statistics
+        $totalQuizzes = $quizQuery->count();
+        $activeQuizzes = $quizQuery->clone()
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->count();
 
-        $totalPeserta = HasilUjian::whereHas('quiz', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->distinct('user_id')->count();
+        $totalPeserta = $hasilUjianQuery->clone()
+            ->distinct('user_id')
+            ->count();
 
-        $totalSoal = Soal::whereHas('quiz', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->count();
-
-        $totalDurasi = Quiz::where('user_id', $userId)->sum('waktu_menit');
-
-        $totalSubmissions = HasilUjian::whereHas('quiz', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->count();
-
-        $averageScore = HasilUjian::whereHas('quiz', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->avg('skor');
+        $totalSoal = $soalQuery->count();
+        $totalDurasi = $quizQuery->clone()->sum('waktu_menit');
+        $totalSubmissions = $hasilUjianQuery->clone()->count();
+        $averageScore = $hasilUjianQuery->clone()->avg('skor');
 
         $completionRate = $totalPeserta > 0 ? ($totalSubmissions / $totalPeserta) * 100 : 0;
 
-        $bestQuiz = Quiz::where('user_id', $userId)
+        $bestQuiz = $quizQuery->clone()
             ->withAvg('hasilUjian', 'skor')
             ->orderBy('hasil_ujian_avg_skor', 'desc')
             ->first();
 
-        $popularQuiz = Quiz::where('user_id', $userId)
+        $popularQuiz = $quizQuery->clone()
             ->withCount('hasilUjian')
             ->orderByDesc('hasil_ujian_count')
             ->limit(3)
             ->get();
 
-        $thisMonth = HasilUjian::whereHas('quiz', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->whereBetween('created_at', [
-            Carbon::now()->startOfMonth(),
-            Carbon::now()->endOfMonth(),
-        ])->count();
+        $thisMonth = $hasilUjianQuery->clone()
+            ->whereBetween('created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth(),
+            ])->count();
 
-        $lastMonth = HasilUjian::whereHas('quiz', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->whereBetween('created_at', [
-            Carbon::now()->subMonth()->startOfMonth(),
-            Carbon::now()->subMonth()->endOfMonth(),
-        ])->count();
+        $lastMonth = $hasilUjianQuery->clone()
+            ->whereBetween('created_at', [
+                Carbon::now()->subMonth()->startOfMonth(),
+                Carbon::now()->subMonth()->endOfMonth(),
+            ])->count();
 
         $growthRate = $lastMonth > 0 ? (($thisMonth - $lastMonth) / $lastMonth) * 100 : 0;
 
@@ -167,15 +191,20 @@ private function getRecentMessages($limit = 5)
         ];
     }
 
-
     private function getQuizPerformanceData()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
 
-        return Quiz::where('user_id', $userId)
-            ->with(['hasilUjian' => function ($query) {
-                $query->select('quiz_id', 'skor', 'created_at', 'waktu_pengerjaan');
-            }])
+        // Base query for quizzes based on admin level
+        $query = Quiz::query();
+        if ($user->isAdmin === '1') {
+            $query->where('user_id', $user->id);
+        }
+        // For admin level 2, no filter needed (show all quizzes)
+
+        return $query->with(['hasilUjian' => function ($query) {
+            $query->select('quiz_id', 'skor', 'created_at', 'waktu_pengerjaan');
+        }])
             ->get()
             ->map(function ($quiz) {
                 $results = $quiz->hasilUjian;
@@ -204,7 +233,6 @@ private function getRecentMessages($limit = 5)
             ->take(3);
     }
 
-
     private function calculateDifficultyLevel($averageScore)
     {
         if ($averageScore >= 80) {
@@ -222,32 +250,43 @@ private function getRecentMessages($limit = 5)
 
     private function getPendingEssaysCount()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
 
-        return HasilUjianDetail::whereHas('hasilUjian.quiz', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
+        $query = HasilUjianDetail::query();
+
+        if ($user->isAdmin === '1') {
+            $query->whereHas('hasilUjian.quiz', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+        // For admin level 2, no filter needed (show all)
+
+        return $query->whereHas('soal', function ($query) {
+            $query->where('tipe', 'essay');
         })
-            ->whereHas('soal', function ($query) {
-                $query->where('tipe', 'essay');
-            })
             ->where('status_jawaban', 'pending')
             ->count();
     }
 
-
     private function getWeeklyStats()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
         $startOfWeek = Carbon::now()->startOfWeek();
-
         $weeklyData = [];
+
         for ($i = 0; $i < 7; $i++) {
             $date = $startOfWeek->copy()->addDays($i);
-            $submissions = HasilUjian::whereHas('quiz', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-                ->whereDate('created_at', $date)
-                ->count();
+
+            $query = HasilUjian::whereDate('created_at', $date);
+
+            if ($user->isAdmin === '1') {
+                $query->whereHas('quiz', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
+            // For admin level 2, no filter needed (show all)
+
+            $submissions = $query->count();
 
             $weeklyData[] = [
                 'date' => $date->format('Y-m-d'),
@@ -261,13 +300,18 @@ private function getRecentMessages($limit = 5)
 
     private function getTopStudents()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
 
-        return HasilUjian::select('user_id', DB::raw('AVG(skor) as avg_score'), DB::raw('COUNT(*) as total_attempts'))
-            ->whereHas('quiz', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->with('user')
+        $query = HasilUjian::select('user_id', DB::raw('AVG(skor) as avg_score'), DB::raw('COUNT(*) as total_attempts'));
+
+        if ($user->isAdmin === '1') {
+            $query->whereHas('quiz', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+        // For admin level 2, no filter needed (show all)
+
+        return $query->with('user')
             ->groupBy('user_id')
             ->orderByDesc('avg_score')
             ->take(10)
@@ -283,14 +327,19 @@ private function getRecentMessages($limit = 5)
 
     private function getCompletionTrends()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
         $last30Days = Carbon::now()->subDays(30);
 
-        return HasilUjian::whereHas('quiz', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })
-            ->where('created_at', '>=', $last30Days)
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as completions')
+        $query = HasilUjian::where('created_at', '>=', $last30Days);
+
+        if ($user->isAdmin === '1') {
+            $query->whereHas('quiz', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+        // For admin level 2, no filter needed (show all)
+
+        return $query->selectRaw('DATE(created_at) as date, COUNT(*) as completions')
             ->groupBy('date')
             ->orderBy('date')
             ->get();

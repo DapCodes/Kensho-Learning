@@ -15,8 +15,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::latest()->get();
-        $kelass = Kelas::whereNot('jurusan', 'UMUM')->orderBy('nama_kelas', 'asc')->get();
+        $users = User::orderByRaw("FIELD(isAdmin, '2', '1', '0')")
+            ->latest()
+            ->paginate(10);
+
+        $kelass = Kelas::whereNot('jurusan', 'UMUM')
+            ->orderBy('nama_kelas', 'asc')
+            ->get();
 
         return view('backend.user.index', compact('users', 'kelass'));
     }

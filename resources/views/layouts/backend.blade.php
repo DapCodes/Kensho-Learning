@@ -19,7 +19,17 @@
     <!-- Owl Carousel -->
     <link rel="stylesheet" href="{{ asset('/assets/backend/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}" />
 
-    <title>Modernize Bootstrap Admin</title>
+    <title>
+        Kenshō |
+        @if(Auth::user()->isAdmin === '2')
+            Admin
+        @elseif(Auth::user()->isAdmin === '1')
+            Guru
+        @else
+            Siswa
+        @endif
+    </title>
+
 
     @yield('styles')
 </head>

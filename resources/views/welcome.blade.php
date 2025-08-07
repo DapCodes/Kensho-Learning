@@ -8,7 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <title>Scholar - Online School HTML5 Template</title>
+    <title>Kenshō | Selamat Datang!</title>
+
+    <link rel="shortcut icon" type="image/png" href="{{ asset('/assets/backend/images/logos/favicon.png') }}" />
 
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('assets/frontend/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -317,8 +319,8 @@ https://templatemo.com/tm-586-scholar
                     <div class="item">
                         <p>“{{ $pesan->pesan }}”</p>
                         <div class="author">
-                            <img src="{{ asset('assets/frontend/images/testimonial-author.jpg') }}" alt="">
-                            <span class="category">Peserta</span>
+                            <img src="{{ asset('assets/frontend/images/testimonial-author.avif') }}" alt="">
+                            <span class="category">Pengguna</span>
                             <h4>{{ $pesan->nama_pengirim }}</h4>
                         </div>
                     </div>

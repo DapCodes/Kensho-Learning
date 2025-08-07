@@ -5,19 +5,28 @@ namespace App\Http\Controllers;
 use App\Exports\DataNilaiExport;
 use App\Models\HasilUjian;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class HasilUjianController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user()->id;
-        // Ambil semua histori berdasarkan user login, dengan relasi quiz dan user
-        $histori = HasilUjian::with(['quiz', 'user'])
-            ->where('user_id', $user)
-            ->latest()
-            ->get();
+
+        $query = HasilUjian::with(['quiz', 'user'])
+            ->where('user_id', $user);
+
+        if ($request->filled('min_skor')) {
+            $query->where('skor', '>=', $request->min_skor);
+        }
+
+        if ($request->filled('max_skor')) {
+            $query->where('skor', '<=', $request->max_skor);
+        }
+
+        $histori = $query->latest()->get();
 
         return view('frontend.histori_pengerjaan', compact('histori'));
     }

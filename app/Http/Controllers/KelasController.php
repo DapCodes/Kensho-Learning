@@ -10,7 +10,7 @@ class KelasController extends Controller
 {
     public function index()
     {
-        $kelas = Kelas::latest()->get();
+        $kelas = Kelas::latest()->paginate(10);
 
         return view('backend.kelas.index', compact('kelas'));
     }
