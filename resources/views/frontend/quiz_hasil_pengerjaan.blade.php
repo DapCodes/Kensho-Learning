@@ -288,7 +288,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0">Jawaban Benar</h6>
-                                        <span class="text-success fw-bold">{{ $hasil->jumlah_benar }}</span>
+                                        <span class="text-success fw-bold">{{ $hasil->jumlah_benar}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -355,7 +355,7 @@
                                                         <span class="badge bg-success-subtle text-success">
                                                             <i class="ti ti-check me-1"></i>Benar
                                                         </span>
-                                                    @elseif ($detail->status_jawaban === 'benar')
+                                                    @elseif ($detail->status_jawaban === 'salah')
                                                         <span class="badge bg-danger-subtle text-danger">
                                                             <i class="ti ti-x me-1"></i>Salah
                                                         </span>
@@ -648,6 +648,45 @@
                         item.classList.add('fade-in-question');
                     });
                 });
+
+                document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on load
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('fade-in');
+            });
+
+            // Animate progress bars
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+
+        function printResult() {
+            window.print();
+        }
+
+        function shareResult() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Hasil Quiz',
+                    text: 'Saya telah menyelesaikan quiz dan mendapat skor {{ $hasil->skor }}!',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Link hasil telah disalin ke clipboard!');
+                });
+            }
+        }
             </script>
 
             <style>
@@ -810,47 +849,6 @@
             </a>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate cards on load
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.classList.add('fade-in');
-            });
-
-            // Animate progress bars
-            const progressBars = document.querySelectorAll('.progress-bar');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 500);
-            });
-        });
-
-        function printResult() {
-            window.print();
-        }
-
-        function shareResult() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Hasil Quiz',
-                    text: 'Saya telah menyelesaikan quiz dan mendapat skor {{ $hasil->skor }}!',
-                    url: window.location.href
-                });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                const url = window.location.href;
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Link hasil telah disalin ke clipboard!');
-                });
-            }
-        }
-    </script>
 
     <style>
         .card {

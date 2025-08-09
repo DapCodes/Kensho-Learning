@@ -365,6 +365,6 @@
         </div>
     @endif
 
-    <script src="{{asset('/assets/backend/js/main/script-kelas.js')}}"></script>
+    <script src="{{ asset('/assets/backend/js/main/script-kelas.js') }}"></script>
     @include('layouts.components-backend.css')
 @endsection

@@ -46,7 +46,8 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Informasi Quiz</h5>
                 <div class="d-flex gap-2">
-                    <a class="btn btn-info btn-sm" href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}" title="Export PDF">
+                    <a class="btn btn-info btn-sm"
+                        href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}" title="Export PDF">
                         <i class="ti ti-file-text"></i>
                     </a>
                     <a href="{{ route('quiz.edit', $quiz->id) }}" class="btn btn-warning btn-sm">
@@ -120,19 +121,19 @@
         </div>
 
 
-                    @php
-                        $questionTypes = [
-                            'pilihan_ganda' => ['label' => 'Pilihan Ganda', 'icon' => 'ti-list', 'color' => 'primary'],
-                            'essay' => ['label' => 'Essay', 'icon' => 'ti-file-text', 'color' => 'primary'],
-                            'benar_salah' => ['label' => 'Benar/Salah', 'icon' => 'ti-x', 'color' => 'primary'],
-                            'checkbox' => ['label' => 'Pilihan Ganda (Multiple)', 'icon' => 'ti-checkbox', 'color' => 'primary']
-                        ];
-                        
-                        $typeStats = $quiz->soals->groupBy('tipe_soal')->map(function($questions) {
-                            return $questions->count();
-                        });
-                    @endphp
-                
+        @php
+            $questionTypes = [
+                'pilihan_ganda' => ['label' => 'Pilihan Ganda', 'icon' => 'ti-list', 'color' => 'primary'],
+                'essay' => ['label' => 'Essay', 'icon' => 'ti-file-text', 'color' => 'primary'],
+                'benar_salah' => ['label' => 'Benar/Salah', 'icon' => 'ti-x', 'color' => 'primary'],
+                'checkbox' => ['label' => 'Pilihan Ganda (Multiple)', 'icon' => 'ti-checkbox', 'color' => 'primary'],
+            ];
+
+            $typeStats = $quiz->soals->groupBy('tipe_soal')->map(function ($questions) {
+                return $questions->count();
+            });
+        @endphp
+
 
         <!-- Questions Section -->
         <div class="card border-0">
@@ -150,9 +151,10 @@
                             $questionType = $soal->tipe;
                             $typeConfig = $questionTypes[$questionType] ?? $questionTypes['pilihan_ganda'];
                         @endphp
-                        
+
                         <div class="question-item card mb-4" data-type="{{ $questionType }}">
-                            <div class="card-header bg-{{ $typeConfig['color'] }}-subtle d-flex justify-content-between align-items-center">
+                            <div
+                                class="card-header bg-{{ $typeConfig['color'] }}-subtle d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="card-title mb-0 text-{{ $typeConfig['color'] }}">
                                         <i class="ti ti-help-circle me-2"></i>Soal {{ $index + 1 }}
@@ -176,16 +178,20 @@
                                 @switch($questionType)
                                     @case('pilihan_ganda')
                                         @include('backend.quiz.partials.pilihan-ganda', ['soal' => $soal])
-                                        @break
+                                    @break
+
                                     @case('essay')
                                         @include('backend.quiz.partials.essay', ['soal' => $soal])
-                                        @break
+                                    @break
+
                                     @case('benar_salah')
                                         @include('backend.quiz.partials.benar-salah', ['soal' => $soal])
-                                        @break
+                                    @break
+
                                     @case('checkbox')
                                         @include('backend.quiz.partials.checkbox', ['soal' => $soal])
-                                        @break
+                                    @break
+
                                     @default
                                         @include('backend.quiz.partials.pilihan-ganda', ['soal' => $soal])
                                 @endswitch
@@ -194,9 +200,9 @@
                                     <small class="text-muted">
                                         <i class="ti ti-check-circle text-success me-1"></i>
                                         Tipe: {{ $typeConfig['label'] }}
-                                        @if($questionType !== 'essay')
-                                            | Jawaban: 
-                                            @if($questionType === 'checkbox')
+                                        @if ($questionType !== 'essay')
+                                            | Jawaban:
+                                            @if ($questionType === 'checkbox')
                                                 <span class="text-success">Multiple</span>
                                             @else
                                                 <strong class="text-success">{{ $soal->jawaban_benar }}</strong>
@@ -228,7 +234,8 @@
                 <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar Quiz
             </a>
             <div class="d-flex gap-2">
-                <a href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}" class="btn btn-danger" target="_blank">
+                <a href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}" class="btn btn-danger"
+                    target="_blank">
                     <i class="ti ti-file-download me-2"></i>Cetak PDF
                 </a>
                 <a href="{{ route('quiz.edit', $quiz->id) }}" class="btn btn-warning">
@@ -243,41 +250,7 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const questionItems = document.querySelectorAll('.question-item');
-
-            questionItems.forEach((item, index) => {
-                item.style.animationDelay = `${index * 0.1}s`;
-                item.classList.add('fade-in');
-            });
-        });
-
-        function shareQuiz() {
-            if (navigator.share) {
-                navigator.share({
-                    title: '{{ $quiz->judul_quiz }}',
-                    text: 'Ikuti quiz: {{ $quiz->judul_quiz }}',
-                    url: window.location.href
-                });
-            } else {
-                // Fallback untuk browser yang tidak mendukung Web Share API
-                const url = window.location.href;
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Link quiz telah disalin ke clipboard!');
-                }).catch(() => {
-                    // Jika clipboard API tidak didukung, gunakan metode lama
-                    const textArea = document.createElement('textarea');
-                    textArea.value = url;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    alert('Link quiz telah disalin ke clipboard!');
-                });
-            }
-        }
-    </script>
+    <script src="{{ asset('/assets/backend/js/main/quiz/script-quiz-show.js') }}"></script>
 
     @include('layouts.components-backend.css')
 

@@ -7,7 +7,8 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Selamat datang kembali <strong>{{ Auth::user()->name }}!</strong></h3>
+                        <h3 class="fw-bold mb-3 text-white">Selamat datang kembali <strong>{{ Auth::user()->name }}!</strong>
+                        </h3>
                         <p class="text-white-75 mb-3">Pantau semua data dari aplikasi anda!</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
@@ -96,7 +97,7 @@
                         </div>
                         <h3 class="fw-bold text-info mb-1">{{ $stats['totalSoal'] }}</h3>
                         <p class="text-muted mb-0">Total Soal</p>
-                        @if($pendingEssaysCount > 0)
+                        @if ($pendingEssaysCount > 0)
                             <small class="text-danger">
                                 <i class="ti ti-alert-circle"></i>
                                 {{ $pendingEssaysCount }} essay pending
@@ -138,24 +139,29 @@
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-success w-100 p-3 action-card">
+                                <a href="{{ route('penilaian.dataNilai') }}"
+                                    class="btn btn-outline-success w-100 p-3 action-card">
                                     <i class="ti ti-chart-bar d-block mb-2" style="font-size: 28px;"></i>
                                     <strong>Lihat Hasil</strong>
                                     <small class="d-block text-muted mt-1">Analisis performa</small>
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
-                                @if($pendingEssaysCount > 0)
-                                    <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-warning w-100 p-3 action-card position-relative">
+                                @if ($pendingEssaysCount > 0)
+                                    <a href="{{ route('penilaian.dataNilai') }}"
+                                        class="btn btn-outline-warning w-100 p-3 action-card position-relative">
                                         <i class="ti ti-edit d-block mb-2" style="font-size: 28px;"></i>
                                         <strong>Koreksi Essay</strong>
-                                        <small class="d-block text-muted mt-1">{{ $pendingEssaysCount }} perlu dikoreksi</small>
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        <small class="d-block text-muted mt-1">{{ $pendingEssaysCount }} perlu
+                                            dikoreksi</small>
+                                        <span
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                             {{ $pendingEssaysCount }}
                                         </span>
                                     </a>
                                 @else
-                                    <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-secondary w-100 p-3 action-card">
+                                    <a href="{{ route('penilaian.dataNilai') }}"
+                                        class="btn btn-outline-secondary w-100 p-3 action-card">
                                         <i class="ti ti-edit d-block mb-2" style="font-size: 28px;"></i>
                                         <strong>Koreksi Essay</strong>
                                         <small class="d-block text-muted mt-1">Semua terkoreksi</small>
@@ -187,19 +193,21 @@
                                     <div class="card bg-light border-0 h-100">
                                         <div class="card-body text-center">
                                             <div class="position-relative mb-3">
-                                                <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center text-white fw-bold" 
-                                                     style="width: 40px; height: 40px;">
+                                                <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center text-white fw-bold"
+                                                    style="width: 40px; height: 40px;">
                                                     #{{ $loop->iteration }}
                                                 </div>
                                             </div>
                                             <h6 class="mb-2">{{ Str::limit($performance['judul'], 25) }}</h6>
                                             <div class="d-flex justify-content-between text-muted small mb-2">
-                                                <span><i class="ti ti-users me-1"></i>{{ $performance['total_peserta'] }}</span>
-                                                <span class="badge bg-primary">{{ number_format($performance['rata_rata_skor'], 1) }}%</span>
+                                                <span><i
+                                                        class="ti ti-users me-1"></i>{{ $performance['total_peserta'] }}</span>
+                                                <span
+                                                    class="badge bg-primary">{{ number_format($performance['rata_rata_skor'], 1) }}%</span>
                                             </div>
                                             <div class="progress" style="height: 6px;">
-                                                <div class="progress-bar" role="progressbar" 
-                                                     style="width: {{ $performance['rata_rata_skor'] }}%"></div>
+                                                <div class="progress-bar" role="progressbar"
+                                                    style="width: {{ $performance['rata_rata_skor'] }}%"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -228,13 +236,13 @@
                     <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="ti ti-message me-2"></i>Pesan Masuk
-                            @if($recentMessages->count() > 0)
+                            @if ($recentMessages->count() > 0)
                                 <span class="badge bg-primary ms-2">{{ $recentMessages->count() }}</span>
                             @endif
                         </h5>
                     </div>
                     <div class="card-body">
-                        @if($recentMessages->count() > 0)
+                        @if ($recentMessages->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead class="table-light">
@@ -248,12 +256,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($recentMessages as $index => $pesan)
+                                        @foreach ($recentMessages as $index => $pesan)
                                             <tr id="message-{{ $pesan->id }}">
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                        <div
+                                                            class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
                                                             <i class="ti ti-user text-white"></i>
                                                         </div>
                                                         <div>
@@ -262,24 +271,26 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a href="mailto:{{ $pesan->email_pengirim }}" class="text-decoration-none">
+                                                    <a href="mailto:{{ $pesan->email_pengirim }}"
+                                                        class="text-decoration-none">
                                                         {{ $pesan->email_pengirim }}
                                                     </a>
                                                 </td>
                                                 <td>
                                                     <div class="message-content">
                                                         {{ Str::limit($pesan->pesan, 50) }}
-                                                        @if(strlen($pesan->pesan) > 50)
-                                                            <button class="btn btn-sm btn-link p-0 text-decoration-none" 
-                                                                    onclick="toggleMessage({{ $pesan->id }})">
+                                                        @if (strlen($pesan->pesan) > 50)
+                                                            <button class="btn btn-sm btn-link p-0 text-decoration-none"
+                                                                onclick="toggleMessage({{ $pesan->id }})">
                                                                 <small>Lihat selengkapnya</small>
                                                             </button>
                                                         @endif
                                                     </div>
-                                                    <div id="full-message-{{ $pesan->id }}" class="full-message d-none">
+                                                    <div id="full-message-{{ $pesan->id }}"
+                                                        class="full-message d-none">
                                                         {{ $pesan->pesan }}
-                                                        <button class="btn btn-sm btn-link p-0 text-decoration-none" 
-                                                                onclick="toggleMessage({{ $pesan->id }})">
+                                                        <button class="btn btn-sm btn-link p-0 text-decoration-none"
+                                                            onclick="toggleMessage({{ $pesan->id }})">
                                                             <small>Tutup</small>
                                                         </button>
                                                     </div>
@@ -294,10 +305,14 @@
                                                 </td>
                                                 <td>
                                                     <div class="d-flex gap-1">
-                                                        <form action="{{ route('pesan.destroy', $pesan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')" style="display: inline;">
+                                                        <form action="{{ route('pesan.destroy', $pesan->id) }}"
+                                                            method="POST"
+                                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')"
+                                                            style="display: inline;">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                title="Hapus">
                                                                 <i class="ti ti-trash"></i>
                                                             </button>
                                                         </form>
@@ -385,16 +400,28 @@
             animation: fadeInUp 0.6s ease-out;
         }
 
-        .stats-card:nth-child(1) { animation-delay: 0.1s; }
-        .stats-card:nth-child(2) { animation-delay: 0.2s; }
-        .stats-card:nth-child(3) { animation-delay: 0.3s; }
-        .stats-card:nth-child(4) { animation-delay: 0.4s; }
+        .stats-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .stats-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .stats-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .stats-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -406,7 +433,7 @@
             .card-body {
                 padding: 1rem;
             }
-            
+
             .stats-card .card-body {
                 padding: 1.5rem;
             }
@@ -428,7 +455,7 @@
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
-                
+
                 setTimeout(() => {
                     card.style.transition = 'all 0.6s ease';
                     card.style.opacity = '1';
@@ -452,7 +479,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 `;
                 document.body.appendChild(notification);
-                
+
                 setTimeout(() => {
                     notification.remove();
                 }, 5000);
@@ -463,7 +490,7 @@
         function toggleMessage(messageId) {
             const shortMessage = document.querySelector(`#message-${messageId} .message-content`);
             const fullMessage = document.getElementById(`full-message-${messageId}`);
-            
+
             if (fullMessage.classList.contains('d-none')) {
                 shortMessage.classList.add('d-none');
                 fullMessage.classList.remove('d-none');
@@ -481,7 +508,7 @@
                     if (data.success) {
                         const modal = document.getElementById('messageModal');
                         const modalBody = document.getElementById('messageModalBody');
-                        
+
                         modalBody.innerHTML = `
                             <div class="row">
                                 <div class="col-md-6">
@@ -507,7 +534,7 @@
                                 </div>
                             </div>
                         `;
-                        
+
                         const bootstrapModal = new bootstrap.Modal(modal);
                         bootstrapModal.show();
                     }
@@ -528,7 +555,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.remove();
             }, 5000);

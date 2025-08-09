@@ -245,7 +245,11 @@
                                                         style="width: 30px; height: 30px;">
                                                         <i class="ti ti-star text-warning" style="font-size: 14px;"></i>
                                                     </div>
-                                                    <span class="fw-bold text-warning">{{ $item->skor }}</span>
+                                                    @if( $item->quiz->status === "Privat" )
+                                                        <span class="fw-bold text-warning"> Tidak di PUBLISH </span>
+                                                    @else
+                                                        <span class="fw-bold text-warning">{{ $item->skor }}</span>
+                                                    @endif
                                                 </div>
                                             </td>
 
@@ -255,7 +259,11 @@
                                                         style="width: 30px; height: 30px;">
                                                         <i class="ti ti-check text-success" style="font-size: 14px;"></i>
                                                     </div>
-                                                    <span class="fw-bold text-success">{{ $item->jumlah_benar }}</span>
+                                                    @if( $item->quiz->status === "Privat" )
+                                                        <span class="fw-bold text-success"> - </span>
+                                                    @else
+                                                        <span class="fw-bold text-success">{{ $item->jumlah_benar }}</span>
+                                                    @endif
                                                 </div>
                                             </td>
 
@@ -265,7 +273,11 @@
                                                         style="width: 30px; height: 30px;">
                                                         <i class="ti ti-x text-danger" style="font-size: 14px;"></i>
                                                     </div>
-                                                    <span class="fw-bold text-danger">{{ $item->jumlah_salah }}</span>
+                                                    @if( $item->quiz->status === "Privat" )
+                                                        <span class="fw-bold text-warning"> - </span>
+                                                    @else
+                                                        <span class="fw-bold text-danger">{{ $item->jumlah_salah }}</span>
+                                                    @endif
                                                 </div>
                                             </td>
 
@@ -282,7 +294,12 @@
                                                         $detik = $totalDetik % 60;
                                                     @endphp
 
-                                                    {{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}
+                                                    @if( $item->quiz->status === "Privat" )
+                                                        <span class="fw-bold text-info"> - </span>
+                                                    @else
+                                                        {{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}
+                                                    @endif
+                                                    
 
                                                 </div>
                                             </td>
@@ -310,15 +327,25 @@
                                                         ? 'check-circle'
                                                         : ($persentase >= 50
                                                             ? 'clock'
-                                                            : 'x-circle');
+                                                            : 'x');
                                             @endphp
 
                                             <td class="py-4 text-center">
-                                                <span
+                                                @if( $item->quiz->status === "Privat" )
+                                                         <span
+                                                    class="badge bg-warning-subtle text-danger px-3 py-2">
+                                                    <i class="ti ti-x me-1"></i>
+                                                    Dirahasiakan
+                                                </span>
+                                                    @else
+                                                        <span
                                                     class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }} px-3 py-2">
                                                     <i class="ti ti-{{ $statusIcon }} me-1"></i>
                                                     {{ $status }}
                                                 </span>
+
+                                                    @endif
+                                                
                                             </td>
                                             <td class="py-4 text-center pe-4">
                                                 <div class="btn-group" role="group">

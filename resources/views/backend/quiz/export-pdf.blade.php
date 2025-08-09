@@ -1,393 +1,436 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
+
 <head>
-    <meta charset="utf-8">
-    <title>Quiz Export - {{ $quiz->judul_quiz }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $quiz->judul_quiz }} - Exam Paper</title>
     <style>
         @page {
-            size: A4;
-            margin: 2cm 1.5cm;
+            size: A4 portrait;
+            margin: 2cm 2cm 3cm 2cm;
+
+            @bottom-center {
+                content: "Halaman " counter(page) " dari " counter(pages);
+                font-family: Arial, sans-serif;
+                font-size: 10px;
+                color: #666;
+            }
         }
-        
-        body {
-            font-family: 'Times New Roman', serif;
-            font-size: 12px;
-            line-height: 1.4;
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.5;
             color: #000;
+            background: #fff;
+            margin: 0 15px;
+            padding: 20px;
         }
-        
-        .header {
+
+        /* Header Styles */
+        .exam-header {
             text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 3px double #000;
+            margin-bottom: 25px;
             padding-bottom: 15px;
+            border-bottom: 2px solid #000;
         }
-        
-        .school-info {
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        
+
         .school-name {
-            font-size: 16px;
+            font-size: 18pt;
             font-weight: bold;
-            margin: 0;
+            margin-bottom: 5px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
-        .subject-info {
-            font-size: 14px;
-            margin: 5px 0;
+
+        .exam-info {
+            margin: 10px 0;
+        }
+
+        .subject-name {
+            font-size: 14pt;
             font-weight: bold;
+            margin-bottom: 8px;
         }
-        
-        .exam-title {
-            font-size: 14px;
+
+        .quiz-title {
+            font-size: 16pt;
             font-weight: bold;
             margin: 10px 0;
             text-transform: uppercase;
+            text-decoration: underline;
         }
-        
-        .class-info {
-            font-size: 12px;
-            margin: 5px 0;
+
+        /* Student Information */
+        .student-info {
+            display: table;
+            width: 100%;
+            margin: 20px 0 30px 0;
+            font-size: 12pt;
         }
-        
-        .quiz-details {
-            margin: 20px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+
+        .student-row {
+            display: table-row;
         }
-        
-        .left-details, .right-details {
-            width: 48%;
+
+        .student-left,
+        .student-right {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+            padding-right: 15px;
         }
-        
-        .detail-row {
-            margin-bottom: 3px;
-            display: flex;
-        }
-        
-        .detail-label {
-            width: 120px;
-            font-weight: normal;
-        }
-        
-        .detail-value {
-            flex: 1;
-            border-bottom: 1px solid #000;
-            padding-left: 5px;
-        }
-        
-        .question {
-            margin-bottom: 20px;
-            page-break-inside: avoid;
-        }
-        
-        .question-number {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .question-text {
-            margin-bottom: 10px;
-            text-align: justify;
-        }
-        
-        .options {
-            margin-left: 0;
-        }
-        
-        .option {
-            margin-bottom: 5px;
-            display: flex;
-            align-items: flex-start;
-        }
-        
-        .option-letter {
-            width: 20px;
-            font-weight: bold;
-        }
-        
-        .option-text {
-            flex: 1;
-        }
-        
-        .checkbox-option {
-            margin-bottom: 5px;
+
+        .info-field {
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
         }
-        
+
+        .field-label {
+            width: 120px;
+            font-weight: normal;
+        }
+
+        .field-value {
+            flex: 1;
+            border-bottom: 1px solid #000;
+            min-height: 20px;
+            padding: 0 5px;
+        }
+
+        .field-filled {
+            background: none;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .instructions h4 {
+            margin-bottom: 10px;
+            font-size: 13pt;
+            font-weight: bold;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+            font-size: 11pt;
+        }
+
+        /* Question Styles */
+        .questions-container {
+            margin-top: 25px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+            orphans: 3;
+            widows: 3;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 12pt;
+            gap: 8px;
+        }
+
+        .question-number {
+            min-width: 30px;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        .question-text {
+            flex: 1;
+            text-align: justify;
+            line-height: 1.6;
+            font-weight: normal;
+        }
+
+        /* Multiple Choice Options */
+        .options {
+            margin-left: 38px;
+            margin-top: 10px;
+        }
+
+        .option {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .option-letter {
+            min-width: 20px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .option-text {
+            flex: 1;
+            text-align: justify;
+            line-height: 1.4;
+        }
+
+        /* True/False Options */
+        .true-false-options {
+            margin-left: 38px;
+            margin-top: 10px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .tf-option {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .tf-circle {
+            width: 15px;
+            height: 15px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Checkbox Options */
+        .checkbox-options {
+            margin-left: 38px;
+            margin-top: 10px;
+        }
+
+        .checkbox-option {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
         .checkbox {
-            display: inline-block;
             width: 12px;
             height: 12px;
             border: 1px solid #000;
-            margin-right: 8px;
-            background-color: white;
-        }
-        
-        .essay-space {
-            margin-top: 10px;
-            border: 1px solid #000;
-            min-height: 100px;
-            padding: 10px;
-        }
-        
-        .answer-sheet {
-            margin-top: 30px;
-            page-break-before: always;
-        }
-        
-        .answer-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .answer-item {
-            text-align: center;
-            padding: 8px;
-            border: 1px solid #000;
-        }
-        
-        .answer-number {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .answer-options {
-            display: flex;
-            justify-content: space-around;
-        }
-        
-        .answer-circle {
-            width: 20px;
-            height: 20px;
-            border: 1px solid #000;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 0 2px;
-        }
-        
-        .footer {
-            position: fixed;
-            bottom: 1cm;
-            right: 1.5cm;
-            font-size: 10px;
-            color: #666;
+            margin-top: 3px;
+            flex-shrink: 0;
         }
 
-        /* Print specific styles */
+        .checkbox-text {
+            flex: 1;
+            text-align: justify;
+            line-height: 1.4;
+        }
+
+        /* Essay Answer Space */
+        .essay-space {
+            margin-left: 38px;
+            margin-top: 15px;
+            min-height: 120px;
+            border: 1px solid #000;
+            background:
+                repeating-linear-gradient(transparent,
+                    transparent 23px,
+                    #ddd 23px,
+                    #ddd 24px);
+            position: relative;
+        }
+
+        .essay-space::before {
+            content: "Jawaban:";
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-style: italic;
+            color: #666;
+            font-size: 10pt;
+        }
+
+        /* Page Break Controls */
+        .page-break {
+            page-break-before: always;
+        }
+
+        .no-break {
+            page-break-inside: avoid;
+        }
+
+        /* Print Optimizations */
         @media print {
             body {
-                font-size: 11px;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+                margin: 0;
+                padding: 15px;
             }
-            
-            .page-break {
-                page-break-before: always;
-            }
-            
+
             .question {
-                page-break-inside: avoid;
+                break-inside: avoid;
             }
+
+            .instructions {
+                break-inside: avoid;
+            }
+        }
+
+        /* Footer */
+        .footer-info {
+            position: fixed;
+            bottom: 1cm;
+            left: 2cm;
+            right: 2cm;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
         }
     </style>
 </head>
+
 <body>
-    <div class="header">
-        <div class="school-info">
-            <h2 class="school-name">SMK ASSALAAM</h2>
-            <div class="subject-info">{{ $quiz->mataPelajaran->nama_mapel ?? '...' }}</div>
-        </div>
-        
-        <div class="exam-title">{{ $quiz->judul_quiz }}</div>
+    <!-- Exam Header -->
+    <div class="exam-header">
+        <div class="school-name">SMK ASSALAAM</div>
+        <div class="subject-name">{{ $quiz->mataPelajaran->nama_mapel ?? 'Mata Pelajaran' }}</div>
+        <div class="quiz-title">{{ $quiz->judul_quiz }}</div>
     </div>
-    
-    <div class="quiz-details">
-        <div class="left-details">
-            <div class="detail-row">
-                <span class="detail-label">Nama : </span>
-                <span class="detail-value"></span>
+
+    <!-- Student Information -->
+    <div class="student-info">
+        <div class="student-row">
+            <div class="student-left">
+                <div class="info-field">
+                    <span class="field-label">Nama:</span>
+                    <span class="field-value"></span>
+                </div>
+                <div class="info-field">
+                    <span class="field-label">Kelas:</span>
+                    <span class="field-value"></span>
+                </div>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">No. Absen : </span>
-                <span class="detail-value"></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Kelas : </span>
-                <span class="detail-value"></span>
-            </div>
-        </div>
-        
-        <div class="right-details">
-            <div class="detail-row">
-                <span class="detail-label">Hari/Tanggal : </span>
-                <span class="detail-value"></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Waktu</span>
-                <span class="detail-value">{{ $quiz->waktu_menit }} menit</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Jumlah Soal</span>
-                <span class="detail-value">{{ $quiz->soals->count() }} soal</span>
+            <div class="student-right">
+                <div class="info-field">
+                    <span class="field-label">Waktu:</span>
+                    <span class="field-value field-filled">{{ $quiz->waktu_menit }} menit</span>
+                </div>
+                <div class="info-field">
+                    <span class="field-label">Jumlah Soal:</span>
+                    <span class="field-value field-filled">{{ $jumlahSoal }} soal</span>
+                </div>
             </div>
         </div>
     </div>
-    
-    @foreach($quiz->soals as $index => $soal)
-        <div class="question">
-            <div class="question-number">{{ $index + 1 }}.</div>
-            
-            <div class="question-text">
-                {{ $soal->pertanyaan }}
-            </div>
-            
-            @if($soal->tipe == 'pilihan_ganda')
-                <div class="options">
-                    @if($soal->pilihan_a)
-                        <div class="option">
-                            <span class="option-letter">a.</span>
-                            <span class="option-text">{{ $soal->pilihan_a }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_b)
-                        <div class="option">
-                            <span class="option-letter">b.</span>
-                            <span class="option-text">{{ $soal->pilihan_b }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_c)
-                        <div class="option">
-                            <span class="option-letter">c.</span>
-                            <span class="option-text">{{ $soal->pilihan_c }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_d)
-                        <div class="option">
-                            <span class="option-letter">d.</span>
-                            <span class="option-text">{{ $soal->pilihan_d }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_e)
-                        <div class="option">
-                            <span class="option-letter">e.</span>
-                            <span class="option-text">{{ $soal->pilihan_e }}</span>
-                        </div>
-                    @endif
-                </div>
-                
-            @elseif($soal->tipe == 'benar_salah')
-                <div class="options">
-                    <div class="option">
-                        <span class="option-letter">a.</span>
-                        <span class="option-text">Benar</span>
-                    </div>
-                    <div class="option">
-                        <span class="option-letter">b.</span>
-                        <span class="option-text">Salah</span>
-                    </div>
-                </div>
-                
-            @elseif($soal->tipe == 'checkbox')
-                <div class="options">
-                    @if($soal->pilihan_a)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_a }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_b)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_b }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_c)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_c }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_d)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_d }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_e)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_e }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_f)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_f }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_g)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_g }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_h)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_h }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_i)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_i }}</span>
-                        </div>
-                    @endif
-                    @if($soal->pilihan_j)
-                        <div class="checkbox-option">
-                            <span class="checkbox"></span>
-                            <span>{{ $soal->pilihan_j }}</span>
-                        </div>
-                    @endif
-                </div>
-                
-            @elseif($soal->tipe == 'essay')
-                <div class="essay-space">
-                    <!-- Ruang untuk jawaban essay -->
-                </div>
-            @endif
-        </div>
-    @endforeach
-    
-    <!-- Optional: Lembar jawaban terpisah untuk pilihan ganda -->
-    {{-- Uncomment if you want a separate answer sheet
-    <div class="answer-sheet">
-        <h3>LEMBAR JAWABAN</h3>
-        <p>Nama: _________________________ Kelas: _______ No. Absen: _____</p>
-        
-        <div class="answer-grid">
-            @for($i = 1; $i <= $quiz->soals->count(); $i++)
-                <div class="answer-item">
-                    <div class="answer-number">{{ $i }}</div>
-                    <div class="answer-options">
-                        <span class="answer-circle"></span>A
-                        <span class="answer-circle"></span>B
-                        <span class="answer-circle"></span>C
-                        <span class="answer-circle"></span>D
-                        <span class="answer-circle"></span>E
-                    </div>
-                </div>
-            @endfor
-        </div>
+
+    <!-- Instructions -->
+    <div class="instructions no-break">
+        <h4>PETUNJUK UMUM:</h4>
+        <ul>
+            <li>Tulis nama, dan kelas pada tempat yang telah disediakan.</li>
+            <li>Periksa dan bacalah soal-soal sebelum menjawab.</li>
+            <li>Dahulukan menjawab soal-soal yang dianggap mudah.</li>
+            <li>Untuk soal pilihan ganda, pilihlah salah satu jawaban yang paling tepat.</li>
+            <li>Untuk soal essay, jawablah dengan jelas dan lengkap pada tempat yang disediakan.</li>
+            <li>Periksa kembali pekerjaan Anda sebelum dikumpulkan.</li>
+        </ul>
     </div>
-    --}}
+
+    <!-- Questions -->
+    <div class="questions-container">
+        @foreach ($quiz->soals as $index => $soal)
+            <div class="question">
+                <div class="question-header">
+                    <div class="question-text"> <span class="question-number">{{ $index + 1 }}.</span>
+                        {!! nl2br(e($soal->pertanyaan)) !!}</div>
+                </div>
+
+                @if ($soal->tipe == 'pilihan_ganda')
+                    <div class="options">
+                        @if (!empty($soal->pilihan_a))
+                            <div class="option">
+                                <span class="option-letter">a.</span>
+                                <span class="option-text">{{ $soal->pilihan_a }}</span>
+                            </div>
+                        @endif
+                        @if (!empty($soal->pilihan_b))
+                            <div class="option">
+                                <span class="option-letter">b.</span>
+                                <span class="option-text">{{ $soal->pilihan_b }}</span>
+                            </div>
+                        @endif
+                        @if (!empty($soal->pilihan_c))
+                            <div class="option">
+                                <span class="option-letter">c.</span>
+                                <span class="option-text">{{ $soal->pilihan_c }}</span>
+                            </div>
+                        @endif
+                        @if (!empty($soal->pilihan_d))
+                            <div class="option">
+                                <span class="option-letter">d.</span>
+                                <span class="option-text">{{ $soal->pilihan_d }}</span>
+                            </div>
+                        @endif
+                        @if (!empty($soal->pilihan_e))
+                            <div class="option">
+                                <span class="option-letter">e.</span>
+                                <span class="option-text">{{ $soal->pilihan_e }}</span>
+                            </div>
+                        @endif
+                    </div>
+                @elseif($soal->tipe == 'benar_salah')
+                    <div class="true-false-options">
+                        <div class="tf-option">
+                            <span class="tf-circle"></span>
+                            <span>BENAR</span>
+                        </div>
+                        <div class="tf-option">
+                            <span class="tf-circle"></span>
+                            <span>SALAH</span>
+                        </div>
+                    </div>
+                @elseif($soal->tipe == 'checkbox')
+                    <div class="checkbox-options">
+                        @foreach (['pilihan_a', 'pilihan_b', 'pilihan_c', 'pilihan_d', 'pilihan_e', 'pilihan_f', 'pilihan_g', 'pilihan_h', 'pilihan_i', 'pilihan_j'] as $option)
+                            @if (!empty($soal->$option))
+                                <div class="checkbox-option">
+                                    <span class="checkbox"></span>
+                                    <span class="checkbox-text">{{ $soal->$option }}</span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                @elseif($soal->tipe == 'essay')
+                    <div class="essay-space"></div>
+                @endif
+            </div>
+        @endforeach
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-info">
+        <em>{{ $quiz->judul_quiz }} - {{ $quiz->mataPelajaran->nama_mapel ?? 'SMK Assalaam' }}</em>
+    </div>
 </body>
+
 </html>

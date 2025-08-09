@@ -150,20 +150,19 @@
                                                 <span class="text-muted">-</span>
                                             @endif
                                         </td>
-                                         <td class="py-4 text-center">
+                                        <td class="py-4 text-center">
                                             <div class="d-flex flex-column align-items-center">
-                                                <span
-                                                    class="fw-bold text-dark">{{ $quiz->user->name }}</span>
+                                                <span class="fw-bold text-dark">{{ $quiz->user->name }}</span>
                                             </div>
                                         </td>
                                         <!-- <td class="py-4 text-center">
-                                            <div class="d-flex flex-column align-items-center">
-                                                <span
-                                                    class="fw-bold text-dark">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('d M Y') }}</span>
-                                                <small
-                                                    class="text-muted">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('H:i') }}</small>
-                                            </div>
-                                        </td> -->
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <span
+                                                            class="fw-bold text-dark">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('d M Y') }}</span>
+                                                        <small
+                                                            class="text-muted">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('H:i') }}</small>
+                                                    </div>
+                                                </td> -->
                                         <td class="py-4 text-center">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <div class="rounded-circle bg-success-subtle d-flex align-items-center justify-content-center me-2"
@@ -202,32 +201,41 @@
                                                 </button>
                                             </form>
                                         </td>
-                    
-<td class="py-4 text-center pe-4">
-    <div class="btn-group" role="group">
-        <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-info btn-sm" title="Lihat Detail">
-            <i class="ti ti-eye"></i>
-        </a>
-        <a href="{{ route('quiz.edit', $quiz->id) }}" class="btn btn-warning btn-sm" title="Edit Quiz">
-            <i class="ti ti-edit"></i>
-        </a>
-        <a class="btn btn-success btn-sm" href="{{ route('quiz.index', ['export' => 'excel', 'quiz_id' => $quiz->id]) }}" title="Export Excel">
-            <i class="ti ti-file-spreadsheet"></i>
-        </a>
-        <a class="btn btn-info btn-sm" href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}" title="Export PDF">
-            <i class="ti ti-file-text"></i>
-        </a>
-        <button type="button" class="btn btn-danger btn-sm" title="Hapus Quiz" onclick="deleteQuiz({{ $quiz->id }}, '{{ $quiz->judul_quiz }}')">
-            <i class="ti ti-trash"></i>
-        </button>
-    </div>
-    
-    <!-- Hidden delete form -->
-    <form id="delete-form-{{ $quiz->id }}" action="{{ route('quiz.destroy', $quiz->id) }}" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
-    </form>
-</td>
+
+                                        <td class="py-4 text-center pe-4">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-info btn-sm"
+                                                    title="Lihat Detail">
+                                                    <i class="ti ti-eye"></i>
+                                                </a>
+                                                <a href="{{ route('quiz.edit', $quiz->id) }}"
+                                                    class="btn btn-warning btn-sm" title="Edit Quiz">
+                                                    <i class="ti ti-edit"></i>
+                                                </a>
+                                                <a class="btn btn-success btn-sm"
+                                                    href="{{ route('quiz.index', ['export' => 'excel', 'quiz_id' => $quiz->id]) }}"
+                                                    title="Export Excel">
+                                                    <i class="ti ti-file-spreadsheet"></i>
+                                                </a>
+                                                <a class="btn btn-info btn-sm"
+                                                    href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}"
+                                                    title="Export PDF">
+                                                    <i class="ti ti-file-text"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-danger btn-sm" title="Hapus Quiz"
+                                                    onclick="deleteQuiz({{ $quiz->id }}, '{{ $quiz->judul_quiz }}')">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Hidden delete form -->
+                                            <form id="delete-form-{{ $quiz->id }}"
+                                                action="{{ route('quiz.destroy', $quiz->id) }}" method="POST"
+                                                style="display: none;">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+                                        </td>
 
 
                                     </tr>
@@ -309,31 +317,6 @@
     @endif
 
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const copyButtons = document.querySelectorAll('.copy-quiz-btn');
-
-            copyButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const quizCode = this.getAttribute('data-quiz-code');
-
-                    // Buat elemen sementara
-                    const tempInput = document.createElement('input');
-                    tempInput.value = quizCode;
-                    document.body.appendChild(tempInput);
-                    tempInput.select();
-                    tempInput.setSelectionRange(0, 99999); // Untuk mobile
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-                });
-            });
-        });
-        // Delete confirmation function
-        function deleteQuiz(quizId, quizTitle) {
-            if (confirm(`Apakah Anda yakin ingin menghapus quiz "${quizTitle}"?\n\nTindakan ini tidak dapat dibatalkan.`)) {
-                document.getElementById('delete-form-' + quizId).submit();
-            }
-        }
-    </script>
+    <script src="{{ asset('/assets/backend/js/main/quiz/script-quiz-index.js') }}"></script>
     @include('layouts.components-backend.css')
 @endsection

@@ -128,79 +128,82 @@
                 </div>
             </div>
             <div class="card-body">
-    <form method="GET" action="{{ route('penilaian.dataNilai') }}" id="filterForm">
-        <div class="row g-3 align-items-end">
-            <!-- Quiz Filter -->
-            <div class="col-md-5">
-                <label for="quiz_filter" class="form-label fw-bold">
-                    <i class="ti ti-file-text me-1"></i>Filter berdasarkan Quiz
-                </label>
-                <select name="quiz_filter" id="quiz_filter" class="form-select">
-                    <option value="all" {{ $quizFilter === 'all' || !$quizFilter ? 'selected' : '' }}>
-                        Semua Quiz
-                    </option>
-                    @foreach($quizzes as $quiz)
-                        <option value="{{ $quiz->id }}" {{ $quizFilter == $quiz->id ? 'selected' : '' }}>
-                            {{ $quiz->judul_quiz }} ({{ $quiz->kode_quiz }})
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+                <form method="GET" action="{{ route('penilaian.dataNilai') }}" id="filterForm">
+                    <div class="row g-3 align-items-end">
+                        <!-- Quiz Filter -->
+                        <div class="col-md-5">
+                            <label for="quiz_filter" class="form-label fw-bold">
+                                <i class="ti ti-file-text me-1"></i>Filter berdasarkan Quiz
+                            </label>
+                            <select name="quiz_filter" id="quiz_filter" class="form-select">
+                                <option value="all" {{ $quizFilter === 'all' || !$quizFilter ? 'selected' : '' }}>
+                                    Semua Quiz
+                                </option>
+                                @foreach ($quizzes as $quiz)
+                                    <option value="{{ $quiz->id }}" {{ $quizFilter == $quiz->id ? 'selected' : '' }}>
+                                        {{ $quiz->judul_quiz }} ({{ $quiz->kode_quiz }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-            <!-- Status Filter -->
-            <div class="col-md-4">
-                <label for="status" class="form-label fw-bold">
-                    <i class="ti ti-check-circle me-1"></i>Status Koreksi
-                </label>
-                <select name="status" id="status" class="form-select">
-                    <option value="">Semua Status</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>
-                        Belum Dikoreksi (Pending)
-                    </option>
-                </select>
-            </div>
+                        <!-- Status Filter -->
+                        <div class="col-md-4">
+                            <label for="status" class="form-label fw-bold">
+                                <i class="ti ti-check-circle me-1"></i>Status Koreksi
+                            </label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="">Semua Status</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>
+                                    Belum Dikoreksi (Pending)
+                                </option>
+                            </select>
+                        </div>
 
-            <!-- Action Buttons -->
-            <div class="col-md-3">
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary flex-fill">
-                        <i class="ti ti-search me-2"></i>Filter
-                    </button>
-                    <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-secondary" title="Reset Filter">
-                        <i class="ti ti-refresh"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filter Summary -->
-        @if($quizFilter && $quizFilter !== 'all' || request('status'))
-            <div class="mt-3">
-                <div class="alert alert-info d-flex align-items-center mb-0 py-2">
-                    <i class="ti ti-info-circle me-2"></i>
-                    <div class="flex-grow-1">
-                        <strong>Filter Aktif:</strong>
-                        @if($quizFilter && $quizFilter !== 'all')
-                            @php
-                                $selectedQuiz = $quizzes->firstWhere('id', $quizFilter);
-                            @endphp
-                            Quiz: "{{ $selectedQuiz->judul_quiz }}"
-                            <span class="badge bg-white text-info ms-1">{{ $selectedQuiz->kode_quiz }}</span>
-                        @endif
-                        
-                        @if(request('status'))
-                            @if($quizFilter && $quizFilter !== 'all') | @endif
-                            Status: 
-                            @if(request('status') == 'pending')
-                                <span class="badge bg-warning text-dark">Belum Dikoreksi</span>
-                            @endif
-                        @endif
+                        <!-- Action Buttons -->
+                        <div class="col-md-3">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary flex-fill">
+                                    <i class="ti ti-search me-2"></i>Filter
+                                </button>
+                                <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-secondary"
+                                    title="Reset Filter">
+                                    <i class="ti ti-refresh"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Filter Summary -->
+                    @if (($quizFilter && $quizFilter !== 'all') || request('status'))
+                        <div class="mt-3">
+                            <div class="alert alert-info d-flex align-items-center mb-0 py-2">
+                                <i class="ti ti-info-circle me-2"></i>
+                                <div class="flex-grow-1">
+                                    <strong>Filter Aktif:</strong>
+                                    @if ($quizFilter && $quizFilter !== 'all')
+                                        @php
+                                            $selectedQuiz = $quizzes->firstWhere('id', $quizFilter);
+                                        @endphp
+                                        Quiz: "{{ $selectedQuiz->judul_quiz }}"
+                                        <span class="badge bg-white text-info ms-1">{{ $selectedQuiz->kode_quiz }}</span>
+                                    @endif
+
+                                    @if (request('status'))
+                                        @if ($quizFilter && $quizFilter !== 'all')
+                                            |
+                                        @endif
+                                        Status:
+                                        @if (request('status') == 'pending')
+                                            <span class="badge bg-warning text-dark">Belum Dikoreksi</span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </form>
             </div>
-        @endif
-    </form>
-</div>
         </div>
 
 
@@ -220,7 +223,7 @@
                                 <h5 class="mb-1">Data Nilai Peserta</h5>
                                 <p class="text-muted mb-0">
                                     @if ($hasilUjians->count() > 0)
-                                        @if($quizFilter && $quizFilter !== 'all')
+                                        @if ($quizFilter && $quizFilter !== 'all')
                                             Menampilkan {{ $hasilUjians->count() }} hasil ujian untuk quiz yang dipilih
                                         @else
                                             Menampilkan {{ $hasilUjians->count() }} hasil ujian dari semua quiz
@@ -235,322 +238,335 @@
 
                     <!-- Export Button Component -->
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        
 
-                            <div class="col-md-12 text-md-end mt-3 mt-md-0">
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('penilaian.dataNilai', array_merge(request()->all(), ['export' => 'excel'])) }}" class="btn btn-success btn-lg px-4">
-                                       Export Excel
-                                    </a>
-                                    <a href="{{ route('penilaian.dataNilai', array_merge(request()->all(), ['export' => 'pdf'])) }}" class="btn btn-danger btn-lg px-4">
-                                            Export PDF
-                                    </a>
-                                </div>
+
+                        <div class="col-md-12 text-md-end mt-3 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <a href="{{ route('penilaian.dataNilai', array_merge(request()->all(), ['export' => 'excel'])) }}"
+                                    class="btn btn-success btn-lg px-4">
+                                    Export Excel
+                                </a>
+                                <a href="{{ route('penilaian.dataNilai', array_merge(request()->all(), ['export' => 'pdf'])) }}"
+                                    class="btn btn-danger btn-lg px-4">
+                                    Export PDF
+                                </a>
                             </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Enhanced Data Table -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-transparent border-bottom py-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="ti ti-table me-2 text-success"></i>Tabel Data Nilai
-                    </h5>
-                    <div class="d-flex align-items-center">
-                        <span class="badge bg-success-subtle text-success px-3 py-2">
-                            {{ $hasilUjians->count() }} Data Tersedia
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            @if ($hasilUjians->count() > 0)
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3">
-                                        <i class="ti ti-hash me-1"></i>No
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3">
-                                        <i class="ti ti-user me-1"></i>Peserta
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3">
-                                        <i class="ti ti-file-text me-1"></i>Quiz
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-calendar me-1"></i>Tanggal
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-clock me-1"></i>Durasi
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-star me-1"></i>Nilai
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        <i class="ti ti-check me-1"></i>Status
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
-                                        Koreksi
-                                    </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center pe-4">
-                                        <i class="ti ti-settings me-1"></i>Aksi
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($hasilUjians as $index => $hasil)
-                                    <tr class="hasil-row">
-                                        <td class="py-4">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center"
-                                                    style="width: 35px; height: 35px;">
-                                                    <span class="fw-bold text-primary">{{ $loop->iteration }}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-4">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center me-3"
-                                                    style="width: 40px; height: 40px;">
-                                                    <i class="ti ti-user text-info"></i>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-1 fw-bold text-dark">{{ $hasil->user->name }}</h6>
-                                                    <small class="text-muted">{{ $hasil->user->email }}</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-4">
-                                            <div>
-                                                <h6 class="mb-1 fw-bold text-dark"
-                                                    title="{{ $hasil->quiz->judul_quiz }}">
-                                                    {{ Str::limit($hasil->quiz->judul_quiz, 30) }}, <strong>{{ $hasil->quiz->user->name }}</strong>
-                                                </h6>
-                                            </div>
-                                        </td>
-                                        <td class="py-4 text-center">
-                                            <div class="d-flex flex-column align-items-center">
-                                                <span class="fw-bold text-dark">
-                                                    {{ \Carbon\Carbon::parse($hasil->tanggal_ujian)->format('d M Y') }}
-                                                </span>
-                                                <small class="text-muted">
-                                                    {{ \Carbon\Carbon::parse($hasil->updated_at)->format('H:i') }}
-                                                </small>
-                                            </div>
-                                        </td>
-                                        <td class="py-4 text-center">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center me-2"
-                                                    style="width: 30px; height: 30px;">
-                                                    <i class="ti ti-clock text-warning" style="font-size: 14px;"></i>
-                                                </div>
-                                                @php
-                                                    $totalDetik = round($hasil->waktu_pengerjaan * 60);
-                                                    $menit = floor($totalDetik / 60);
-                                                    $detik = $totalDetik % 60;
-                                                @endphp
-                                                <span class="text-muted">{{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}</span>
-                                                <small class="text-muted ms-1">min</small>
-                                            </div>
-                                        </td>
-                                        <td class="py-4 text-center">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                @php
-                                                    $badgeClass = 'secondary';
-                                                    if ($hasil->skor >= 80) {
-                                                        $badgeClass = 'success';
-                                                    } elseif ($hasil->skor >= 70) {
-                                                        $badgeClass = 'info';
-                                                    } elseif ($hasil->skor >= 60) {
-                                                        $badgeClass = 'warning';
-                                                    } elseif ($hasil->skor > 0) {
-                                                        $badgeClass = 'danger';
-                                                    }
-                                                @endphp
-                                                <span class="badge bg-{{ $badgeClass }}-subtle text-{{ $badgeClass }} px-3 py-2 fw-bold">
-                                                    <i class="ti ti-star me-1"></i>{{ $hasil->skor ?? 'Belum Dinilai' }}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        @php
-                                            // Periksa apakah ada essay yang perlu dikoreksi
-                                            $hasEssayNeedingGrading = $hasil->detail->contains(function ($d) {
-                                                return $d->soal->tipe === 'essay' && $d->status_jawaban === 'pending';
-                                            });
-
-                                            // Periksa apakah semua essay sudah dikoreksi
-                                            $allEssaysGraded = $hasil->detail
-                                                ->filter(fn($d) => $d->soal->tipe === 'essay')
-                                                ->every(fn($d) => $d->status_jawaban !== 'pending');
-
-                                            // Periksa apakah user yang login adalah pembuat quiz
-                                            $canGrade = $hasil->quiz->user_id === Auth::id();
-                                        @endphp
-
-                                        <td class="py-4 text-center">
-                                            @if ($hasEssayNeedingGrading)
-                                                <span class="badge bg-warning-subtle text-warning px-3 py-2">
-                                                    <i class="ti ti-clock me-1"></i>
-                                                    Perlu Koreksi
-                                                </span>
-                                            @elseif ($allEssaysGraded)
-                                                <span class="badge bg-success-subtle text-success px-3 py-2">
-                                                    <i class="ti ti-check-circle me-1"></i>
-                                                    Sudah Dikoreksi
-                                                </span>
-                                            @else
-                                                <span class="badge bg-info-subtle text-info px-3 py-2">
-                                                    <i class="ti ti-info-circle me-1"></i>
-                                                    Tidak Ada Essay
-                                                </span>
-                                            @endif
-                                        </td>
-
-                                        <td class="py-4">
-                                            @if ($canGrade && $hasEssayNeedingGrading)
-                                                <div class="mt-2">
-                                                    <a href="{{ route('penilaian.show', $hasil->id) }}"
-                                                        class="btn btn-sm btn-outline-primary">
-                                                        Koreksi Essay
-                                                    </a>
-                                                </div>
-                                            @elseif (!$canGrade)
-                                                <span class="badge bg-secondary-subtle text-secondary px-3 py-2">
-                                                    <i class="ti ti-lock me-1"></i>
-                                                    Tidak Ada Akses
-                                                </span>
-                                            @else
-                                                <div class="mt-2">
-                                                    <a href="{{ route('penilaian.show', $hasil->id) }}"
-                                                        class="btn btn-sm btn-outline-primary">
-                                                        Koreksi
-                                                    </a>
-                                                </div>
-                                            @endif
-                                        </td>
-
-                                        <td class="py-4 text-center pe-4">
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('penilaian.detail', $hasil->id) }}"
-                                                    class="btn btn-info btn-sm" title="Lihat Detail">
-                                                    <i class="ti ti-eye"></i>
-                                                </a>
-                                                @if ($hasil->quiz->soals->where('jenis_soal', 'essay')->count() > 0)
-                                                    <a href="{{ route('penilaian.index') }}?hasil_id={{ $hasil->id }}"
-                                                        class="btn btn-warning btn-sm" title="Beri Nilai Essay">
-                                                        <i class="ti ti-edit"></i>
-                                                    </a>
-                                                @endif
-
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-success btn-sm dropdown-toggle"
-                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="ti ti-download"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('penilaian.detail', ['id' => $hasil->id, 'export' => 'excel']) }}">
-                                                                <i class="fas fa-file-excel me-2 text-success"></i>Export ke Excel
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('penilaian.detail', ['id' => $hasil->id, 'export' => 'pdf']) }}">
-                                                                <i class="fas fa-file-pdf me-2 text-danger"></i>Export ke PDF
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @else
-                <!-- Enhanced Empty State -->
-                <div class="card-body text-center py-5">
-                    <div class="mb-4">
-                        <div class="rounded-circle bg-success-subtle d-inline-flex align-items-center justify-content-center mb-3"
-                            style="width: 100px; height: 100px;">
-                            <i class="ti ti-clipboard-data text-success" style="font-size: 48px;"></i>
                         </div>
                     </div>
-                    <h3 class="fw-bold text-dark mb-3">
-                        @if($quizFilter && $quizFilter !== 'all')
-                            Belum Ada Data Nilai untuk Quiz Ini
-                        @else
-                            Belum Ada Data Nilai
-                        @endif
-                    </h3>
-                    <p class="text-muted mb-4 mx-auto" style="max-width: 400px;">
-                        @if($quizFilter && $quizFilter !== 'all')
-                            Belum ada peserta yang mengerjakan quiz yang dipilih. Bagikan kode quiz kepada peserta untuk mulai mendapatkan data nilai.
-                        @else
-                            Belum ada peserta yang mengerjakan quiz Anda. Bagikan kode quiz kepada peserta untuk mulai mendapatkan data nilai.
-                        @endif
-                    </p>
-                    <div class="d-flex justify-content-center gap-3">
-                        @if($quizFilter && $quizFilter !== 'all')
-                            <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-primary px-4">
-                                <i class="ti ti-refresh me-2"></i>Lihat Semua Quiz
+                </div>
+            </div>
+
+            <!-- Enhanced Data Table -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-bottom py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="ti ti-table me-2 text-success"></i>Tabel Data Nilai
+                        </h5>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success-subtle text-success px-3 py-2">
+                                {{ $hasilUjians->count() }} Data Tersedia
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                @if ($hasilUjians->count() > 0)
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
+                                            <i class="ti ti-hash me-1"></i>No
+                                        </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
+                                            <i class="ti ti-user me-1"></i>Peserta
+                                        </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
+                                            <i class="ti ti-file-text me-1"></i>Quiz
+                                        </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                            <i class="ti ti-calendar me-1"></i>Tanggal
+                                        </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                            <i class="ti ti-clock me-1"></i>Durasi
+                                        </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                            <i class="ti ti-star me-1"></i>Nilai
+                                        </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                            <i class="ti ti-check me-1"></i>Status
+                                        </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                            Koreksi
+                                        </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center pe-4">
+                                            <i class="ti ti-settings me-1"></i>Aksi
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($hasilUjians as $index => $hasil)
+                                        <tr class="hasil-row">
+                                            <td class="py-4">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center"
+                                                        style="width: 35px; height: 35px;">
+                                                        <span class="fw-bold text-primary">{{ $loop->iteration }}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center me-3"
+                                                        style="width: 40px; height: 40px;">
+                                                        <i class="ti ti-user text-info"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-1 fw-bold text-dark">{{ $hasil->user->name }}</h6>
+                                                        <small class="text-muted">{{ $hasil->user->email }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4">
+                                                <div>
+                                                    <h6 class="mb-1 fw-bold text-dark"
+                                                        title="{{ $hasil->quiz->judul_quiz }}">
+                                                        {{ Str::limit($hasil->quiz->judul_quiz, 30) }},
+                                                        <strong>{{ $hasil->quiz->user->name }}</strong>
+                                                    </h6>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 text-center">
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <span class="fw-bold text-dark">
+                                                        {{ \Carbon\Carbon::parse($hasil->tanggal_ujian)->format('d M Y') }}
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        {{ \Carbon\Carbon::parse($hasil->updated_at)->format('H:i') }}
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 text-center">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center me-2"
+                                                        style="width: 30px; height: 30px;">
+                                                        <i class="ti ti-clock text-warning" style="font-size: 14px;"></i>
+                                                    </div>
+                                                    @php
+                                                        $totalDetik = round($hasil->waktu_pengerjaan * 60);
+                                                        $menit = floor($totalDetik / 60);
+                                                        $detik = $totalDetik % 60;
+                                                    @endphp
+                                                    <span
+                                                        class="text-muted">{{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}</span>
+                                                    <small class="text-muted ms-1">min</small>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 text-center">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    @php
+                                                        $badgeClass = 'secondary';
+                                                        if ($hasil->skor >= 80) {
+                                                            $badgeClass = 'success';
+                                                        } elseif ($hasil->skor >= 70) {
+                                                            $badgeClass = 'info';
+                                                        } elseif ($hasil->skor >= 60) {
+                                                            $badgeClass = 'warning';
+                                                        } elseif ($hasil->skor > 0) {
+                                                            $badgeClass = 'danger';
+                                                        }
+                                                    @endphp
+                                                    <span
+                                                        class="badge bg-{{ $badgeClass }}-subtle text-{{ $badgeClass }} px-3 py-2 fw-bold">
+                                                        <i
+                                                            class="ti ti-star me-1"></i>{{ $hasil->skor ?? 'Belum Dinilai' }}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            @php
+                                                // Periksa apakah ada essay yang perlu dikoreksi
+                                                $hasEssayNeedingGrading = $hasil->detail->contains(function ($d) {
+                                                    return $d->soal->tipe === 'essay' &&
+                                                        $d->status_jawaban === 'pending';
+                                                });
+
+                                                // Periksa apakah semua essay sudah dikoreksi
+                                                $allEssaysGraded = $hasil->detail
+                                                    ->filter(fn($d) => $d->soal->tipe === 'essay')
+                                                    ->every(fn($d) => $d->status_jawaban !== 'pending');
+
+                                                // Periksa apakah user yang login adalah pembuat quiz
+                                                $canGrade = $hasil->quiz->user_id === Auth::id();
+                                            @endphp
+
+                                            <td class="py-4 text-center">
+                                                @if ($hasEssayNeedingGrading)
+                                                    <span class="badge bg-warning-subtle text-warning px-3 py-2">
+                                                        <i class="ti ti-clock me-1"></i>
+                                                        Perlu Koreksi
+                                                    </span>
+                                                @elseif ($allEssaysGraded)
+                                                    <span class="badge bg-success-subtle text-success px-3 py-2">
+                                                        <i class="ti ti-check-circle me-1"></i>
+                                                        Sudah Dikoreksi
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-info-subtle text-info px-3 py-2">
+                                                        <i class="ti ti-info-circle me-1"></i>
+                                                        Tidak Ada Essay
+                                                    </span>
+                                                @endif
+                                            </td>
+
+                                            <td class="py-4">
+                                                @if ($canGrade && $hasEssayNeedingGrading)
+                                                    <div class="mt-2 text-center">
+                                                        <a href="{{ route('penilaian.show', $hasil->id) }}"
+                                                            class="btn btn-sm btn-outline-primary">
+                                                            Koreksi Essay
+                                                        </a>
+                                                    </div>
+                                                @elseif (!$canGrade)
+                                                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2">
+                                                        <i class="ti ti-lock me-1"></i>
+                                                        Tidak Ada Akses
+                                                    </span>
+                                                @else
+                                                    <div class="mt-2 text-center">
+                                                        <a href="{{ route('penilaian.show', $hasil->id) }}"
+                                                            class="btn btn-sm btn-outline-primary">
+                                                            Koreksi Ulang?
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            </td>
+
+                                            <td class="py-4 text-center pe-4">
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ route('penilaian.detail', $hasil->id) }}"
+                                                        class="btn btn-info btn-sm" title="Lihat Detail">
+                                                        <i class="ti ti-eye"></i>
+                                                    </a>
+                                                    @if ($hasil->quiz->soals->where('jenis_soal', 'essay')->count() > 0)
+                                                        <a href="{{ route('penilaian.index') }}?hasil_id={{ $hasil->id }}"
+                                                            class="btn btn-warning btn-sm" title="Beri Nilai Essay">
+                                                            <i class="ti ti-edit"></i>
+                                                        </a>
+                                                    @endif
+
+                                                    <div class="btn-group">
+                                                        <button type="button"
+                                                            class="btn btn-success btn-sm dropdown-toggle"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="ti ti-download"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('penilaian.detail', ['id' => $hasil->id, 'export' => 'excel']) }}">
+                                                                    <i
+                                                                        class="fas fa-file-excel me-2 text-success"></i>Export
+                                                                    ke Excel
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('penilaian.detail', ['id' => $hasil->id, 'export' => 'pdf']) }}">
+                                                                    <i class="fas fa-file-pdf me-2 text-danger"></i>Export
+                                                                    ke PDF
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @else
+                    <!-- Enhanced Empty State -->
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <div class="rounded-circle bg-success-subtle d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 100px; height: 100px;">
+                                <i class="ti ti-clipboard-data text-success" style="font-size: 48px;"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-3">
+                            @if ($quizFilter && $quizFilter !== 'all')
+                                Belum Ada Data Nilai untuk Quiz Ini
+                            @else
+                                Belum Ada Data Nilai
+                            @endif
+                        </h3>
+                        <p class="text-muted mb-4 mx-auto" style="max-width: 400px;">
+                            @if ($quizFilter && $quizFilter !== 'all')
+                                Belum ada peserta yang mengerjakan quiz yang dipilih. Bagikan kode quiz kepada peserta untuk
+                                mulai mendapatkan data nilai.
+                            @else
+                                Belum ada peserta yang mengerjakan quiz Anda. Bagikan kode quiz kepada peserta untuk mulai
+                                mendapatkan data nilai.
+                            @endif
+                        </p>
+                        <div class="d-flex justify-content-center gap-3">
+                            @if ($quizFilter && $quizFilter !== 'all')
+                                <a href="{{ route('penilaian.dataNilai') }}" class="btn btn-outline-primary px-4">
+                                    <i class="ti ti-refresh me-2"></i>Lihat Semua Quiz
+                                </a>
+                            @endif
+                            <a href="{{ route('quiz.index') }}" class="btn btn-success px-5">
+                                <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar Quiz
                             </a>
-                        @endif
-                        <a href="{{ route('quiz.index') }}" class="btn btn-success px-5">
-                            <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar Quiz
-                        </a>
+                        </div>
                     </div>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    <!-- Enhanced Toast Messages -->
-    @if (session('success'))
-        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
-            <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-success text-white border-0">
-                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
-                        style="width: 20px; height: 20px;">
-                        <i class="ti ti-check text-success" style="font-size: 12px;"></i>
-                    </div>
-                    <strong class="me-auto">Berhasil</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body bg-white">
-                    {{ session('success') }}
-                </div>
+                @endif
             </div>
         </div>
-    @endif
 
-    @if (session('error'))
-        <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
-            <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-danger text-white border-0">
-                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
-                        style="width: 20px; height: 20px;">
-                        <i class="ti ti-x text-danger" style="font-size: 12px;"></i>
+        <!-- Enhanced Toast Messages -->
+        @if (session('success'))
+            <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
+                <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-success text-white border-0">
+                        <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
+                            style="width: 20px; height: 20px;">
+                            <i class="ti ti-check text-success" style="font-size: 12px;"></i>
+                        </div>
+                        <strong class="me-auto">Berhasil</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
                     </div>
-                    <strong class="me-auto">Error</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body bg-white">
-                    {{ session('error') }}
+                    <div class="toast-body bg-white">
+                        {{ session('success') }}
+                    </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
+
+        @if (session('error'))
+            <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
+                <div class="toast show border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-danger text-white border-0">
+                        <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2"
+                            style="width: 20px; height: 20px;">
+                            <i class="ti ti-x text-danger" style="font-size: 12px;"></i>
+                        </div>
+                        <strong class="me-auto">Error</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body bg-white">
+                        {{ session('error') }}
+                    </div>
+                </div>
+            </div>
+        @endif
 
 
-<script src="{{asset('/assets/backend/js/main/penilaian/script-datanilai.js')}}"></script>
+        <script src="{{ asset('/assets/backend/js/main/penilaian/script-datanilai.js') }}"></script>
 
-    @include('layouts.components-backend.css')
-@endsection
+        @include('layouts.components-backend.css')
+    @endsection

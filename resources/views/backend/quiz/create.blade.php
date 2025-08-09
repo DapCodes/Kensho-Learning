@@ -253,7 +253,7 @@
         </div>
     </div>
 
-    <script src="{{asset('/assets/backend/js/main/quiz/script-quiz-create.js')}}"></script>
+    <script src="{{ asset('/assets/backend/js/main/quiz/script-quiz-create.js') }}"></script>
 
     <style>
         .card {

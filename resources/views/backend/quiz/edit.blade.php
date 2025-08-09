@@ -132,13 +132,16 @@
                         </div>
                         <div class="col-md-2">
                             <div class="mb-3">
-                                <label for="pengulangan" class="form-label">pengulangan <span class="text-danger">*</span></label>
+                                <label for="pengulangan" class="form-label">pengulangan <span
+                                        class="text-danger">*</span></label>
                                 <select class="form-select @error('pengulangan') is-invalid @enderror" id="pengulangan"
                                     name="pengulangan" required>
                                     <option value="" disabled>Pilih pengulangan</option>
                                     <option value="Boleh"
-                                        {{ old('pengulangan_pekerjaan', $quiz->pengulangan_pekerjaan) == 'Boleh' ? 'selected' : '' }}>Boleh</option>
-                                    <option value="Tidak" {{ old('pengulangan_pekerjaan', $quiz->pengulangan_pekerjaan) == 'Tidak' ? 'selected' : '' }}>
+                                        {{ old('pengulangan_pekerjaan', $quiz->pengulangan_pekerjaan) == 'Boleh' ? 'selected' : '' }}>
+                                        Boleh</option>
+                                    <option value="Tidak"
+                                        {{ old('pengulangan_pekerjaan', $quiz->pengulangan_pekerjaan) == 'Tidak' ? 'selected' : '' }}>
                                         Tidak</option>
                                 </select>
                                 @error('pengulangan')
@@ -177,7 +180,8 @@
                                 </div>
                                 <div class="card-body">
                                     <!-- Hidden field for existing question ID -->
-                                    <input type="hidden" name="questions[{{ $index }}][id]" value="{{ $soal->id }}">
+                                    <input type="hidden" name="questions[{{ $index }}][id]"
+                                        value="{{ $soal->id }}">
 
                                     <div class="mb-3">
                                         <label for="question-{{ $index }}" class="form-label">Teks Soal <span
@@ -193,24 +197,41 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="question-type-{{ $index }}" class="form-label">Tipe Soal <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="question-type-{{ $index }}" name="questions[{{ $index }}][type]" required onchange="handleQuestionTypeChange({{ $index }})">
+                                                <label for="question-type-{{ $index }}" class="form-label">Tipe
+                                                    Soal <span class="text-danger">*</span></label>
+                                                <select class="form-select" id="question-type-{{ $index }}"
+                                                    name="questions[{{ $index }}][type]" required
+                                                    onchange="handleQuestionTypeChange({{ $index }})">
                                                     <option value="">Pilih Tipe Soal</option>
-                                                    <option value="pilihan_ganda" {{ old('questions.' . $index . '.type', $soal->tipe ?? 'pilihan_ganda') == 'pilihan_ganda' ? 'selected' : '' }}>Pilihan Ganda</option>
-                                                    <option value="essay" {{ old('questions.' . $index . '.type', $soal->tipe ?? '') == 'essay' ? 'selected' : '' }}>Essay</option>
-                                                    <option value="benar_salah" {{ old('questions.' . $index . '.type', $soal->tipe ?? '') == 'benar_salah' ? 'selected' : '' }}>Benar/Salah</option>
-                                                    <option value="checkbox" {{ old('questions.' . $index . '.type', $soal->tipe ?? '') == 'checkbox' ? 'selected' : '' }}>Checkbox (Multiple Answer)</option>
+                                                    <option value="pilihan_ganda"
+                                                        {{ old('questions.' . $index . '.type', $soal->tipe ?? 'pilihan_ganda') == 'pilihan_ganda' ? 'selected' : '' }}>
+                                                        Pilihan Ganda</option>
+                                                    <option value="essay"
+                                                        {{ old('questions.' . $index . '.type', $soal->tipe ?? '') == 'essay' ? 'selected' : '' }}>
+                                                        Essay</option>
+                                                    <option value="benar_salah"
+                                                        {{ old('questions.' . $index . '.type', $soal->tipe ?? '') == 'benar_salah' ? 'selected' : '' }}>
+                                                        Benar/Salah</option>
+                                                    <option value="checkbox"
+                                                        {{ old('questions.' . $index . '.type', $soal->tipe ?? '') == 'checkbox' ? 'selected' : '' }}>
+                                                        Checkbox (Multiple Answer)</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="question-weight-{{ $index }}" class="form-label">Bobot Soal <span class="text-danger">*</span></label>
-                                                <input type="number" class="form-control" id="question-weight-{{ $index }}" name="questions[{{ $index }}][weight]" min="1" max="100" value="{{ old('questions.' . $index . '.weight', $soal->bobot ?? 1) }}" required placeholder="1-100">
+                                                <label for="question-weight-{{ $index }}" class="form-label">Bobot
+                                                    Soal <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control"
+                                                    id="question-weight-{{ $index }}"
+                                                    name="questions[{{ $index }}][weight]" min="1"
+                                                    max="100"
+                                                    value="{{ old('questions.' . $index . '.weight', $soal->bobot ?? 1) }}"
+                                                    required placeholder="1-100">
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div id="question-options-{{ $index }}">
                                         <!-- Options will be populated by JavaScript -->
                                     </div>
@@ -240,7 +261,7 @@
 
     <script>
         let questionIndex = {{ count($quiz->soals) }};
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize existing questions
             @foreach ($quiz->soals as $index => $soal)
@@ -254,7 +275,8 @@
 
             // Remove question
             document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-question') || e.target.closest('.remove-question')) {
+                if (e.target.classList.contains('remove-question') || e.target.closest(
+                        '.remove-question')) {
                     const questionItem = e.target.closest('.question-item');
                     questionItem.remove();
                     updateQuestionNumbers();
@@ -274,7 +296,7 @@
             const card = document.createElement('div');
             card.className = 'question-item card mb-4';
             card.setAttribute('data-question-index', index);
-            
+
             card.innerHTML = `
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="card-title mb-0">Soal ${index + 1}</h6>
@@ -314,7 +336,7 @@
                     </div>
                 </div>
             `;
-            
+
             return card;
         }
 
@@ -352,7 +374,7 @@
 
         function createMultipleChoiceOptions(questionNumber) {
             const existingData = getExistingQuestionData(questionNumber);
-            
+
             return `
                 <div class="row">
                     <div class="col-md-6">
@@ -408,7 +430,7 @@
 
         function createEssayOptions(questionNumber) {
             const existingData = getExistingQuestionData(questionNumber);
-            
+
             return `
                 <div class="mb-3">
                     <label for="essay-answer-${questionNumber}" class="form-label">Jawaban Model (Opsional)</label>
@@ -420,7 +442,7 @@
 
         function createTrueFalseOptions(questionNumber) {
             const existingData = getExistingQuestionData(questionNumber);
-            
+
             return `
                 <div class="mb-3">
                     <label class="form-label">Jawaban Benar <span class="text-danger">*</span></label>
@@ -441,11 +463,12 @@
         function createCheckboxOptions(questionNumber) {
             const existingData = getExistingQuestionData(questionNumber);
             let checkboxOptionsHtml = '';
-            
+
             // If there's existing checkbox data, use it; otherwise create 2 default options
             if (existingData.checkbox_options && existingData.checkbox_options.length > 0) {
                 existingData.checkbox_options.forEach((option, index) => {
-                    const isCorrect = existingData.checkbox_correct && existingData.checkbox_correct.includes(index.toString());
+                    const isCorrect = existingData.checkbox_correct && existingData.checkbox_correct.includes(index
+                        .toString());
                     checkboxOptionsHtml += `
                         <div class="row mb-2">
                             <div class="col-md-10">
@@ -478,7 +501,7 @@
                     `;
                 }
             }
-            
+
             return `
                 <div class="mb-3">
                     <label class="form-label">Opsi Pilihan <span class="text-danger">*</span></label>
@@ -519,34 +542,34 @@
         }
 
 
-function getExistingQuestionData(questionNumber) {
-    const existingQuestions = window.existingQuestions = @json($processedSoals);
-    if (!existingQuestions || !existingQuestions[questionNumber]) {
-        return {};        // fallback kosong
-    }
+        function getExistingQuestionData(questionNumber) {
+            const existingQuestions = window.existingQuestions = @json($processedSoals);
+            if (!existingQuestions || !existingQuestions[questionNumber]) {
+                return {}; // fallback kosong
+            }
 
-    const question = existingQuestions[questionNumber];
+            const question = existingQuestions[questionNumber];
 
-    // ------ hanya untuk soal tipe checkbox ------
-    const letters = 'abcdefghij'.split('');
-    const checkbox_options = letters
-        .map(l => question['pilihan_' + l])
-        .filter(Boolean);                     // buang null / ''
+            // ------ hanya untuk soal tipe checkbox ------
+            const letters = 'abcdefghij'.split('');
+            const checkbox_options = letters
+                .map(l => question['pilihan_' + l])
+                .filter(Boolean); // buang null / ''
 
-    const checkbox_correct = (question.checkbox_correct ?? question.jawaban_benar ?? '')
-        .toString()
-        .split(',')
-        .map(s => s.trim())
-        .filter(Boolean);
-    // --------------------------------------------
+            const checkbox_correct = (question.checkbox_correct ?? question.jawaban_benar ?? '')
+                .toString()
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean);
+            // --------------------------------------------
 
-    // gabungkan semuanya
-    return {
-        ...question,            // pilihan_a, pilihan_b, … bobot, dll.
-        checkbox_options,
-        checkbox_correct
-    };
-}
+            // gabungkan semuanya
+            return {
+                ...question, // pilihan_a, pilihan_b, … bobot, dll.
+                checkbox_options,
+                checkbox_correct
+            };
+        }
 
 
 
@@ -583,17 +606,20 @@ function getExistingQuestionData(questionNumber) {
 
                 // Validasi berdasarkan tipe soal
                 const questionType = typeSelect.value;
-                
+
                 if (questionType === 'pilihan_ganda') {
                     const optionA = document.getElementById(`option-a-${questionNumber}`);
                     const optionB = document.getElementById(`option-b-${questionNumber}`);
                     const optionC = document.getElementById(`option-c-${questionNumber}`);
                     const optionD = document.getElementById(`option-d-${questionNumber}`);
-                    const correctAnswer = document.querySelector(`input[name="questions[${questionNumber}][jawaban_benar]"]:checked`);
+                    const correctAnswer = document.querySelector(
+                        `input[name="questions[${questionNumber}][jawaban_benar]"]:checked`);
 
-                    if (!optionA.value.trim() || !optionB.value.trim() || !optionC.value.trim() || !optionD.value.trim()) {
+                    if (!optionA.value.trim() || !optionB.value.trim() || !optionC.value.trim() || !optionD
+                        .value.trim()) {
                         isValid = false;
-                        errorMessage = `Semua pilihan (A, B, C, D) wajib diisi untuk Soal ${questionNumber + 1}.`;
+                        errorMessage =
+                            `Semua pilihan (A, B, C, D) wajib diisi untuk Soal ${questionNumber + 1}.`;
                         return;
                     }
 
@@ -603,16 +629,19 @@ function getExistingQuestionData(questionNumber) {
                         return;
                     }
                 } else if (questionType === 'benar_salah') {
-                    const correctAnswer = document.querySelector(`input[name="questions[${questionNumber}][jawaban_benar]"]:checked`);
-                    
+                    const correctAnswer = document.querySelector(
+                        `input[name="questions[${questionNumber}][jawaban_benar]"]:checked`);
+
                     if (!correctAnswer) {
                         isValid = false;
                         errorMessage = `Pilih jawaban yang benar untuk Soal ${questionNumber + 1}.`;
                         return;
                     }
                 } else if (questionType === 'checkbox') {
-                    const checkboxOptions = document.querySelectorAll(`input[name="questions[${questionNumber}][checkbox_options][]"]`);
-                    const checkboxCorrect = document.querySelectorAll(`input[name="questions[${questionNumber}][checkbox_correct][]"]:checked`);
+                    const checkboxOptions = document.querySelectorAll(
+                        `input[name="questions[${questionNumber}][checkbox_options][]"]`);
+                    const checkboxCorrect = document.querySelectorAll(
+                        `input[name="questions[${questionNumber}][checkbox_correct][]"]:checked`);
 
                     // Validasi minimal 2 opsi
                     let validOptions = 0;
@@ -631,7 +660,8 @@ function getExistingQuestionData(questionNumber) {
                     // Validasi minimal 1 jawaban benar
                     if (checkboxCorrect.length < 1) {
                         isValid = false;
-                        errorMessage = `Minimal 1 jawaban benar wajib dipilih untuk Soal ${questionNumber + 1}.`;
+                        errorMessage =
+                            `Minimal 1 jawaban benar wajib dipilih untuk Soal ${questionNumber + 1}.`;
                         return;
                     }
                 }
@@ -699,7 +729,7 @@ function getExistingQuestionData(questionNumber) {
         function removeCheckboxOption(questionNumber, optionIndex) {
             const container = document.getElementById(`checkbox-options-${questionNumber}`);
             const options = container.children;
-            
+
             if (options.length > 2) {
                 options[optionIndex].remove();
                 updateCheckboxIndexes(questionNumber);
@@ -712,21 +742,21 @@ function getExistingQuestionData(questionNumber) {
         function updateCheckboxIndexes(questionNumber) {
             const container = document.getElementById(`checkbox-options-${questionNumber}`);
             const options = container.children;
-            
+
             Array.from(options).forEach((option, index) => {
                 const input = option.querySelector('input[type="text"]');
                 const checkbox = option.querySelector('input[type="checkbox"]');
                 const label = option.querySelector('label');
-                
+
                 if (input) {
                     input.placeholder = `Masukkan opsi ${index + 1}`;
                 }
-                
+
                 if (checkbox) {
                     checkbox.value = index;
                     checkbox.id = `checkbox-correct-${questionNumber}-${index}`;
                 }
-                
+
                 if (label) {
                     label.setAttribute('for', `checkbox-correct-${questionNumber}-${index}`);
                 }
@@ -737,7 +767,7 @@ function getExistingQuestionData(questionNumber) {
         function addRemoveButtonToCheckboxOptions(questionNumber) {
             const container = document.getElementById(`checkbox-options-${questionNumber}`);
             const options = container.children;
-            
+
             Array.from(options).forEach((option, index) => {
                 if (!option.querySelector('.remove-checkbox-option')) {
                     const removeBtn = document.createElement('button');
@@ -745,7 +775,7 @@ function getExistingQuestionData(questionNumber) {
                     removeBtn.className = 'btn btn-outline-danger btn-sm remove-checkbox-option';
                     removeBtn.innerHTML = '<i class="ti ti-trash"></i>';
                     removeBtn.onclick = () => removeCheckboxOption(questionNumber, index);
-                    
+
                     const col = option.querySelector('.col-md-2');
                     if (col && options.length > 2) {
                         col.appendChild(removeBtn);
@@ -765,11 +795,11 @@ function getExistingQuestionData(questionNumber) {
         function saveDraft() {
             const formData = new FormData(document.getElementById('quiz-edit-form'));
             const draftData = {};
-            
+
             for (let [key, value] of formData.entries()) {
                 draftData[key] = value;
             }
-            
+
             // Simpan ke localStorage sebagai draft
             localStorage.setItem(`quiz_draft_${window.location.pathname}`, JSON.stringify(draftData));
         }
@@ -810,7 +840,7 @@ function getExistingQuestionData(questionNumber) {
             const question = document.getElementById(`question-${questionNumber}`).value;
             const type = document.getElementById(`question-type-${questionNumber}`).value;
             const weight = document.getElementById(`question-weight-${questionNumber}`).value;
-            
+
             let previewContent = `
                 <div class="modal fade" id="preview-modal-${questionNumber}" tabindex="-1">
                     <div class="modal-dialog modal-lg">
@@ -831,13 +861,13 @@ function getExistingQuestionData(questionNumber) {
                                     ${question}
                                 </div>
             `;
-            
+
             if (type === 'pilihan_ganda') {
                 const optionA = document.getElementById(`option-a-${questionNumber}`).value;
                 const optionB = document.getElementById(`option-b-${questionNumber}`).value;
                 const optionC = document.getElementById(`option-c-${questionNumber}`).value;
                 const optionD = document.getElementById(`option-d-${questionNumber}`).value;
-                
+
                 previewContent += `
                     <div class="mb-3">
                         <strong>Pilihan:</strong><br>
@@ -856,7 +886,8 @@ function getExistingQuestionData(questionNumber) {
                     </div>
                 `;
             } else if (type === 'checkbox') {
-                const checkboxOptions = document.querySelectorAll(`input[name="questions[${questionNumber}][checkbox_options][]"]`);
+                const checkboxOptions = document.querySelectorAll(
+                    `input[name="questions[${questionNumber}][checkbox_options][]"]`);
                 previewContent += `<div class="mb-3"><strong>Pilihan:</strong><br>`;
                 checkboxOptions.forEach((option, index) => {
                     if (option.value.trim()) {
@@ -865,7 +896,7 @@ function getExistingQuestionData(questionNumber) {
                 });
                 previewContent += `</div>`;
             }
-            
+
             previewContent += `
                             </div>
                             <div class="modal-footer">
@@ -875,16 +906,16 @@ function getExistingQuestionData(questionNumber) {
                     </div>
                 </div>
             `;
-            
+
             // Remove existing modal if any
             const existingModal = document.getElementById(`preview-modal-${questionNumber}`);
             if (existingModal) {
                 existingModal.remove();
             }
-            
+
             // Add new modal
             document.body.insertAdjacentHTML('beforeend', previewContent);
-            
+
             // Show modal
             const modal = new bootstrap.Modal(document.getElementById(`preview-modal-${questionNumber}`));
             modal.show();
@@ -899,7 +930,7 @@ function getExistingQuestionData(questionNumber) {
                 previewBtn.className = 'btn btn-outline-info btn-sm me-2 preview-question';
                 previewBtn.innerHTML = '<i class="ti ti-eye me-1"></i>Preview';
                 previewBtn.onclick = () => previewQuestion(questionNumber);
-                
+
                 const removeBtn = cardHeader.querySelector('.remove-question');
                 if (removeBtn) {
                     cardHeader.insertBefore(previewBtn, removeBtn);

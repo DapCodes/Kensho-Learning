@@ -527,158 +527,6 @@
             </div>
         </div>
 
-        <script src="{{ asset('/assets/backend/js/main/penilaian/script-penilaian-detail.js') }}"></script>
-
-        <style>
-            /* Question Detail Styles */
-            .question-item {
-                transition: all 0.3s ease;
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            .question-item.fade-in-question {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            .question-item:hover {
-                background-color: #f8f9fa;
-            }
-
-            .question-number {
-                flex-shrink: 0;
-            }
-
-            .question-content {
-                transition: all 0.3s ease;
-            }
-
-            .answer-box {
-                transition: all 0.2s ease;
-            }
-
-            .answer-box:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            }
-
-            .toggle-detail {
-                border: none !important;
-                padding: 0.25rem 0.5rem;
-                transition: all 0.2s ease;
-            }
-
-            .toggle-detail:hover {
-                background-color: #e9ecef;
-                border-radius: 0.375rem;
-            }
-
-            /* Filter Button Styles */
-            .btn-outline-primary.active,
-            .btn-outline-success.active,
-            .btn-outline-danger.active,
-            .btn-outline-secondary.active {
-                background-color: var(--bs-primary);
-                border-color: var(--bs-primary);
-                color: white;
-            }
-
-            .btn-outline-success.active {
-                background-color: var(--bs-success);
-                border-color: var(--bs-success);
-            }
-
-            .btn-outline-danger.active {
-                background-color: var(--bs-danger);
-                border-color: var(--bs-danger);
-            }
-
-            .btn-outline-secondary.active {
-                background-color: var(--bs-secondary);
-                border-color: var(--bs-secondary);
-            }
-
-            /* Background Subtle Colors */
-            .bg-success-subtle {
-                background-color: rgba(25, 135, 84, 0.1) !important;
-            }
-
-            .bg-danger-subtle {
-                background-color: rgba(220, 53, 69, 0.1) !important;
-            }
-
-            .bg-info-subtle {
-                background-color: rgba(13, 202, 240, 0.1) !important;
-            }
-
-            .text-success {
-                color: #198754 !important;
-            }
-
-            .text-danger {
-                color: #dc3545 !important;
-            }
-
-            .text-info {
-                color: #0dcaf0 !important;
-            }
-
-            /* Border Colors */
-            .border-success {
-                border-color: #198754 !important;
-            }
-
-            .border-danger {
-                border-color: #dc3545 !important;
-            }
-
-            .border-info {
-                border-color: #0dcaf0 !important;
-            }
-
-            /* Progress Bar Animation */
-            .progress-bar {
-                transition: width 1.5s ease-in-out;
-            }
-
-            /* Responsive Design */
-            @media (max-width: 768px) {
-                .d-flex.gap-2 {
-                    flex-wrap: wrap;
-                }
-
-                .btn-sm {
-                    margin-bottom: 0.25rem;
-                }
-
-                .question-number {
-                    margin-bottom: 1rem;
-                }
-
-                .col-md-6 {
-                    margin-bottom: 1rem;
-                }
-            }
-
-            /* Animation Keyframes */
-            @keyframes fadeInQuestion {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .fade-in-question {
-                animation: fadeInQuestion 0.5s ease forwards;
-            }
-        </style>
-        <!-- end -->
 
         <!-- Action Buttons -->
         <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
@@ -695,8 +543,157 @@
         </div>
     </div>
 
+    <script src="{{ asset('/assets/backend/js/main/penilaian/script-penilaian-detail.js') }}"></script>
 
     <style>
+        /* Question Detail Styles */
+        .question-item {
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .question-item.fade-in-question {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .question-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .question-number {
+            flex-shrink: 0;
+        }
+
+        .question-content {
+            transition: all 0.3s ease;
+        }
+
+        .answer-box {
+            transition: all 0.2s ease;
+        }
+
+        .answer-box:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-detail {
+            border: none !important;
+            padding: 0.25rem 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-detail:hover {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+        }
+
+        /* Filter Button Styles */
+        .btn-outline-primary.active,
+        .btn-outline-success.active,
+        .btn-outline-danger.active,
+        .btn-outline-secondary.active {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+            color: white;
+        }
+
+        .btn-outline-success.active {
+            background-color: var(--bs-success);
+            border-color: var(--bs-success);
+        }
+
+        .btn-outline-danger.active {
+            background-color: var(--bs-danger);
+            border-color: var(--bs-danger);
+        }
+
+        .btn-outline-secondary.active {
+            background-color: var(--bs-secondary);
+            border-color: var(--bs-secondary);
+        }
+
+        /* Background Subtle Colors */
+        .bg-success-subtle {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+
+        .bg-danger-subtle {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+
+        .bg-info-subtle {
+            background-color: rgba(13, 202, 240, 0.1) !important;
+        }
+
+        .text-success {
+            color: #198754 !important;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .text-info {
+            color: #0dcaf0 !important;
+        }
+
+        /* Border Colors */
+        .border-success {
+            border-color: #198754 !important;
+        }
+
+        .border-danger {
+            border-color: #dc3545 !important;
+        }
+
+        .border-info {
+            border-color: #0dcaf0 !important;
+        }
+
+        /* Progress Bar Animation */
+        .progress-bar {
+            transition: width 1.5s ease-in-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .d-flex.gap-2 {
+                flex-wrap: wrap;
+            }
+
+            .btn-sm {
+                margin-bottom: 0.25rem;
+            }
+
+            .question-number {
+                margin-bottom: 1rem;
+            }
+
+            .col-md-6 {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeInQuestion {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-question {
+            animation: fadeInQuestion 0.5s ease forwards;
+        }
+
         .card {
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
             border: 1px solid rgba(0, 0, 0, 0.125);

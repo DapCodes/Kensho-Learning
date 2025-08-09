@@ -352,6 +352,6 @@
         </div>
     @endif
 
-    <script src="{{asset('/assets/backend/js/main/script-matapelajaran.js')}}"></script>
+    <script src="{{ asset('/assets/backend/js/main/script-matapelajaran.js') }}"></script>
     @include('layouts.components-backend.css')
 @endsection

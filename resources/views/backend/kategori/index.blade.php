@@ -305,6 +305,6 @@
         </div>
     @endif
 
-    <script src="{{asset('/assets/backend/js/main/script-kategori.js')}}"></script>
+    <script src="{{ asset('/assets/backend/js/main/script-kategori.js') }}"></script>
     @include('layouts.components-backend.css')
 @endsection

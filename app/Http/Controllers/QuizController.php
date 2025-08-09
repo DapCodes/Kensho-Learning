@@ -38,6 +38,7 @@ class QuizController extends Controller
         if ($request->has('export') && $request->has('quiz_id')) {
             $quizId = $request->get('quiz_id');
             $quiz = Quiz::with('soals')->findOrFail($quizId);
+            $jumlahSoal = $quiz->soals->count();
 
             // Check if user has permission to export this quiz
             if ($user->isAdmin === '1' && $quiz->user_id !== auth()->id()) {
@@ -49,16 +50,16 @@ class QuizController extends Controller
             if ($exportType === 'excel') {
                 return Excel::download(new QuizExport($quiz), 'quiz_'.$quiz->kode_quiz.'.xlsx');
             } elseif ($exportType === 'pdf') {
-                return $this->exportToPdf($quiz);
+                return $this->exportToPdf($quiz, $jumlahSoal);
             }
         }
 
         return view('backend.quiz.index', compact('quizzes'));
     }
 
-    private function exportToPdf($quiz)
+    private function exportToPdf($quiz, $jumlahSoal)
     {
-        $pdf = Pdf::loadView('backend.quiz.export-pdf', compact('quiz'));
+        $pdf = Pdf::loadView('backend.quiz.export-pdf', compact('quiz', 'jumlahSoal'));
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->download('quiz_'.$quiz->kode_quiz.'.pdf');
