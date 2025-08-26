@@ -20,8 +20,8 @@
     <link rel="stylesheet" href="{{ asset('/assets/backend/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}" />
 
     <title>
-        Kenshō |
-        @if(Auth::user()->isAdmin === '2')
+        Dexa |
+        @if (Auth::user()->isAdmin === '2')
             Admin
         @elseif(Auth::user()->isAdmin === '1')
             Guru

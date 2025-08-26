@@ -2,9 +2,9 @@
     <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
             <a href="./main/index.html" class="text-nowrap logo-img">
-                <img src="{{ asset('/assets/backend/images/logos/dark-logo.svg') }}" class="dark-logo m-1"
+                <img src="{{ asset('/assets/backend/images/logos/dark-logo.png') }}" class="dark-logo m-1"
                     alt="Logo-Dark" />
-                <img src="{{ asset('/assets/backend/images/logos/light-logo.svg') }}" class="light-logo m-1"
+                <img src="{{ asset('/assets/backend/images/logos/light-logo.png') }}" class="light-logo m-1"
                     alt="Logo-light" />
             </a>
             <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
