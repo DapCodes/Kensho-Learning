@@ -301,6 +301,9 @@
                                         <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
                                             Koreksi
                                         </th>
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                            Tab Switch
+                                        </th>
                                         <th scope="col" class="border-0 fw-bold text-dark py-3 text-center pe-4">
                                             <i class="ti ti-settings me-1"></i>Aksi
                                         </th>
@@ -439,6 +442,18 @@
                                                             class="btn btn-sm btn-outline-primary">
                                                             Koreksi Ulang?
                                                         </a>
+                                                    </div>
+                                                @endif
+                                            </td>
+
+                                            <td class="py-4">
+                                                @if ($hasil->perpindahan_halaman >= 5)
+                                                    <div class="mt-2 text-center text-danger">
+                                                        {{ $hasil->perpindahan_halaman }}
+                                                    </div>
+                                                @else
+                                                    <div class="mt-2 text-center text-success">
+                                                        {{ $hasil->perpindahan_halaman }}
                                                     </div>
                                                 @endif
                                             </td>

@@ -120,8 +120,8 @@
                                                 <span class="badge bg-secondary">Siswa</span>
                                             @endif
                                         </td>
-                                         <td class="py-4">
-                                             <h6 class="mb-0 fw-bold text-dark" title="{{ $user->name }}">
+                                        <td class="py-4">
+                                            <h6 class="mb-0 fw-bold text-dark" title="{{ $user->name }}">
                                                 {{ $user->kelas->nama_kelas }}</h6>
                                         </td>
                                         <td class="py-4">
@@ -130,12 +130,12 @@
                                         </td>
                                         @if ($user->email !== 'admin@gmail.com')
                                             <td class="py-4 text-center pe-4">
-                                                @if (auth()->user()->canImpersonate() && $user->canBeImpersonated())
+                                                {{-- @if (auth()->user()->canImpersonate() && $user->canBeImpersonated())
                                                     <a href="{{ route('impersonate', $user->id) }}"
                                                         class="btn btn-sm btn-primary">
                                                         Impersonate
                                                     </a>
-                                                @endif
+                                                @endif --}}
                                                 <div class="btn-group" role="group">
                                                     <a href="{{ route('users.edit', $user->id) }}"
                                                         class="btn btn-warning btn-sm" title="Edit User">

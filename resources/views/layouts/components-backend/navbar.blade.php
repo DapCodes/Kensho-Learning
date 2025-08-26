@@ -21,9 +21,9 @@
             </ul>
             <div class="d-block d-lg-none py-4">
                 <a href="./main/index.html" class="text-nowrap logo-img">
-                    <img src="{{ asset('assets/backend/images/logos/dark-logo.svg') }}" class="dark-logo"
+                    <img src="{{ asset('assets/backend/images/logos/dark-logo.png') }}" class="dark-logo"
                         alt="Logo-Dark" />
-                    <img src="{{ asset('assets/backend/images/logos/light-logo.svg') }}" class="light-logo"
+                    <img src="{{ asset('assets/backend/images/logos/light-logo.png') }}" class="light-logo"
                         alt="Logo-light" />
                 </a>
             </div>
@@ -84,11 +84,11 @@
                                             Log Out
                                         </a>
 
-                                        @if (session()->has('impersonated_by'))
+                                        {{-- @if (session()->has('impersonated_by'))
                                             <a href="{{ route('impersonate.leave') }}" class="btn btn-warning">
                                                 Kembali ke Admin
                                             </a>
-                                        @endif
+                                        @endif --}}
 
                                         <form action="{{ route('logout') }}" method="post" id="logout-form">
                                             @csrf
