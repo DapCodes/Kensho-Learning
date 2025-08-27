@@ -181,13 +181,12 @@
                                             </span>
                                         </td>
                                         <td class="py-4 text-center">
-                                            <form action="{{ route('quiz.toggleAktivasi', $quiz->id) }}" method="POST"
-                                                onsubmit="return confirm('Apakah kamu yakin ingin mengubah status aktivasi kuis ini?')">
+                                            <form action="{{ route('quiz.toggleAktivasi', $quiz->id) }}" method="POST">
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="submit"
-                                                    class="btn btn-sm 
-                                                    {{ $quiz->status_aktivasi === 'aktif' ? 'btn-danger' : 'btn-success' }}">
+                                                    class="btn btn-sm {{ $quiz->status_aktivasi === 'aktif' ? 'btn-danger' : 'btn-success' }}"
+                                                    onclick="return confirm('Apakah Anda yakin ingin {{ $quiz->status_aktivasi === 'aktif' ? 'menonaktifkan' : 'mengaktifkan' }} quiz &quot;{{ addslashes($quiz->judul_quiz) }}&quot;?')">
                                                     <i
                                                         class="ti ti-{{ $quiz->status_aktivasi === 'aktif' ? 'x-circle' : 'check-circle' }} me-1"></i>
                                                     {{ $quiz->status_aktivasi === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
@@ -215,7 +214,7 @@
                                                     <i class="ti ti-file-text"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-danger btn-sm" title="Hapus Quiz"
-                                                    onclick="deleteQuiz({{ $quiz->id }}, '{{ $quiz->judul_quiz }}')">
+                                                    onclick="deleteQuiz({{ $quiz->id }}, '{{ addslashes($quiz->judul_quiz) }}')">
                                                     <i class="ti ti-trash"></i>
                                                 </button>
                                             </div>
@@ -336,13 +335,12 @@
                                 <!-- Mobile Actions -->
                                 <div class="mobile-actions">
                                     <!-- Activation Button -->
-                                    <form action="{{ route('quiz.toggleAktivasi', $quiz->id) }}" method="POST"
-                                        onsubmit="return confirm('Apakah kamu yakin ingin mengubah status aktivasi kuis ini?')">
+                                    <form action="{{ route('quiz.toggleAktivasi', $quiz->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
                                         <button type="submit"
-                                            class="btn mobile-activation-btn
-                            {{ $quiz->status_aktivasi === 'aktif' ? 'btn-danger' : 'btn-success' }}">
+                                            class="btn mobile-activation-btn {{ $quiz->status_aktivasi === 'aktif' ? 'btn-danger' : 'btn-success' }}"
+                                            onclick="return confirm('Apakah Anda yakin ingin {{ $quiz->status_aktivasi === 'aktif' ? 'menonaktifkan' : 'mengaktifkan' }} quiz &quot;{{ addslashes($quiz->judul_quiz) }}&quot;?')">
                                             <i
                                                 class="ti ti-{{ $quiz->status_aktivasi === 'aktif' ? 'x-circle' : 'check-circle' }}"></i>
                                             {{ $quiz->status_aktivasi === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
@@ -378,7 +376,7 @@
                                     <!-- Delete Button -->
                                     <div class="mobile-action-row">
                                         <button type="button" class="btn btn-danger"
-                                            onclick="deleteQuiz({{ $quiz->id }}, '{{ $quiz->judul_quiz }}')">
+                                            onclick="deleteQuiz({{ $quiz->id }}, '{{ addslashes($quiz->judul_quiz) }}')">
                                             <i class="ti ti-trash"></i>
                                             Hapus Quiz
                                         </button>
@@ -468,6 +466,94 @@
         </div>
     @endif
 
-    <script src="{{ asset('/assets/backend/js/main/quiz/script-quiz-index.js') }}"></script>
+    <script>
+        // Script sederhana hanya untuk copy quiz code dan delete
+        document.addEventListener("DOMContentLoaded", function() {
+            // Copy quiz code functionality
+            const copyButtons = document.querySelectorAll(".copy-quiz-btn");
+            copyButtons.forEach((button) => {
+                button.addEventListener("click", function() {
+                    const quizCode = this.getAttribute("data-quiz-code");
+
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(quizCode).then(function() {
+                            showCopyFeedback(button, true);
+                        }).catch(function() {
+                            fallbackCopy(quizCode, button);
+                        });
+                    } else {
+                        fallbackCopy(quizCode, button);
+                    }
+                });
+            });
+
+            function fallbackCopy(text, button) {
+                const tempInput = document.createElement("input");
+                tempInput.value = text;
+                tempInput.style.position = "absolute";
+                tempInput.style.left = "-9999px";
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                tempInput.setSelectionRange(0, 99999);
+
+                try {
+                    const successful = document.execCommand("copy");
+                    showCopyFeedback(button, successful);
+                } catch (err) {
+                    showCopyFeedback(button, false);
+                }
+
+                document.body.removeChild(tempInput);
+            }
+
+            function showCopyFeedback(button, success) {
+                const originalContent = button.innerHTML;
+                const originalClass = button.className;
+
+                if (success) {
+                    button.innerHTML = '<i class="ti ti-check"></i>';
+                    button.classList.add("btn-success");
+                    button.classList.remove("btn-outline-secondary");
+
+                    setTimeout(() => {
+                        button.innerHTML = originalContent;
+                        button.className = originalClass;
+                    }, 2000);
+                } else {
+                    button.innerHTML = '<i class="ti ti-x"></i>';
+                    button.classList.add("btn-danger");
+                    button.classList.remove("btn-outline-secondary");
+
+                    setTimeout(() => {
+                        button.innerHTML = originalContent;
+                        button.className = originalClass;
+                    }, 2000);
+                }
+            }
+
+            // Auto-hide toast messages
+            const bootstrapToasts = document.querySelectorAll(".toast.show");
+            bootstrapToasts.forEach((toast) => {
+                setTimeout(() => {
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.hide();
+                }, 5000);
+            });
+        });
+
+        // Delete confirmation function
+        function deleteQuiz(quizId, quizTitle) {
+            const confirmed = confirm(
+                `Apakah Anda yakin ingin menghapus quiz "${quizTitle}"?\n\nTindakan ini tidak dapat dibatalkan.`);
+
+            if (confirmed) {
+                const form = document.getElementById("delete-form-" + quizId);
+                if (form) {
+                    form.submit();
+                }
+            }
+        }
+    </script>
+
     @include('layouts.components-backend.css')
 @endsection

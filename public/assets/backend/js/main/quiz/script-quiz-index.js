@@ -124,6 +124,67 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3000);
     }
 
+    // Enhanced activation toggle functionality - PERBAIKAN UTAMA
+    const activationForms = document.querySelectorAll(
+        'form[action*="toggleAktivasi"]'
+    );
+    activationForms.forEach((form) => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const button = this.querySelector('button[type="submit"]');
+            const isActive = button.textContent
+                .trim()
+                .toLowerCase()
+                .includes("nonaktifkan");
+            const action = isActive ? "menonaktifkan" : "mengaktifkan";
+
+            // Create custom confirmation
+            const confirmed = confirm(
+                `Apakah Anda yakin ingin ${action} quiz ini?`
+            );
+
+            if (confirmed) {
+                // Show loading state
+                const originalContent = button.innerHTML;
+                button.innerHTML =
+                    '<i class="ti ti-loader-2 animate-spin"></i> Processing...';
+                button.disabled = true;
+
+                // Create a new FormData from the form
+                const formData = new FormData(this);
+                const actionUrl = this.getAttribute("action");
+
+                // Use fetch for better control
+                fetch(actionUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-TOKEN":
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute("content") ||
+                            formData.get("_token"),
+                    },
+                })
+                    .then((response) => {
+                        if (response.ok) {
+                            // Reload page to reflect changes
+                            window.location.reload();
+                        } else {
+                            throw new Error("Network response was not ok");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                        // Fallback: submit form normally
+                        this.submit();
+                    });
+            }
+        });
+    });
+
     // Auto-hide existing Bootstrap toasts
     const bootstrapToasts = document.querySelectorAll(".toast.show");
     bootstrapToasts.forEach((toast) => {
@@ -133,16 +194,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 5000);
     });
 
-    // Add loading states to buttons
+    // Add loading states to other buttons (excluding activation buttons)
     const actionButtons = document.querySelectorAll(
-        '.btn[href], .btn[type="submit"]'
+        '.btn[href], .btn[type="submit"]:not([form*="toggleAktivasi"])'
     );
     actionButtons.forEach((button) => {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", function (e) {
+            // Skip if it's copy button or activation button
             if (
-                this.type !== "button" &&
-                !this.classList.contains("copy-quiz-btn")
+                this.classList.contains("copy-quiz-btn") ||
+                this.closest('form[action*="toggleAktivasi"]')
             ) {
+                return;
+            }
+
+            if (this.type !== "button") {
                 const originalContent = this.innerHTML;
                 this.innerHTML =
                     '<i class="ti ti-loader-2 animate-spin"></i> Loading...';
@@ -189,21 +255,23 @@ document.addEventListener("DOMContentLoaded", function () {
 // Delete confirmation function - Enhanced
 function deleteQuiz(quizId, quizTitle) {
     // Create custom confirmation modal for better UX
-    if (window.innerWidth <= 768) {
-        // Mobile-friendly confirmation
-        const confirmed = confirm(
-            `Hapus quiz "${quizTitle}"?\n\nTindakan ini tidak dapat dibatalkan.`
-        );
-        if (confirmed) {
-            document.getElementById("delete-form-" + quizId).submit();
-        }
-    } else {
-        // Desktop confirmation
-        const confirmed = confirm(
-            `Apakah Anda yakin ingin menghapus quiz "${quizTitle}"?\n\nTindakan ini tidak dapat dibatalkan dan akan menghapus semua data terkait quiz ini.`
-        );
-        if (confirmed) {
-            document.getElementById("delete-form-" + quizId).submit();
+    const confirmed = confirm(
+        `Apakah Anda yakin ingin menghapus quiz "${quizTitle}"?\n\nTindakan ini tidak dapat dibatalkan dan akan menghapus semua data terkait quiz ini.`
+    );
+
+    if (confirmed) {
+        const form = document.getElementById("delete-form-" + quizId);
+        if (form) {
+            // Add loading state to any visible delete button
+            const deleteButton = document.querySelector(
+                `button[onclick*="deleteQuiz(${quizId}"]`
+            );
+            if (deleteButton) {
+                deleteButton.innerHTML =
+                    '<i class="ti ti-loader-2 animate-spin"></i> Menghapus...';
+                deleteButton.disabled = true;
+            }
+            form.submit();
         }
     }
 }
