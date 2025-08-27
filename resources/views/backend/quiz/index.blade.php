@@ -88,7 +88,8 @@
 
             @if ($quizzes->count() > 0)
                 <div class="card-body p-0">
-                    <div class="table-responsive">
+                    <!-- Desktop Table -->
+                    <div class="table-responsive desktop-table">
                         <table class="table table-hover quiz-table mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -155,14 +156,6 @@
                                                 <span class="fw-bold text-dark">{{ $quiz->user->name }}</span>
                                             </div>
                                         </td>
-                                        <!-- <td class="py-4 text-center">
-                                                    <div class="d-flex flex-column align-items-center">
-                                                        <span
-                                                            class="fw-bold text-dark">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('d M Y') }}</span>
-                                                        <small
-                                                            class="text-muted">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('H:i') }}</small>
-                                                    </div>
-                                                </td> -->
                                         <td class="py-4 text-center">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <div class="rounded-circle bg-success-subtle d-flex align-items-center justify-content-center me-2"
@@ -201,7 +194,6 @@
                                                 </button>
                                             </form>
                                         </td>
-
                                         <td class="py-4 text-center pe-4">
                                             <div class="btn-group" role="group">
                                                 <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-info btn-sm"
@@ -227,7 +219,6 @@
                                                     <i class="ti ti-trash"></i>
                                                 </button>
                                             </div>
-
                                             <!-- Hidden delete form -->
                                             <form id="delete-form-{{ $quiz->id }}"
                                                 action="{{ route('quiz.destroy', $quiz->id) }}" method="POST"
@@ -236,12 +227,173 @@
                                                 @method('DELETE')
                                             </form>
                                         </td>
-
-
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile Quiz Layout -->
+                    <div class="mobile-quiz-container">
+                        @foreach ($quizzes as $index => $quiz)
+                            <div class="mobile-quiz-card" data-quiz-id="{{ $quiz->id }}">
+                                <!-- Mobile Card Header -->
+                                <div class="mobile-card-header">
+                                    <div class="mobile-card-number">
+                                        {{ $loop->iteration }}
+                                    </div>
+                                    <div class="mobile-card-title">
+                                        <h6 title="{{ $quiz->judul_quiz }}">
+                                            {{ Str::limit($quiz->judul_quiz, 50) }}
+                                        </h6>
+                                    </div>
+                                </div>
+
+                                <!-- Mobile Card Info -->
+                                <div class="mobile-card-info">
+                                    <!-- Kode Quiz -->
+                                    <div class="mobile-info-row">
+                                        <div class="mobile-info-label">
+                                            <i class="ti ti-key"></i>
+                                            Kode Quiz
+                                        </div>
+                                        <div class="mobile-info-value">
+                                            @if ($quiz->kode_quiz)
+                                                <div class="mobile-code-section">
+                                                    <span class="badge bg-primary-subtle text-primary">
+                                                        {{ $quiz->kode_quiz }}
+                                                    </span>
+                                                    <button
+                                                        class="btn btn-outline-secondary btn-sm mobile-copy-btn copy-quiz-btn"
+                                                        data-quiz-code="{{ $quiz->kode_quiz }}" title="Salin Kode Quiz"
+                                                        type="button">
+                                                        <i class="ti ti-copy"></i>
+                                                    </button>
+                                                </div>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Kreator -->
+                                    <div class="mobile-info-row">
+                                        <div class="mobile-info-label">
+                                            <i class="ti ti-user"></i>
+                                            Kreator
+                                        </div>
+                                        <div class="mobile-info-value">
+                                            <span class="fw-bold">{{ $quiz->user->name }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Peserta -->
+                                    <div class="mobile-info-row">
+                                        <div class="mobile-info-label">
+                                            <i class="ti ti-users"></i>
+                                            Peserta
+                                        </div>
+                                        <div class="mobile-info-value">
+                                            <div class="participant-count">
+                                                <div class="participant-icon">
+                                                    <i class="ti ti-users text-success" style="font-size: 12px;"></i>
+                                                </div>
+                                                <span class="fw-bold text-success">{{ $quiz->hasilUjian->count() }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mata Pelajaran -->
+                                    <div class="mobile-info-row">
+                                        <div class="mobile-info-label">
+                                            <i class="ti ti-book"></i>
+                                            Mapel
+                                        </div>
+                                        <div class="mobile-info-value">
+                                            <span
+                                                class="fw-bold text-success">{{ $quiz->mataPelajaran->nama_mapel }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div class="mobile-info-row">
+                                        <div class="mobile-info-label">
+                                            <i class="ti ti-school"></i>
+                                            Status
+                                        </div>
+                                        <div class="mobile-info-value">
+                                            <span
+                                                class="badge bg-{{ $quiz->soals->count() > 0 ? 'success' : 'warning' }}-subtle 
+                                 text-{{ $quiz->soals->count() > 0 ? 'success' : 'warning' }}">
+                                                <i
+                                                    class="ti ti-{{ $quiz->soals->count() > 0 ? 'check-circle' : 'clock' }} me-1"></i>
+                                                {{ $quiz->status_aktivasi === 'aktif' ? 'Aktif' : 'Nonaktif' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Mobile Actions -->
+                                <div class="mobile-actions">
+                                    <!-- Activation Button -->
+                                    <form action="{{ route('quiz.toggleAktivasi', $quiz->id) }}" method="POST"
+                                        onsubmit="return confirm('Apakah kamu yakin ingin mengubah status aktivasi kuis ini?')">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit"
+                                            class="btn mobile-activation-btn
+                            {{ $quiz->status_aktivasi === 'aktif' ? 'btn-danger' : 'btn-success' }}">
+                                            <i
+                                                class="ti ti-{{ $quiz->status_aktivasi === 'aktif' ? 'x-circle' : 'check-circle' }}"></i>
+                                            {{ $quiz->status_aktivasi === 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
+                                        </button>
+                                    </form>
+
+                                    <!-- Action Buttons Row 1 -->
+                                    <div class="mobile-action-row">
+                                        <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-info">
+                                            <i class="ti ti-eye"></i>
+                                            Detail
+                                        </a>
+                                        <a href="{{ route('quiz.edit', $quiz->id) }}" class="btn btn-warning">
+                                            <i class="ti ti-edit"></i>
+                                            Edit
+                                        </a>
+                                    </div>
+
+                                    <!-- Action Buttons Row 2 -->
+                                    <div class="mobile-action-row">
+                                        <a class="btn btn-success"
+                                            href="{{ route('quiz.index', ['export' => 'excel', 'quiz_id' => $quiz->id]) }}">
+                                            <i class="ti ti-file-spreadsheet"></i>
+                                            Excel
+                                        </a>
+                                        <a class="btn btn-info"
+                                            href="{{ route('quiz.index', ['export' => 'pdf', 'quiz_id' => $quiz->id]) }}">
+                                            <i class="ti ti-file-text"></i>
+                                            PDF
+                                        </a>
+                                    </div>
+
+                                    <!-- Delete Button -->
+                                    <div class="mobile-action-row">
+                                        <button type="button" class="btn btn-danger"
+                                            onclick="deleteQuiz({{ $quiz->id }}, '{{ $quiz->judul_quiz }}')">
+                                            <i class="ti ti-trash"></i>
+                                            Hapus Quiz
+                                        </button>
+                                    </div>
+
+                                    <!-- Hidden delete form -->
+                                    <form id="delete-form-{{ $quiz->id }}"
+                                        action="{{ route('quiz.destroy', $quiz->id) }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             @else
@@ -315,7 +467,6 @@
             </div>
         </div>
     @endif
-
 
     <script src="{{ asset('/assets/backend/js/main/quiz/script-quiz-index.js') }}"></script>
     @include('layouts.components-backend.css')

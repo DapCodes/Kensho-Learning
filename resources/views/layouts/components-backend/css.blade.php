@@ -456,4 +456,328 @@
             border-radius: 8px !important;
         }
     }
+
+    /* Enhanced mobile responsiveness - Replace the existing mobile section */
+    @media (max-width: 768px) {
+
+        /* Container adjustments */
+        .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        /* Header section mobile */
+        .card.bg-gradient-primary .row {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .card.bg-gradient-primary .col-3 {
+            margin-top: 1rem;
+        }
+
+        /* Action section mobile */
+        .card-body .row.align-items-center {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .col-md-4.text-md-end {
+            margin-top: 1rem;
+            text-align: center !important;
+        }
+
+        /* Mobile table - Hide desktop table */
+        .table-responsive .quiz-table {
+            display: none;
+        }
+
+        /* Create mobile card layout */
+        .mobile-quiz-container {
+            display: block;
+        }
+
+        .mobile-quiz-card {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-quiz-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Mobile card header */
+        .mobile-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .mobile-card-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .mobile-card-title {
+            flex: 1;
+        }
+
+        .mobile-card-title h6 {
+            margin: 0;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1rem;
+            line-height: 1.3;
+        }
+
+        /* Mobile card info rows */
+        .mobile-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0;
+        }
+
+        .mobile-info-row:not(:last-child) {
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .mobile-info-label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            min-width: 100px;
+        }
+
+        .mobile-info-label i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .mobile-info-value {
+            text-align: right;
+            flex: 1;
+            margin-left: 1rem;
+        }
+
+        /* Code quiz section in mobile */
+        .mobile-code-section {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mobile-code-section .badge {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .mobile-copy-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        /* Mobile action buttons */
+        .mobile-actions {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid #f8f9fa;
+        }
+
+        .mobile-action-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .mobile-action-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Mobile button adjustments */
+        .mobile-actions .btn {
+            flex: 1;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .mobile-actions .btn i {
+            font-size: 1rem;
+        }
+
+        /* Status activation button full width on mobile */
+        .mobile-activation-btn {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Mobile badges */
+        .mobile-info-value .badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* Participant count styling */
+        .participant-count {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .participant-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(17, 153, 142, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Toast adjustments for mobile */
+        .toast {
+            min-width: 280px;
+            max-width: calc(100vw - 2rem);
+        }
+
+        /* Responsive font sizes */
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        h5 {
+            font-size: 1.2rem;
+        }
+
+        h6 {
+            font-size: 1rem;
+        }
+
+        /* Button group adjustments */
+        .btn-group {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            border-radius: 6px !important;
+            min-width: calc(50% - 0.125rem);
+            margin: 0;
+            padding: 0.5rem 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        /* Empty state mobile adjustments */
+        .text-center .rounded-circle {
+            width: 80px !important;
+            height: 80px !important;
+        }
+
+        .text-center .ti {
+            font-size: 36px !important;
+        }
+
+        .text-center h3 {
+            font-size: 1.3rem;
+        }
+
+        .text-center p {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Extra small devices */
+    @media (max-width: 576px) {
+        .mobile-quiz-card {
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .mobile-card-header {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+
+        .mobile-card-number {
+            margin-bottom: 0.75rem;
+            margin-right: 0;
+        }
+
+        .mobile-info-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .mobile-info-value {
+            text-align: left;
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .mobile-code-section {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .participant-count {
+            justify-content: flex-start;
+        }
+
+        .mobile-action-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+
+        .btn-group .btn {
+            min-width: 100%;
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    /* Show mobile layout only on mobile */
+    @media (min-width: 769px) {
+        .mobile-quiz-container {
+            display: none !important;
+        }
+    }
 </style>
