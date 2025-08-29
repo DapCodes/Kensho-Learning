@@ -280,14 +280,13 @@ https://templatemo.com/tm-586-scholar
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseFour" aria-expanded="false"
                                     aria-controls="collapseFour">
-                                    Apakah tersedia dukungan mentor?
+                                    Apakah ujian menggunakan DEXA aman?
                                 </button>
                             </h2>
                             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    Ya, setiap kursus dilengkapi forum diskusi dan sesi tanya jawab dengan mentor
-                                    sehingga Anda tidak belajar sendirian.
+                                    Ya, setiap ujian atau latihan soal yang anda kerjakan pastinya sangat aman!
                                 </div>
                             </div>
                         </div>
