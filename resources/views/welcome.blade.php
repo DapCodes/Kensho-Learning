@@ -55,7 +55,7 @@ https://templatemo.com/tm-586-scholar
                     <nav class="main-nav">
                         <!-- ***** Logo Start ***** -->
                         <a href="#top" class="logo">
-                            <img src="{{ asset('assets/backend/images/logos/Ukuran kecil x.png') }}" alt="Logo">
+                            <img src="{{ asset('assets/backend/images/logos/Ukuran kecil putih.png') }}" alt="Logo">
                         </a>
                         <!-- ***** Logo End ***** -->
 

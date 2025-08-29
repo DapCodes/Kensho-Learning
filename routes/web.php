@@ -58,8 +58,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', Admin::class]], func
 
     Route::prefix('penilaian')->name('penilaian.')->group(function () {
 
-        // Route untuk menyimpan penilaian essay (batch update)
-        // Simpan penilaian essay (batch update)
         Route::post('/update-grade/{id}', [PenilaianController::class, 'updateGrade'])
             ->name('updateGrade');
 
@@ -83,11 +81,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', Admin::class]], func
         Route::get('/penilaian/export-pengerjaan/{id}', [PenilaianController::class, 'exportPengerjaan'])
             ->name('penilaian.export-pengerjaan');
 
-        // Tambahkan route detail di atas /{id}
         Route::get('/detail/{id}', [PenilaianController::class, 'detail'])->name('detail');
 
         Route::get('/{id}', [PenilaianController::class, 'show'])->name('show');
-        Route::post('/{id}/update-grade', [PenilaianController::class, 'updateGrade'])->name('updateGrade');
         Route::post('/bulk-grade', [PenilaianController::class, 'bulkGrade'])->name('bulkGrade');
     });
 
