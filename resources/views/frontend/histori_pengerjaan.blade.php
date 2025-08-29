@@ -6,8 +6,8 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Histori Pengerjaan Quiz</h3>
-                        <p class="text-white-75 mb-3">Pantau semua hasil quiz yang telah Anda kerjakan</p>
+                        <h3 class="fw-bold mb-3 text-white">Histori Pengerjaan Quiz!</h3>
+                        <p class="text-white-75 mb-3">Pantau semua hasil quiz yang telah Anda kerjakan.</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
                                 <li class="breadcrumb-item">
@@ -142,8 +142,10 @@
 
             <form method="GET" action="{{ route('histori-pengerjaan') }}" class="mb-4">
                 <div class="d-flex gap-2">
-                    <input type="number" name="min_skor" class="form-control" placeholder="Skor Minimum" value="{{ request('min_skor') }}">
-                    <input type="number" name="max_skor" class="form-control" placeholder="Skor Maksimum" value="{{ request('max_skor') }}">
+                    <input type="number" name="min_skor" class="form-control" placeholder="Skor Minimum"
+                        value="{{ request('min_skor') }}">
+                    <input type="number" name="max_skor" class="form-control" placeholder="Skor Maksimum"
+                        value="{{ request('max_skor') }}">
                     <button type="submit" class="btn btn-primary">Filter</button>
                     <a href="{{ route('histori-pengerjaan') }}" class="btn btn-secondary">Reset</a>
                 </div>
@@ -245,7 +247,7 @@
                                                         style="width: 30px; height: 30px;">
                                                         <i class="ti ti-star text-warning" style="font-size: 14px;"></i>
                                                     </div>
-                                                    @if( $item->quiz->status === "Privat" )
+                                                    @if ($item->quiz->status === 'Privat')
                                                         <span class="fw-bold text-warning"> Tidak di PUBLISH </span>
                                                     @else
                                                         <span class="fw-bold text-warning">{{ $item->skor }}</span>
@@ -259,10 +261,11 @@
                                                         style="width: 30px; height: 30px;">
                                                         <i class="ti ti-check text-success" style="font-size: 14px;"></i>
                                                     </div>
-                                                    @if( $item->quiz->status === "Privat" )
+                                                    @if ($item->quiz->status === 'Privat')
                                                         <span class="fw-bold text-success"> - </span>
                                                     @else
-                                                        <span class="fw-bold text-success">{{ $item->jumlah_benar }}</span>
+                                                        <span
+                                                            class="fw-bold text-success">{{ $item->jumlah_benar }}</span>
                                                     @endif
                                                 </div>
                                             </td>
@@ -273,7 +276,7 @@
                                                         style="width: 30px; height: 30px;">
                                                         <i class="ti ti-x text-danger" style="font-size: 14px;"></i>
                                                     </div>
-                                                    @if( $item->quiz->status === "Privat" )
+                                                    @if ($item->quiz->status === 'Privat')
                                                         <span class="fw-bold text-warning"> - </span>
                                                     @else
                                                         <span class="fw-bold text-danger">{{ $item->jumlah_salah }}</span>
@@ -294,12 +297,12 @@
                                                         $detik = $totalDetik % 60;
                                                     @endphp
 
-                                                    @if( $item->quiz->status === "Privat" )
+                                                    @if ($item->quiz->status === 'Privat')
                                                         <span class="fw-bold text-info"> - </span>
                                                     @else
                                                         {{ $menit }}:{{ str_pad($detik, 2, '0', STR_PAD_LEFT) }}
                                                     @endif
-                                                    
+
 
                                                 </div>
                                             </td>
@@ -331,21 +334,19 @@
                                             @endphp
 
                                             <td class="py-4 text-center">
-                                                @if( $item->quiz->status === "Privat" )
-                                                         <span
-                                                    class="badge bg-warning-subtle text-danger px-3 py-2">
-                                                    <i class="ti ti-x me-1"></i>
-                                                    Dirahasiakan
-                                                </span>
-                                                    @else
-                                                        <span
-                                                    class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }} px-3 py-2">
-                                                    <i class="ti ti-{{ $statusIcon }} me-1"></i>
-                                                    {{ $status }}
-                                                </span>
+                                                @if ($item->quiz->status === 'Privat')
+                                                    <span class="badge bg-warning-subtle text-danger px-3 py-2">
+                                                        <i class="ti ti-x me-1"></i>
+                                                        Dirahasiakan
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }} px-3 py-2">
+                                                        <i class="ti ti-{{ $statusIcon }} me-1"></i>
+                                                        {{ $status }}
+                                                    </span>
+                                                @endif
 
-                                                    @endif
-                                                
                                             </td>
                                             <td class="py-4 text-center pe-4">
                                                 <div class="btn-group" role="group">

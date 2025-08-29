@@ -13,7 +13,6 @@ class KategoriController extends Controller
     public function index()
     {
         $kategori = Kategori::orderBy('created_at', 'desc')->paginate(10);
-
         return view('backend.kategori.index', compact('kategori'));
     }
 
@@ -56,39 +55,57 @@ class KategoriController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $kategori = Kategori::with('quiz')->findOrFail($id);
+        // Validasi ID
+        if (!is_numeric($id)) {
+            abort(404);
+        }
 
+        $kategori = Kategori::with('quiz')->findOrFail($id);
         return view('backend.kategori.show', compact('kategori'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $kategori = Kategori::findOrFail($id);
+        // Validasi ID
+        if (!is_numeric($id)) {
+            abort(404, 'ID kategori tidak valid');
+        }
 
-        return view('backend.kategori.edit', compact('kategori'));
+        try {
+            $kategori = Kategori::findOrFail($id);
+            return view('backend.kategori.edit', compact('kategori'));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            abort(404, 'Kategori dengan ID ' . $id . ' tidak ditemukan');
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $kategori = Kategori::findOrFail($id);
-
-        $request->validate([
-            'nama_kategori' => 'required|string|max:255|unique:kategoris,nama_kategori,'.$id,
-        ], [
-            'nama_kategori.required' => 'Nama kategori wajib diisi',
-            'nama_kategori.max' => 'Nama kategori maksimal 255 karakter',
-            'nama_kategori.unique' => 'Nama kategori sudah ada, silakan gunakan nama lain',
-        ]);
+        // Validasi ID
+        if (!is_numeric($id)) {
+            return redirect()->route('kategori.index')
+                ->with('error', 'ID kategori tidak valid');
+        }
 
         try {
+            $kategori = Kategori::findOrFail($id);
+
+            $request->validate([
+                'nama_kategori' => 'required|string|max:255|unique:kategoris,nama_kategori,'.$id,
+            ], [
+                'nama_kategori.required' => 'Nama kategori wajib diisi',
+                'nama_kategori.max' => 'Nama kategori maksimal 255 karakter',
+                'nama_kategori.unique' => 'Nama kategori sudah ada, silakan gunakan nama lain',
+            ]);
+
             $oldName = $kategori->nama_kategori;
 
             $kategori->update([
@@ -98,19 +115,32 @@ class KategoriController extends Controller
             return redirect()->route('kategori.index')
                 ->with('success', 'Kategori "'.$oldName.'" berhasil diperbarui menjadi "'.$request->nama_kategori.'"');
 
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('kategori.index')
+                ->with('error', 'Kategori dengan ID ' . $id . ' tidak ditemukan');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat memperbarui kategori. Silakan coba lagi.');
+                ->with('error', 'Terjadi kesalahan saat memperbarui kategori: ' . $e->getMessage());
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         try {
+            // Validasi ID
+            if (!is_numeric($id)) {
+                return redirect()->route('kategori.index')
+                    ->with('error', 'ID kategori tidak valid');
+            }
+
             $kategori = Kategori::findOrFail($id);
             $namaKategori = $kategori->nama_kategori;
 
@@ -125,9 +155,12 @@ class KategoriController extends Controller
             return redirect()->route('kategori.index')
                 ->with('success', 'Kategori "'.$namaKategori.'" berhasil dihapus');
 
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('kategori.index')
+                ->with('error', 'Kategori tidak ditemukan');
         } catch (\Exception $e) {
             return redirect()->route('kategori.index')
-                ->with('error', 'Terjadi kesalahan saat menghapus kategori. Silakan coba lagi.');
+                ->with('error', 'Terjadi kesalahan saat menghapus kategori: ' . $e->getMessage());
         }
     }
 
@@ -137,7 +170,6 @@ class KategoriController extends Controller
     public function getCategories()
     {
         $categories = Kategori::orderBy('nama_kategori', 'asc')->get();
-
         return response()->json($categories);
     }
 

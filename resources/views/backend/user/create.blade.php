@@ -6,7 +6,7 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Buat data user sekarang!!</h3>
+                        <h3 class="fw-bold mb-3 text-white">Buat data user sekarang!</h3>
                         <p class="text-white-75 mb-3">Buat data user dengan mengisi beberapa form di bawah.</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
@@ -15,7 +15,7 @@
                                         <i class="ti ti-home me-1"></i>Kelola
                                     </a>
                                 </li>
-                                <li class="breadcrumb-item text-white-75" aria-current="page">User</li>
+                                <li class="breadcrumb-item text-white-75" aria-current="page">Pengguna</li>
                                 <li class="breadcrumb-item active text-white" aria-current="page">Tambah</li>
                             </ol>
                         </nav>
@@ -46,7 +46,7 @@
                     <div class="card-header bg-white py-3">
                         <h5 class="mb-0 fw-semibold">
                             <i class="ti ti-user-plus me-2 text-primary"></i>
-                            Form Tambah User
+                            Form Tambah Pengguna
                         </h5>
                     </div>
 
@@ -110,8 +110,8 @@
                                     <select name="isAdmin" id="isAdmin"
                                         class="form-select @error('isAdmin') is-invalid @enderror" required>
                                         <option value="" disabled selected>Pilih Role...</option>
-                                        <option value="1" {{ old('isAdmin') == '1' ? 'selected' : '' }}>Admin</option>
-                                        <option value="0" {{ old('isAdmin') == '0' ? 'selected' : '' }}>User</option>
+                                        <option value="1" {{ old('isAdmin') == '1' ? 'selected' : '' }}>Guru</option>
+                                        <option value="0" {{ old('isAdmin') == '0' ? 'selected' : '' }}>Siswa</option>
                                     </select>
                                     @error('isAdmin')
                                         <div class="invalid-feedback">{{ $message }}</div>

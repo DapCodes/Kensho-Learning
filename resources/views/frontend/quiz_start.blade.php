@@ -300,7 +300,7 @@
         }
 
         // Create audio element for alert sound
-        const alertSound = new Audio('/assets/backend/sounds/alert.m4a');
+        const alertSound = new Audio('/assets/backend/sounds/alert.mp3');
         alertSound.preload = 'auto';
         alertSound.volume = 1.0;
         alertSound.loop = true;

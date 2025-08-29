@@ -7,8 +7,8 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Edit Quiz</h3>
-                        <p class="text-white-75 mb-3">Perbarui dan kelola quiz anda dengan mudah</p>
+                        <h3 class="fw-bold mb-3 text-white">Edit Quiz!</h3>
+                        <p class="text-white-75 mb-3">Perbarui dan kelola quiz anda dengan mudah.</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
                                 <li class="breadcrumb-item">

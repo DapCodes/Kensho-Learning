@@ -6,8 +6,8 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Data Nilai Ujian</h3>
-                        <p class="text-white-75 mb-3">Kelola dan pantau semua hasil ujian peserta dengan mudah</p>
+                        <h3 class="fw-bold mb-3 text-white">Data Nilai Ujian!</h3>
+                        <p class="text-white-75 mb-3">Kelola dan pantau semua hasil ujian peserta dengan mudah.</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
                                 <li class="breadcrumb-item">
@@ -150,12 +150,15 @@
                         <!-- Status Filter -->
                         <div class="col-md-4">
                             <label for="status" class="form-label fw-bold">
-                                <i class="ti ti-check-circle me-1"></i>Status Koreksi
+                                <i class="ti ti-check-circle me-1"></i>Status Nilai
                             </label>
                             <select name="status" id="status" class="form-select">
                                 <option value="">Semua Status</option>
                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>
                                     Belum Dikoreksi (Pending)
+                                </option>
+                                <option value="problem" {{ request('status') == 'problem' ? 'selected' : '' }}>
+                                    Terdeteksi Curang (Bermasalah)
                                 </option>
                             </select>
                         </div>
@@ -196,6 +199,8 @@
                                         Status:
                                         @if (request('status') == 'pending')
                                             <span class="badge bg-warning text-dark">Belum Dikoreksi</span>
+                                        @elseif (request('status') == 'problem')
+                                            <span class="badge bg-warning text-dark">Terdeteksi Curang</span>
                                         @endif
                                     @endif
                                 </div>
@@ -263,11 +268,6 @@
                         <h5 class="mb-0 fw-bold">
                             <i class="ti ti-table me-2 text-success"></i>Tabel Data Nilai
                         </h5>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-success-subtle text-success px-3 py-2">
-                                {{ $hasilUjians->count() }} Data Tersedia
-                            </span>
-                        </div>
                     </div>
                 </div>
 

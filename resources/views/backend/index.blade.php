@@ -51,7 +51,6 @@
                         <h3 class="fw-bold text-primary mb-1">{{ $stats['totalQuizzes'] }}</h3>
                         <p class="text-muted mb-0">Total Quiz</p>
                         <small class="text-success">
-                            <i class="ti ti-arrow-up"></i>
                             {{ $stats['activeQuizzes'] }} aktif bulan ini
                         </small>
                     </div>
@@ -67,8 +66,7 @@
                         <h3 class="fw-bold text-success mb-1">{{ $stats['totalPeserta'] }}</h3>
                         <p class="text-muted mb-0">Total Peserta</p>
                         <small class="text-info">
-                            <i class="ti ti-check"></i>
-                            {{ $stats['totalSubmissions'] }} submissions
+                            {{ $stats['totalSubmissions'] }} Submit
                         </small>
                     </div>
                 </div>
@@ -83,7 +81,7 @@
                         <h3 class="fw-bold text-warning mb-1">{{ $stats['averageScore'] }}%</h3>
                         <p class="text-muted mb-0">Rata-rata Skor</p>
                         <small class="text-primary">
-                            {{ $stats['completionRate'] }}% completion rate
+                            {{ $stats['completionRate'] }}% Rata Rata Penyelesaian
                         </small>
                     </div>
                 </div>
@@ -99,12 +97,10 @@
                         <p class="text-muted mb-0">Total Soal</p>
                         @if ($pendingEssaysCount > 0)
                             <small class="text-danger">
-                                <i class="ti ti-alert-circle"></i>
                                 {{ $pendingEssaysCount }} essay pending
                             </small>
                         @else
                             <small class="text-success">
-                                <i class="ti ti-check"></i>
                                 Semua terkoreksi
                             </small>
                         @endif

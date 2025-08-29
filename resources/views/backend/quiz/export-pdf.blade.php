@@ -24,6 +24,7 @@
             box-sizing: border-box;
         }
 
+
         body {
             font-family: 'Times New Roman', serif;
             font-size: 12pt;
@@ -194,7 +195,7 @@
             line-height: 1.4;
         }
 
-        /* True/False Options */
+        /* True/False Options - FIXED */
         .true-false-options {
             margin-left: 38px;
             margin-top: 10px;
@@ -205,18 +206,29 @@
         .tf-option {
             display: flex;
             align-items: center;
-            font-weight: bold;
+            font-weight: normal;
         }
 
-        .tf-circle {
-            width: 15px;
-            height: 15px;
-            border: 2px solid #000;
-            border-radius: 50%;
+        .tf-box {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #000 !important;
             margin-right: 8px;
+            background: #fff !important;
+            position: relative;
+            vertical-align: middle;
         }
 
-        /* Checkbox Options */
+        .tf-box::before {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        /* Checkbox Options - FIXED */
         .checkbox-options {
             margin-left: 38px;
             margin-top: 10px;
@@ -230,11 +242,22 @@
         }
 
         .checkbox {
-            width: 12px;
-            height: 12px;
-            border: 1px solid #000;
-            margin-top: 3px;
-            flex-shrink: 0;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #000 !important;
+            margin-top: 2px;
+            background: #fff !important;
+            position: relative;
+            vertical-align: top;
+        }
+
+        .checkbox::before {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: transparent;
         }
 
         .checkbox-text {
@@ -278,20 +301,67 @@
 
         /* Print Optimizations */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
             body {
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
                 margin: 0;
                 padding: 15px;
+                background: white !important;
             }
 
             .question {
                 break-inside: avoid;
+                page-break-inside: avoid;
             }
 
             .instructions {
                 break-inside: avoid;
+                page-break-inside: avoid;
             }
+
+            .tf-box,
+            .checkbox {
+                border: 2px solid #000 !important;
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                box-shadow: none !important;
+                opacity: 1 !important;
+            }
+
+            .tf-box::before,
+            .checkbox::before {
+                display: block !important;
+                background: transparent !important;
+            }
+        }
+
+        /* Alternative fallback using Unicode characters */
+        .tf-box-alt {
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            margin-right: 8px;
+            display: inline-block;
+            width: 18px;
+            text-align: center;
+        }
+
+        .checkbox-alt {
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: #000;
+            margin-top: 2px;
+            display: inline-block;
+            width: 16px;
+            text-align: center;
         }
 
         /* Footer */
@@ -351,6 +421,8 @@
             <li>Periksa dan bacalah soal-soal sebelum menjawab.</li>
             <li>Dahulukan menjawab soal-soal yang dianggap mudah.</li>
             <li>Untuk soal pilihan ganda, pilihlah salah satu jawaban yang paling tepat.</li>
+            <li>Untuk soal benar/salah, beri tanda silang (X) pada kotak yang sesuai.</li>
+            <li>Untuk soal checkbox, beri tanda centang (V) pada kotak pilihan yang benar.</li>
             <li>Untuk soal essay, jawablah dengan jelas dan lengkap pada tempat yang disediakan.</li>
             <li>Periksa kembali pekerjaan Anda sebelum dikumpulkan.</li>
         </ul>
@@ -400,12 +472,12 @@
                     </div>
                 @elseif($soal->tipe == 'benar_salah')
                     <div class="true-false-options">
-                        <div class="tf-option">
-                            <span class="tf-circle"></span>
+                        <div class="tf-option text-center">
+                            <span class="tf-box"></span>
                             <span>BENAR</span>
                         </div>
                         <div class="tf-option">
-                            <span class="tf-circle"></span>
+                            <span class="tf-box"></span>
                             <span>SALAH</span>
                         </div>
                     </div>
@@ -413,9 +485,11 @@
                     <div class="checkbox-options">
                         @foreach (['pilihan_a', 'pilihan_b', 'pilihan_c', 'pilihan_d', 'pilihan_e', 'pilihan_f', 'pilihan_g', 'pilihan_h', 'pilihan_i', 'pilihan_j'] as $option)
                             @if (!empty($soal->$option))
-                                <div class="checkbox-option">
-                                    <span class="checkbox"></span>
-                                    <span class="checkbox-text">{{ $soal->$option }}</span>
+                                <div class="checkbox-option" style="display: flex">
+                                    <span class="checkbox-text">
+                                        <span class="tf-box"></span>
+                                        {{ $soal->$option }}
+                                    </span>
                                 </div>
                             @endif
                         @endforeach

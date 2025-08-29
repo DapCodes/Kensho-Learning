@@ -6,8 +6,8 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Semua User Anda!!</h3>
-                        <p class="text-white-75 mb-3">Kelola dan pantau semua user Anda dengan mudah</p>
+                        <h3 class="fw-bold mb-3 text-white">Semua Pengguna!</h3>
+                        <p class="text-white-75 mb-3">Kelola dan pantau semua Pengguna dengan mudah.</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
                                 <li class="breadcrumb-item">
@@ -50,12 +50,12 @@
                                 </div>
                             </div>
                             <div>
-                                <h5 class="mb-1">Daftar User Anda</h5>
+                                <h5 class="mb-1">Daftar Pengguna Anda</h5>
                                 <p class="text-muted mb-0">
                                     @if ($users->count() > 0)
-                                        Menampilkan {{ $users->count() }} user dari total koleksi Anda
+                                        Menampilkan {{ $users->count() }} Pengguna dari total koleksi Anda
                                     @else
-                                        Belum ada user yang dibuat - mulai dengan membuat user pertama!
+                                        Belum ada Pengguna yang dibuat - mulai dengan membuat Pengguna pertama!
                                     @endif
                                 </p>
                             </div>
@@ -63,22 +63,22 @@
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <a href="{{ route('users.create') }}" class="btn btn-primary btn-lg px-4">
-                            <i class="ti ti-plus me-2"></i>Buat User Baru
+                            <i class="ti ti-plus me-2"></i>Buat Pengguna Baru
                         </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- User Table -->
+        <!-- Pengguna Table -->
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-bottom py-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <h5 class="mb-0 fw-bold">
-                        <i class="ti ti-table me-2 text-primary"></i>Tabel User
+                        <i class="ti ti-table me-2 text-primary"></i>Tabel Pengguna
                     </h5>
                     <span class="badge bg-primary-subtle text-primary px-3 py-2">
-                        {{ $users->count() }} User
+                        {{ $users->count() }} Pengguna
                     </span>
                 </div>
             </div>
@@ -92,7 +92,7 @@
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-hash me-1"></i>No</th>
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-user me-1"></i>Nama</th>
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-mail me-1"></i>Email</th>
-                                    <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-shield me-1"></i>Role</th>
+                                    <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-shield me-1"></i>Peran</th>
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-shield me-1"></i>Kelas</th>
                                     <th class="border-0 fw-bold text-dark py-3"><i class="ti ti-calendar me-1"></i>Dibuat
                                     </th>
@@ -142,7 +142,7 @@
                                                         <i class="ti ti-edit"></i>
                                                     </a>
                                                     <button type="button" class="btn btn-danger btn-sm" title="Hapus User"
-                                                        onclick="if(confirm('Yakin ingin menghapus user {{ $user->name }}?')) { document.getElementById('delete-form-{{ $user->id }}').submit(); }">
+                                                        onclick="if(confirm('Yakin ingin menghapus Pengguna {{ $user->name }}?')) { document.getElementById('delete-form-{{ $user->id }}').submit(); }">
                                                         <i class="ti ti-trash"></i>
                                                     </button>
                                                 </div>
@@ -174,10 +174,10 @@
                     </div>
                     <h3 class="fw-bold text-dark mb-3">Belum Ada User</h3>
                     <p class="text-muted mb-4 mx-auto" style="max-width: 400px;">
-                        Mulai dengan membuat user pertama untuk mengelola sistem Anda dengan lebih baik!
+                        Mulai dengan membuat Pengguna pertama untuk mengelola sistem Anda dengan lebih baik!
                     </p>
                     <a href="{{ route('users.create') }}" class="btn btn-primary btn-lg px-5">
-                        <i class="ti ti-plus me-2"></i>Buat User Pertama
+                        <i class="ti ti-plus me-2"></i>Buat Pengguna Pertama
                     </a>
                 </div>
             @endif

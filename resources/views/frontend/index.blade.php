@@ -7,8 +7,8 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Quiz Terbaru!!</h3>
-                        <p class="text-white-75 mb-3">Kerjakan quiz dengan jujur dan bersungguh-sungguh</p>
+                        <h3 class="fw-bold mb-3 text-white">Quiz Terbaru!</h3>
+                        <p class="text-white-75 mb-3">Kerjakan quiz dengan jujur dan bersungguh-sungguh.</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
                                 <li class="breadcrumb-item">
@@ -104,18 +104,20 @@
                     </div>
                     <div class="col-md-4">
                         <div class="search-container position-relative">
-                            <input type="text" id="searchInput" class="form-control ps-5" 
+                            <input type="text" id="searchInput" class="form-control ps-5"
                                 placeholder="Cari berdasarkan judul quiz...">
                             <div class="search-icon position-absolute top-50 start-0 translate-middle-y ms-3">
                                 <i class="ti ti-search text-muted"></i>
                             </div>
-                            <button type="button" id="clearSearch" class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" style="display: flex;">
+                            <button type="button" id="clearSearch"
+                                class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2"
+                                style="display: flex;">
                                 <i class="ti ti-x"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Search Results Info -->
                 <div id="searchInfo" class="mt-3" style="display: none;">
                     <div class="alert alert-info py-2 px-3 mb-0">
@@ -132,111 +134,117 @@
                 $recentQuizzes = $quizzes->where('created_at', '>=', now()->subDays(7));
             @endphp
 
-           @forelse($quizzes as $index => $quiz)
-   @php
-       $attempted = $quiz->hasilUjian->where('user_id', auth()->id())->isNotEmpty();
-       $canRetake = $quiz->pengulangan_pekerjaan !== 'Tidak';
-       $isDisabled = $attempted && !$canRetake;
-   @endphp
-   
-   <div class="col-lg-4 col-md-6 col-sm-12 mb-4 quiz-item" data-quiz-title="{{ strtolower($quiz->judul_quiz) }}">
-       <div class="card quiz-card h-100 position-relative {{ $isDisabled ? 'opacity-50' : '' }}" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
-           @if($attempted)
-               <div class="position-absolute top-0 end-0 m-2 bg-success text-white px-2 py-1 rounded-pill small fw-bold" style="z-index: 10;">
-                   ✔ Completed
-               </div>
-           @endif
-           
-           <div class="card-body pb-0">
-               <h5 class="card-title fw-bold mb-2 quiz-title" title="{{ $quiz->judul_quiz }}">
-                   {{ Str::limit($quiz->judul_quiz, 45) }}
-               </h5>
+            @forelse($quizzes as $index => $quiz)
+                @php
+                    $attempted = $quiz->hasilUjian->where('user_id', auth()->id())->isNotEmpty();
+                    $canRetake = $quiz->pengulangan_pekerjaan !== 'Tidak';
+                    $isDisabled = $attempted && !$canRetake;
+                @endphp
 
-               <p class="card-text text-muted small mb-3">
-                   {{ $quiz->deskripsi ? Str::limit($quiz->deskripsi, 80) : 'Tidak ada deskripsi' }}
-               </p>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4 quiz-item"
+                    data-quiz-title="{{ strtolower($quiz->judul_quiz) }}">
+                    <div class="card quiz-card h-100 position-relative {{ $isDisabled ? 'opacity-50' : '' }}"
+                        data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+                        @if ($attempted)
+                            <div class="position-absolute top-0 end-0 m-2 bg-success text-white px-2 py-1 rounded-pill small fw-bold"
+                                style="z-index: 10;">
+                                ✔ Completed
+                            </div>
+                        @endif
 
-               @if ($quiz->kode_quiz)
-                   <div class="mb-3">
-                       <div class="d-flex align-items-center justify-content-between bg-light rounded p-2">
-                           <div class="d-flex align-items-center">
-                               <i class="ti ti-key text-primary me-2"></i>
-                               <span class="fw-semibold">{{ $quiz->kode_quiz }}</span>
-                           </div>
-                           <button class="btn btn-sm btn-outline-primary copy-btn" data-quiz-code="{{ $quiz->kode_quiz }}" title="Salin Kode Quiz">
-                               <i class="ti ti-copy"></i>
-                           </button>
-                       </div>
-                   </div>
-               @endif
+                        <div class="card-body pb-0">
+                            <h5 class="card-title fw-bold mb-2 quiz-title" title="{{ $quiz->judul_quiz }}">
+                                {{ Str::limit($quiz->judul_quiz, 45) }}
+                            </h5>
 
-               <div class="row text-center mb-3">
-                   <div class="col-4">
-                       <div class="stats-item">
-                           <i class="ti ti-file-text text-primary d-block mb-1"></i>
-                           <span class="fw-bold d-block">{{ $quiz->soals->count() }}</span>
-                           <small class="text-muted">Soal</small>
-                       </div>
-                   </div>
-                   <div class="col-4">
-                       <div class="stats-item">
-                           <i class="ti ti-clock text-warning d-block mb-1"></i>
-                           <span class="fw-bold d-block">{{ $quiz->waktu_menit }}</span>
-                           <small class="text-muted">Menit</small>
-                       </div>
-                   </div>
-                   <div class="col-4">
-                       <div class="stats-item">
-                           <i class="ti ti-calendar text-info d-block mb-1"></i>
-                           <span class="fw-bold d-block">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('d/m') }}</span>
-                           <small class="text-muted">Dibuat</small>
-                       </div>
-                   </div>
-               </div>
+                            <p class="card-text text-muted small mb-3">
+                                {{ $quiz->deskripsi ? Str::limit($quiz->deskripsi, 80) : 'Tidak ada deskripsi' }}
+                            </p>
 
-               @php
-                   \Carbon\Carbon::setLocale('id');
-               @endphp
-               <div class="mb-3">
-                   <small class="text-muted">
-                       <i class="ti ti-calendar me-1"></i>
-                       Dibuat {{ \Carbon\Carbon::parse($quiz->tanggal_buat)->diffForHumans() }}
-                   </small>
-               </div>
-           </div>
+                            @if ($quiz->kode_quiz)
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center justify-content-between bg-light rounded p-2">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ti ti-key text-primary me-2"></i>
+                                            <span class="fw-semibold">{{ $quiz->kode_quiz }}</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary copy-btn"
+                                            data-quiz-code="{{ $quiz->kode_quiz }}" title="Salin Kode Quiz">
+                                            <i class="ti ti-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
 
-           <div class="card-footer bg-transparent border-0 pt-0">
-               <div class="row g-2">
-                   <div class="col-12">
-                       @if($isDisabled)
-                           <button class="btn btn-secondary w-100 btn-action disabled" disabled>
-                               Tidak Dapat Diulang
-                           </button>
-                       @else
-                           <a href="{{ route('quiz.detail', $quiz->id) }}" class="btn btn-primary w-100 btn-action">
-                               {{ $attempted ? 'Kerjakan Lagi' : 'Kerjakan Sekarang!' }}
-                           </a>
-                       @endif
-                   </div>
-               </div>
-           </div>
-       </div>
-   </div>
-@empty
-   <div class="col-12" id="emptyState">
-       <div class="card text-center py-5">
-           <div class="card-body">
-               <div class="mb-4">
-                   <i class="ti ti-file-text display-1 text-muted"></i>
-               </div>
-               <h3 class="mb-3">Tidak Ada Quiz Terbaru</h3>
-               <p class="text-muted mb-4">
-                   Belum ada quiz yang dibuat dalam 7 hari terakhir.
-               </p>
-           </div>
-       </div>
-   </div>
-@endforelse
+                            <div class="row text-center mb-3">
+                                <div class="col-4">
+                                    <div class="stats-item">
+                                        <i class="ti ti-file-text text-primary d-block mb-1"></i>
+                                        <span class="fw-bold d-block">{{ $quiz->soals->count() }}</span>
+                                        <small class="text-muted">Soal</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stats-item">
+                                        <i class="ti ti-clock text-warning d-block mb-1"></i>
+                                        <span class="fw-bold d-block">{{ $quiz->waktu_menit }}</span>
+                                        <small class="text-muted">Menit</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stats-item">
+                                        <i class="ti ti-calendar text-info d-block mb-1"></i>
+                                        <span
+                                            class="fw-bold d-block">{{ \Carbon\Carbon::parse($quiz->tanggal_buat)->format('d/m') }}</span>
+                                        <small class="text-muted">Dibuat</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @php
+                                \Carbon\Carbon::setLocale('id');
+                            @endphp
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="ti ti-calendar me-1"></i>
+                                    Dibuat {{ \Carbon\Carbon::parse($quiz->tanggal_buat)->diffForHumans() }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-transparent border-0 pt-0">
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    @if ($isDisabled)
+                                        <button class="btn btn-secondary w-100 btn-action disabled" disabled>
+                                            Tidak Dapat Diulang
+                                        </button>
+                                    @else
+                                        <a href="{{ route('quiz.detail', $quiz->id) }}"
+                                            class="btn btn-primary w-100 btn-action">
+                                            {{ $attempted ? 'Kerjakan Lagi' : 'Kerjakan Sekarang!' }}
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-12" id="emptyState">
+                    <div class="card text-center py-5">
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <i class="ti ti-file-text display-1 text-muted"></i>
+                            </div>
+                            <h3 class="mb-3">Tidak Ada Quiz Terbaru</h3>
+                            <p class="text-muted mb-4">
+                                Belum ada quiz yang dibuat dalam 7 hari terakhir.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endforelse
         </div>
 
         <!-- No Results State -->
@@ -367,9 +375,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
             }
+
             50% {
                 transform: scale(1.05);
             }
@@ -461,6 +472,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -504,7 +516,7 @@
                 this.noResultsState = document.getElementById('noResultsState');
                 this.quizItems = document.querySelectorAll('.quiz-item');
                 this.searchTerm = document.getElementById('searchTerm');
-                
+
                 this.init();
             }
 
@@ -529,7 +541,7 @@
 
             performSearch(query) {
                 const searchTerm = query.toLowerCase().trim();
-                
+
                 if (searchTerm === '') {
                     this.showAllQuizzes();
                     this.hideSearchInfo();
@@ -548,7 +560,7 @@
                 this.quizItems.forEach((item) => {
                     const title = item.getAttribute('data-quiz-title');
                     const titleElement = item.querySelector('.quiz-title');
-                    
+
                     if (title.includes(searchTerm)) {
                         this.showQuizItem(item);
                         this.highlightSearchTerm(titleElement, searchTerm);
@@ -572,7 +584,7 @@
             hideQuizItem(item) {
                 item.classList.remove('fade-in');
                 item.classList.add('fade-out');
-                
+
                 setTimeout(() => {
                     if (item.classList.contains('fade-out')) {
                         item.style.display = 'none';
@@ -628,7 +640,7 @@
                 if (show) {
                     this.searchTerm.textContent = searchTerm;
                     this.noResultsState.classList.remove('d-none');
-                    this.quizContainer.classList.add('d-none');   // sembunyikan grid
+                    this.quizContainer.classList.add('d-none'); // sembunyikan grid
                 } else {
                     this.noResultsState.classList.add('d-none');
                     this.quizContainer.classList.remove('d-none'); // tampilkan grid
@@ -686,7 +698,8 @@
                     const quizCode = this.getAttribute('data-quiz-code');
 
                     if (copyToClipboard(quizCode)) {
-                        showToast(`Kode quiz <strong>${quizCode}</strong> berhasil disalin!`, 'success');
+                        showToast(`Kode quiz <strong>${quizCode}</strong> berhasil disalin!`,
+                            'success');
 
                         // Visual feedback
                         const originalHTML = this.innerHTML;

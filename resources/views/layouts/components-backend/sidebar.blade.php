@@ -1,9 +1,9 @@
 <aside class="left-sidebar with-vertical" style="z-index: 1000;">
     <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-            <a href="./main/index.html" class="text-nowrap logo-img">
-                <img src="{{ asset('/assets/backend/images/logos/dark-logo.png') }}" class="dark-logo m-1"
-                    alt="Logo-Dark" />
+            <a href="#" class="text-nowrap logo-img">
+                <img src="{{ asset('/assets/backend/images/logos/dark-logo.svg') }}" class="dark-logo" alt="Logo-Dark"
+                    style="width: 100px;" />
                 <img src="{{ asset('/assets/backend/images/logos/light-logo.png') }}" class="light-logo m-1"
                     alt="Logo-light" />
             </a>
@@ -47,7 +47,7 @@
                         <li class="sidebar-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
                             <a class="sidebar-link" href="{{ route('users.index') }}">
                                 <span class="d-flex"><i class="ti ti-users"></i></span>
-                                <span class="hide-menu">User</span>
+                                <span class="hide-menu">Pengguna</span>
                             </a>
                         </li>
                     @endif

@@ -30,8 +30,11 @@
                     <div class="col-md-8 col-lg-6 col-xxl-3 auth-card">
                         <div class="card mb-0">
                             <div class="card-body">
-                                <a href="../main/index.html"
-                                    class="text-nowrap logo-img text-center d-block mb-5 w-100">
+                                <button onclick="history.back()"
+                                    class="btn btn-outline-primary d-flex align-items-center mb-3">
+                                    <i class="ti ti-arrow-left me-2"></i> Kembali
+                                </button>
+                                <a href="#" class="text-nowrap logo-img text-center d-block mb-5 w-100">
                                     <img src="{{ asset('/assets/backend/images/logos/dark-logo.png') }}"
                                         class="dark-logo" alt="Logo-Dark" />
                                     <img src="{{ asset('/assets/backend/images/logos/light-logo.svg') }}"
@@ -40,7 +43,7 @@
                                 <div class="position-relative text-center my-4">
                                     <p
                                         class="mb-0 fs-4 px-3 d-inline-block bg-body text-dark z-index-5 position-relative">
-                                        Selamat Datang!!
+                                        Selamat Datang!
                                     </p>
                                     <span
                                         class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
@@ -62,7 +65,7 @@
 
                                     {{-- Password --}}
                                     <div class="mb-3">
-                                        <label for="password" class="form-label">Password</label>
+                                        <label for="password" class="form-label">Kata Sandi</label>
                                         <input type="password" id="password" name="password"
                                             class="form-control @error('password') is-invalid @enderror" required
                                             autocomplete="current-password">
@@ -77,7 +80,7 @@
                                             <input class="form-check-input" type="checkbox" name="remember"
                                                 id="remember">
                                             <label class="form-check-label" for="remember">
-                                                Remember this device
+                                                Ingat Perangkat Ini?
                                             </label>
                                         </div>
                                     </div>

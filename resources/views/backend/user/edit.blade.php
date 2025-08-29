@@ -6,7 +6,7 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Ubah data {{ $user->name }}</h3>
+                        <h3 class="fw-bold mb-3 text-white">Ubah data {{ $user->name }}!</h3>
                         <p class="text-white-75 mb-3">Ubah data {{ $user->name }} dengan mengisi beberapa form di bawah.
                         </p>
                         <nav aria-label="breadcrumb">
@@ -141,7 +141,7 @@
                                 <!-- Password -->
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="form-label fw-medium">
-                                        <i class="ti ti-lock me-1"></i>Password Baru
+                                        <i class="ti ti-lock me-1"></i>Kata sandi Baru
                                     </label>
                                     <div class="input-group">
                                         <input type="password" name="password" id="password"
@@ -159,7 +159,7 @@
                                 <!-- Konfirmasi Password -->
                                 <div class="col-md-6 mb-3">
                                     <label for="password_confirmation" class="form-label fw-medium">
-                                        <i class="ti ti-lock-check me-1"></i>Konfirmasi Password Baru
+                                        <i class="ti ti-lock-check me-1"></i>Konfirmasi Kata Sandi Baru
                                     </label>
                                     <div class="input-group">
                                         <input type="password" name="password_confirmation" id="password_confirmation"

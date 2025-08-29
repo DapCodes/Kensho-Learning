@@ -54,13 +54,11 @@ https://templatemo.com/tm-586-scholar
                 <div class="col-12">
                     <nav class="main-nav">
                         <!-- ***** Logo Start ***** -->
-                        <a href="index.html" class="logo">
-                            <h1>Dexa</h1>
+                        <a href="#top" class="logo">
+                            <img src="{{ asset('assets/backend/images/logos/Ukuran kecil x.png') }}" alt="Logo">
                         </a>
                         <!-- ***** Logo End ***** -->
-                        <!-- ***** Serach Start ***** -->
 
-                        <!-- ***** Serach Start ***** -->
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
                             <li class="scroll-to-section"><a href="#top" class="active">Beranda</a></li>
@@ -83,11 +81,13 @@ https://templatemo.com/tm-586-scholar
                                 </li>
                             @endguest
                         </ul>
+
                         <a class='menu-trigger'>
                             <span>Menu</span>
                         </a>
                         <!-- ***** Menu End ***** -->
                     </nav>
+
                 </div>
             </div>
         </div>

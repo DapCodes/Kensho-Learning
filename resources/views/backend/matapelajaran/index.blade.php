@@ -6,8 +6,8 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Semua Mata Pelajaran Anda!!</h3>
-                        <p class="text-white-75 mb-3">Kelola dan pantau semua mata pelajaran Anda dengan mudah</p>
+                        <h3 class="fw-bold mb-3 text-white">Semua Mata Pelajaran Anda!</h3>
+                        <p class="text-white-75 mb-3">Kelola dan pantau semua mata pelajaran Anda dengan mudah.</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
                                 <li class="breadcrumb-item">
@@ -352,6 +352,100 @@
         </div>
     @endif
 
-    <script src="{{ asset('/assets/backend/js/main/script-matapelajaran.js') }}"></script>
+    <script>
+        // URL base untuk mata pelajaran
+        const mataPelajaranBaseUrl = "{{ route('matapelajaran.index') }}";
+
+        // Delete confirmation function
+        function deleteMataPelajaran(mataPelajaranId, mataPelajaranName) {
+            if (
+                confirm(
+                    `Apakah Anda yakin ingin menghapus mata pelajaran "${mataPelajaranName}"?\n\nTindakan ini tidak dapat dibatalkan.`
+                )
+            ) {
+                document.getElementById("delete-form-" + mataPelajaranId).submit();
+            }
+        }
+
+        // Edit mata pelajaran function
+        function editMataPelajaran(id, nama, deskripsi) {
+            // Set form action untuk update
+            const actionUrl = `${mataPelajaranBaseUrl}/${id}`;
+            document.getElementById("editMataPelajaranForm").action = actionUrl;
+
+            // Debug: log URL yang akan digunakan
+            console.log("Edit form action URL:", actionUrl);
+
+            // Set value input nama mata pelajaran dan deskripsi
+            document.getElementById("edit_nama_mapel").value = nama;
+            document.getElementById("edit_deskripsi").value = deskripsi || "";
+
+            // Clear any previous validation errors
+            const namaElement = document.getElementById("edit_nama_mapel");
+            const deskripsiElement = document.getElementById("edit_deskripsi");
+
+            namaElement.classList.remove("is-invalid");
+            deskripsiElement.classList.remove("is-invalid");
+
+            // Remove any previous error messages
+            const errorElements = document.querySelectorAll(
+                "#editMataPelajaranModal .invalid-feedback"
+            );
+            errorElements.forEach((element) => element.remove());
+        }
+
+        // Auto-hide toasts after 5 seconds
+        document.addEventListener("DOMContentLoaded", function() {
+            const toasts = document.querySelectorAll(".toast");
+            toasts.forEach(function(toast) {
+                setTimeout(function() {
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.hide();
+                }, 5000);
+            });
+
+            // Reset form saat modal ditutup
+            const editModal = document.getElementById("editMataPelajaranModal");
+            if (editModal) {
+                editModal.addEventListener("hidden.bs.modal", function() {
+                    const form = document.getElementById("editMataPelajaranForm");
+                    form.reset();
+                    form.action = "";
+
+                    // Clear validation errors
+                    const namaElement = document.getElementById("edit_nama_mapel");
+                    const deskripsiElement = document.getElementById("edit_deskripsi");
+
+                    namaElement.classList.remove("is-invalid");
+                    deskripsiElement.classList.remove("is-invalid");
+
+                    // Remove any error messages
+                    const errorElements = document.querySelectorAll(
+                        "#editMataPelajaranModal .invalid-feedback"
+                    );
+                    errorElements.forEach((element) => element.remove());
+                });
+            }
+
+            // Reset add modal form saat modal ditutup
+            const addModal = document.getElementById("addMataPelajaranModal");
+            if (addModal) {
+                addModal.addEventListener("hidden.bs.modal", function() {
+                    const form = addModal.querySelector("form");
+                    form.reset();
+
+                    // Clear validation errors
+                    const inputs = form.querySelectorAll(".form-control");
+                    inputs.forEach((input) => {
+                        input.classList.remove("is-invalid");
+                    });
+
+                    // Remove any error messages
+                    const errorElements = form.querySelectorAll(".invalid-feedback");
+                    errorElements.forEach((element) => element.remove());
+                });
+            }
+        });
+    </script>
     @include('layouts.components-backend.css')
 @endsection

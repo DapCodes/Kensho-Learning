@@ -7,8 +7,8 @@
             <div class="card-body px-4 py-4">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h3 class="fw-bold mb-3 text-white">Terimakasih sudah mengerjakan!!</h3>
-                        <p class="text-white-75 mb-3">Semua jawaban anda sudah tersimpan di database kami!!</p>
+                        <h3 class="fw-bold mb-3 text-white">Terimakasih sudah mengerjakan!</h3>
+                        <p class="text-white-75 mb-3">Semua jawaban anda sudah tersimpan di database kami.</p>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-light">
                                 <li class="breadcrumb-item">
@@ -288,7 +288,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0">Jawaban Benar</h6>
-                                        <span class="text-success fw-bold">{{ $hasil->jumlah_benar}}</span>
+                                        <span class="text-success fw-bold">{{ $hasil->jumlah_benar }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -650,43 +650,43 @@
                 });
 
                 document.addEventListener('DOMContentLoaded', function() {
-            // Animate cards on load
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.classList.add('fade-in');
-            });
+                    // Animate cards on load
+                    const cards = document.querySelectorAll('.card');
+                    cards.forEach((card, index) => {
+                        card.style.animationDelay = `${index * 0.1}s`;
+                        card.classList.add('fade-in');
+                    });
 
-            // Animate progress bars
-            const progressBars = document.querySelectorAll('.progress-bar');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 500);
-            });
-        });
-
-        function printResult() {
-            window.print();
-        }
-
-        function shareResult() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Hasil Quiz',
-                    text: 'Saya telah menyelesaikan quiz dan mendapat skor {{ $hasil->skor }}!',
-                    url: window.location.href
+                    // Animate progress bars
+                    const progressBars = document.querySelectorAll('.progress-bar');
+                    progressBars.forEach(bar => {
+                        const width = bar.style.width;
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, 500);
+                    });
                 });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                const url = window.location.href;
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Link hasil telah disalin ke clipboard!');
-                });
-            }
-        }
+
+                function printResult() {
+                    window.print();
+                }
+
+                function shareResult() {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Hasil Quiz',
+                            text: 'Saya telah menyelesaikan quiz dan mendapat skor {{ $hasil->skor }}!',
+                            url: window.location.href
+                        });
+                    } else {
+                        // Fallback for browsers that don't support Web Share API
+                        const url = window.location.href;
+                        navigator.clipboard.writeText(url).then(() => {
+                            alert('Link hasil telah disalin ke clipboard!');
+                        });
+                    }
+                }
             </script>
 
             <style>

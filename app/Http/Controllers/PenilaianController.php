@@ -235,6 +235,10 @@ class PenilaianController extends Controller
             $hasilUjianQuery->whereHas('detail', function ($query) {
                 $query->where('status_jawaban', 'pending');
             });
+        } else if ($statusFilter === 'problem') {
+            $hasilUjianQuery->whereHas('detail', function ($query) {
+                $query->where('perpindahan_halaman', '>', 5);
+            });
         }
 
         // Ambil data
