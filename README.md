@@ -152,25 +152,19 @@ Kami menyambut kontribusi dari komunitas! Berikut cara berkontribusi:
 
 ---
 
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
----
-
 ## 📞 Dukungan
 
 Jika Anda mengalami masalah atau memiliki pertanyaan:
 
 -   🐛 [Laporkan Bug](https://github.com/DapCodes/Kensho-Learning/issues)
 -   💬 [Diskusi](https://github.com/DapCodes/Kensho-Learning/discussions)
--   📧 Email: support@dexa-cbt.com
+-   📧 Email: daffaramadhan929@gmail.com
 
 ---
 
 <div align="center">
   <p>
-    Dibuat dengan ❤️ oleh Tim Dexa<br>
-    © 2024 Dexa CBT. All rights reserved.
+    Dibuat dengan ❤️ oleh Tim Operasi Programmer Mengoding<br>
+    © 2025 Dexa CBT. All rights reserved.
   </p>
 </div>
