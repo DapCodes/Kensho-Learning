@@ -103,7 +103,7 @@
                                     <th scope="col" class="border-0 fw-bold text-dark py-3">
                                         <i class="ti ti-file-text me-1"></i>Deskripsi
                                     </th>
-                                    <th scope="col" class="border-0 fw-bold text-dark py-3 text-center pe-4">
+                                    <th scope="col" class="border-0 fw-bold text-dark py-3 pe-4">
                                         <i class="ti ti-settings me-1"></i>Aksi
                                     </th>
                                 </tr>

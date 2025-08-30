@@ -286,25 +286,25 @@
                                         <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-file-text me-1"></i>Quiz
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-calendar me-1"></i>Tanggal
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-clock me-1"></i>Durasi
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-star me-1"></i>Nilai
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-check me-1"></i>Status
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             Koreksi
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             Tab Switch
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center pe-4">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3 pe-4">
                                             <i class="ti ti-settings me-1"></i>Aksi
                                         </th>
                                     </tr>

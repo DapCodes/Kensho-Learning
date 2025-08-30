@@ -178,25 +178,25 @@
                                         <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-file-text me-1"></i>Judul Quiz
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-calendar me-1"></i>Tanggal
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-star me-1"></i>Skor
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-check-circle me-1"></i>Benar
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-x-circle me-1"></i>Salah
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-clock me-1"></i>Waktu
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-award me-1"></i>Status
                                         </th>
-                                        <th scope="col" class="border-0 fw-bold text-dark py-3 text-center">
+                                        <th scope="col" class="border-0 fw-bold text-dark py-3">
                                             <i class="ti ti-point me-1"></i>Action
                                         </th>
                                     </tr>
@@ -243,10 +243,7 @@
 
                                             <td class="py-4 text-center">
                                                 <div class="d-flex align-items-center justify-content-center">
-                                                    <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center me-2"
-                                                        style="width: 30px; height: 30px;">
-                                                        <i class="ti ti-star text-warning" style="font-size: 14px;"></i>
-                                                    </div>
+
                                                     @if ($item->quiz->status === 'Privat')
                                                         <span class="fw-bold text-warning"> Tidak di PUBLISH </span>
                                                     @else
@@ -257,10 +254,7 @@
 
                                             <td class="py-4 text-center">
                                                 <div class="d-flex align-items-center justify-content-center">
-                                                    <div class="rounded-circle bg-success-subtle d-flex align-items-center justify-content-center me-2"
-                                                        style="width: 30px; height: 30px;">
-                                                        <i class="ti ti-check text-success" style="font-size: 14px;"></i>
-                                                    </div>
+
                                                     @if ($item->quiz->status === 'Privat')
                                                         <span class="fw-bold text-success"> - </span>
                                                     @else
@@ -272,10 +266,7 @@
 
                                             <td class="py-4 text-center">
                                                 <div class="d-flex align-items-center justify-content-center">
-                                                    <div class="rounded-circle bg-danger-subtle d-flex align-items-center justify-content-center me-2"
-                                                        style="width: 30px; height: 30px;">
-                                                        <i class="ti ti-x text-danger" style="font-size: 14px;"></i>
-                                                    </div>
+
                                                     @if ($item->quiz->status === 'Privat')
                                                         <span class="fw-bold text-warning"> - </span>
                                                     @else
@@ -286,10 +277,7 @@
 
                                             <td class="py-4 text-center">
                                                 <div class="d-flex align-items-center justify-content-center">
-                                                    <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center me-2"
-                                                        style="width: 30px; height: 30px;">
-                                                        <i class="ti ti-clock text-info" style="font-size: 14px;"></i>
-                                                    </div>
+
 
                                                     @php
                                                         $totalDetik = round($item->waktu_pengerjaan * 60);
@@ -336,13 +324,13 @@
                                             <td class="py-4 text-center">
                                                 @if ($item->quiz->status === 'Privat')
                                                     <span class="badge bg-warning-subtle text-danger px-3 py-2">
-                                                        <i class="ti ti-x me-1"></i>
+
                                                         Dirahasiakan
                                                     </span>
                                                 @else
                                                     <span
                                                         class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }} px-3 py-2">
-                                                        <i class="ti ti-{{ $statusIcon }} me-1"></i>
+
                                                         {{ $status }}
                                                     </span>
                                                 @endif
